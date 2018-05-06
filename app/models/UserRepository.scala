@@ -42,9 +42,12 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
     users.result
   }
 
-  // def create(name: String, email: String, password: String): Future[User] = db.run {
-  // }
-
+  def create(name: String, email: String, password: String): Future[User] = db.run {
+    (users.map(u => (u.name, u.email, u.passwordHash))
+      returning users.map(u => (u.id, u.createdAt, u.updatedAt))
+      into ((form, user) => User(user._1, form._1, form._2, form._3, user._2, user._3))
+      ) += (name, email, password)
+  }
 }
 
 
