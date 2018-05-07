@@ -1,0 +1,15 @@
+@(user: Form[LoginData])(implicit request: MessagesRequestHeader)
+
+@import helper._
+
+<h1>Login</h1>
+
+@form(routes.SessionController.createSession()) {
+  @inputText(user("email"))
+  @inputPassword(user("password"))
+  @CSRF.formField
+
+  <div class="buttons">
+    <input type="submit" value="Login"/>
+  </div>
+}

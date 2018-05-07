@@ -8,6 +8,10 @@ GET     /persons/new                controllers.PersonController.index
 POST    /person                     controllers.PersonController.addPerson
 GET     /persons                    controllers.PersonController.getPersons
 
+# Session Routes
+GET  /login     controllers.SessionController.newSession
+POST /login     controllers.SessionController.createSession
+
 # User Routes
 GET  /users     controllers.UserController.index
 GET  /users/new controllers.UserController.newUser

@@ -21,8 +21,9 @@ case class UserData(name: String, email: String, password: String)
 
 // User Controller
 class UserController @Inject()(repo: UserRepository,
-                               cc: MessagesControllerComponents)
-                              (implicit ec: ExecutionContext) extends MessagesAbstractController(cc) {
+  cc: MessagesControllerComponents)
+(implicit ec: ExecutionContext) extends
+MessagesAbstractController(cc) {
 
   // Define Form Structure
   val userForm = Form {
