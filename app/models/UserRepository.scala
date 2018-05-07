@@ -3,6 +3,7 @@ package models
 import javax.inject.{ Inject, Singleton }
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
+import scala.util.{Try}
 
 import java.sql.Timestamp
 import slick.driver.PostgresDriver.api._
@@ -22,16 +23,19 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
     // Define columns
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
-    def email = column[String]("email")
+    def email = column[String]("email", O.Unique)
     def passwordHash = column[String]("password_hash")
-    def createdAt = column[Timestamp]("created_at")
-    def updatedAt = column[Timestamp]("updated_at")
+    def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
+    def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
 
     // Default Projection
     def * = (id, name, email, passwordHash, createdAt, updatedAt) <> (User.tupled, User.unapply)
   }
 
   private val users = TableQuery[UserTable]
+
+  // Print SQL command to create table
+  // users.schema.create.statements.foreach(println)
 
   // =================
   // Define CRUD here.
@@ -42,11 +46,14 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
     users.result
   }
 
-  def create(name: String, email: String, password: String): Future[User] = db.run {
+  def create(name: String, email: String, password: String): Future[Try[User]] = {
+    val seq = (
     (users.map(u => (u.name, u.email, u.passwordHash))
       returning users.map(u => (u.id, u.createdAt, u.updatedAt))
       into ((form, user) => User(user._1, form._1, form._2, form._3, user._2, user._3))
       ) += (name, email, password)
+    )
+    return db.run(seq.asTry)
   }
 }
 

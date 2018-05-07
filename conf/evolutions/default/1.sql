@@ -1,13 +1,12 @@
 # --- !Ups
-CREATE TABLE "users" (
-  "id" bigserial primary key,
-  "name" character varying,
-  "email" character varying,
-  "password_hash" character varying,
-  "created_at" timestamp NOT NULL default now(),
-  "updated_at" timestamp NOT NULL default now()
+create table "users" (
+  "id" BIGSERIAL NOT NULL PRIMARY KEY,
+  "name" VARCHAR NOT NULL,
+  "email" VARCHAR NOT NULL UNIQUE,
+  "password_hash" VARCHAR NOT NULL,
+  "created_at" timestamp default now() NOT NULL,
+  "updated_at" timestamp default now() NOT NULL
 )
 
 # --- !Downs
-
 DROP TABLE IF EXISTS "users"
