@@ -42,16 +42,15 @@ MessagesAbstractController(cc) {
       loginData => {
         // Find User
         repo.getByEmail(loginData.email).map { result =>
-          result match {
-            case Some(user) =>
-              if (BCrypt.checkpw(loginData.password, user.passwordHash)) {
-                Redirect(routes.UserController.index).flashing("success" -> "Successfully login")
-              } else {
-                Redirect(routes.SessionController.newSession).flashing("error" -> "Invalid email/password combination")
-              }
-            case None =>
-              Redirect(routes.SessionController.newSession).flashing("error" -> "Invalid email/password combination")
+          var returnResult = Redirect(routes.SessionController.newSession).flashing("error" -> "Invalid email/password combination")
+          if (result.isDefined) {
+            val user = result.get
+            if (BCrypt.checkpw(loginData.password, user.passwordHash)) {
+              returnResult =  Redirect(routes.UserController.index).flashing("success" -> "Successfully login")
+            }
           }
+
+          returnResult
         }
       }
     )
