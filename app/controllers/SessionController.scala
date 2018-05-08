@@ -39,10 +39,20 @@ MessagesAbstractController(cc) {
       errorForm => {
         Future.successful(Ok(views.html.session.newSession(errorForm)))
       },
-      user => {
+      loginData => {
         // Find User
-        // Checkpw with BCrypt.checkpw(user.password, foundUser.password)
-        Future.successful(Redirect(routes.UserController.index).flashing("success" -> "Successfully login"))
+        repo.getByEmail(loginData.email).map { result =>
+          result match {
+            case Some(user) =>
+              if (BCrypt.checkpw(loginData.password, user.passwordHash)) {
+                Redirect(routes.UserController.index).flashing("success" -> "Successfully login")
+              } else {
+                Redirect(routes.SessionController.newSession).flashing("error" -> "Invalid email/password combination")
+              }
+            case None =>
+              Redirect(routes.SessionController.newSession).flashing("error" -> "Invalid email/password combination")
+          }
+        }
       }
     )
   }
