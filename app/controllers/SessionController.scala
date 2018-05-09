@@ -46,7 +46,7 @@ MessagesAbstractController(cc) {
           if (result.isDefined) {
             val user = result.get
             if (BCrypt.checkpw(loginData.password, user.passwordHash)) {
-              returnResult =  Redirect(routes.UserController.index).flashing("success" -> "Successfully login")
+              returnResult =  Redirect(routes.UserController.index).flashing("success" -> "Successfully login").withSession("email" -> user.email)
             }
           }
 
@@ -55,8 +55,5 @@ MessagesAbstractController(cc) {
       }
     )
   }
-
-
-
 }
 
