@@ -70,6 +70,11 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
     val action = user.map(u => (u.name, u.email)).update(name, email)
     db.run(action)
   }
+
+  def delete(id: Long): Future[Int] = {
+    val action = users.filter(_.id === id).delete
+    db.run(action)
+  }
 }
 
 

@@ -12,13 +12,13 @@
 
 <ul>
 @for(user <- users) {
-<a href="/users/@user.id">
+<a href="@routes.UserController.showUser(user.id)">
   <li>
     @user.name
 
     <ul>
-      <li><a href="/users/@user.id/edit">Edit</a></li>
-      <li>Delete</li>
+      <li><a href="@routes.UserController.editUser(user.id)">Edit</a></li>
+      <li><a href="@routes.UserController.deleteUser(user.id)">Delete</li>
     </ul>
   </li>
 </a>

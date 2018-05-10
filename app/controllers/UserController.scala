@@ -109,7 +109,6 @@ MessagesAbstractController(cc) {
   }
 
   def updateUser(id: Long) = Action.async { implicit request =>
-    println(request)
     profileForm.bindFromRequest.fold(
       errorForm => {
         println(errorForm)
@@ -128,5 +127,10 @@ MessagesAbstractController(cc) {
     )
   }
 
+  def deleteUser(id: Long) = Action.async { implicit requset =>
+    repo.delete(id).map { _ =>
+      Redirect(routes.UserController.index())
+    }
+  }
 }
 
