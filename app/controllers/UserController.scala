@@ -82,11 +82,20 @@ MessagesAbstractController(cc) {
 
   def showUser(id: Long) = Action.async { implicit request =>
     repo.get(id).map { result =>
-      println(result)
       result match {
         case Some(u) =>
-          println(u)
           Ok(views.html.user.showUser(u))
+        case None => Ok(views.html.index())
+      }
+    }
+  }
+
+  def editUser(id: Long) = Action.async { implicit request =>
+    repo.get(id).map { result =>
+      result match {
+        case Some(u) =>
+          val filledForm = userForm.fill(UserData(u.name, u.email, ""))
+          Ok(views.html.user.editUser(filledForm))
         case None => Ok(views.html.index())
       }
     }

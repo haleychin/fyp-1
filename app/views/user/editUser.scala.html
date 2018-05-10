@@ -1,0 +1,14 @@
+@(user: Form[UserData])(implicit request: MessagesRequestHeader)
+@import helper._
+
+<h1>Edit User</h1>
+
+@form(routes.UserController.createUser()) {
+  @inputText(user("name"))
+  @inputText(user("email"))
+  @CSRF.formField
+
+  <div class="buttons">
+    <input type="submit" value="Update"/>
+  </div>
+}
