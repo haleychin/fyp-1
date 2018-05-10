@@ -1,9 +1,9 @@
-@(user: Form[UserData])(implicit request: MessagesRequestHeader)
+@(id: Long, user: Form[ProfileData])(implicit request: MessagesRequestHeader)
 @import helper._
 
 <h1>Edit User</h1>
 
-@form(routes.UserController.createUser()) {
+@form(routes.UserController.updateUser(id)) {
   @inputText(user("name"))
   @inputText(user("email"))
   @CSRF.formField

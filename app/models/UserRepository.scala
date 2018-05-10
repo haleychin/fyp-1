@@ -62,7 +62,13 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
       into ((form, user) => User(user._1, form._1, form._2, form._3, user._2, user._3))
       ) += (name, email, password)
     )
-    return db.run(seq.asTry)
+    db.run(seq.asTry)
+  }
+
+  def update(id: Long, name: String, email: String): Future[Int] = {
+    val user = users.filter(_.id === id)
+    val action = user.map(u => (u.name, u.email)).update(name, email)
+    db.run(action)
   }
 }
 

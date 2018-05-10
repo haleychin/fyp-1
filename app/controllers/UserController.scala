@@ -18,6 +18,7 @@ import org.mindrot.jbcrypt.BCrypt
 
 // Define Form Case Class
 case class UserData(name: String, email: String, password: String)
+case class ProfileData(name: String, email: String)
 
 // User Controller
 class UserController @Inject()(
@@ -33,6 +34,12 @@ MessagesAbstractController(cc) {
       "email" -> email,
       "password" -> nonEmptyText(minLength = 6)
     )(UserData.apply)(UserData.unapply)
+  }
+  val profileForm = Form {
+    mapping(
+      "name" -> nonEmptyText,
+      "email" -> email
+    )(ProfileData.apply)(ProfileData.unapply)
   }
 
   def index = Action.async { implicit request =>
@@ -94,11 +101,31 @@ MessagesAbstractController(cc) {
     repo.get(id).map { result =>
       result match {
         case Some(u) =>
-          val filledForm = userForm.fill(UserData(u.name, u.email, ""))
-          Ok(views.html.user.editUser(filledForm))
+          val filledForm = profileForm.fill(ProfileData(u.name, u.email))
+          Ok(views.html.user.editUser(id, filledForm))
         case None => Ok(views.html.index())
       }
     }
+  }
+
+  def updateUser(id: Long) = Action.async { implicit request =>
+    println(request)
+    profileForm.bindFromRequest.fold(
+      errorForm => {
+        println(errorForm)
+        Future.successful(Ok(views.html.user.editUser(id, errorForm)))
+      },
+      user => {
+        repo.update(id, user.name, user.email).map { result =>
+          println(result)
+          if (result > 0) {
+            Redirect(routes.UserController.showUser(id))
+          } else {
+            Redirect(routes.UserController.editUser(id))
+          }
+        }
+      }
+    )
   }
 
 }
