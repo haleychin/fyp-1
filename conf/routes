@@ -11,6 +11,7 @@ GET     /persons                    controllers.PersonController.getPersons
 # Session Routes
 GET  /login     controllers.SessionController.newSession
 POST /login     controllers.SessionController.createSession
+GET  /logout    controllers.SessionController.destroySession
 
 # User Routes
 GET  /users     controllers.UserController.index

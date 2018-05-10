@@ -55,5 +55,9 @@ MessagesAbstractController(cc) {
       }
     )
   }
+
+  def destroySession = Action { implicit request =>
+    Redirect(routes.SessionController.newSession()).withNewSession
+  }
 }
 
