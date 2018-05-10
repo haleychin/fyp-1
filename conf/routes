@@ -16,6 +16,7 @@ GET  /logout    controllers.SessionController.destroySession
 # User Routes
 GET  /users     controllers.UserController.index
 GET  /users/new controllers.UserController.newUser
+GET  /users/:id controllers.UserController.showUser(id: Long)
 POST /users     controllers.UserController.createUser
 
 # Map static resources from the /public folder to the /assets URL path

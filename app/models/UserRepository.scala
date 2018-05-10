@@ -50,6 +50,10 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
     users.filter(_.email === email).result.headOption
   }
 
+  def get(id: Long): Future[Option[User]] = db.run {
+    users.filter(_.id === id).result.headOption
+  }
+
   // Create User
   def create(name: String, email: String, password: String): Future[Try[User]] = {
     val seq = (

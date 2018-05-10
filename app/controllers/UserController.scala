@@ -36,17 +36,20 @@ MessagesAbstractController(cc) {
   }
 
   def index = Action.async { implicit request =>
-    val optionalResult = request.session.get("email").map(repo.getByEmail(_))
-    optionalResult match {
-      case Some(futureResult) =>
-        futureResult.map { result =>
-          result match {
-            case Some(u) => Ok(views.html.user.index(u))
-            case None => Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
-          }
-        }
-      case None =>
-        Future.successful(Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first."))
+    // val optionalResult = request.session.get("email").map(repo.getByEmail(_))
+    // optionalResult match {
+    //   case Some(futureResult) =>
+    //     futureResult.map { result =>
+    //       result match {
+    //         case Some(u) => Ok(views.html.user.index(u))
+    //         case None => Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
+    //       }
+    //     }
+    //   case None =>
+    //     Future.successful(Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first."))
+    // }
+    repo.list().map { users =>
+      Ok(views.html.user.index(users))
     }
   }
 
@@ -75,6 +78,18 @@ MessagesAbstractController(cc) {
 
       }
     )
+  }
+
+  def showUser(id: Long) = Action.async { implicit request =>
+    repo.get(id).map { result =>
+      println(result)
+      result match {
+        case Some(u) =>
+          println(u)
+          Ok(views.html.user.showUser(u))
+        case None => Ok(views.html.index())
+      }
+    }
   }
 
 }

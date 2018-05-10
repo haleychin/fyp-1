@@ -1,4 +1,4 @@
-@(user: User)(implicit request: MessagesRequestHeader)
+@(users: Seq[User])(implicit request: MessagesRequestHeader)
 
 @request.flash.get("success").map { key =>
    @request.messages(key)
@@ -8,6 +8,13 @@
    @request.messages(key)
 }
 
-<h1>Hello World</h1>
-<h1>Hello @user.name</h1>
+<h1>Listing Users</h1>
+
+<ul>
+@for(user <- users) {
+<a href="/users/@user.id">
+  <li>@user.name</li>
+</a>
+}
+</ul>
 
