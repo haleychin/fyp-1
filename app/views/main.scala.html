@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit flash: Flash, request: RequestHeader)
 
 <!DOCTYPE html>
 
@@ -23,7 +23,28 @@
   </head>
 
   <body>
-    @content
+    <div class="container">
+      @flashClass(key: String) = @{
+        if (key == "error") {
+          "danger"
+        } else {
+          "success"
+        }
+      }
+      @flash.data.map { case (key, value) =>
+        @if(value) {
+          <div class="alert alert-@flashClass(key) alert-dismissible fade show" role="alert">
+            @value
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        }
+      }
+      @content
+    </div>
+
+
     <!-- JQuery -->
     <script type="text/javascript" src='@routes.Assets.versioned("js/jquery-3.2.1.min.js")'></script>
     <!-- Bootstrap tooltips -->
