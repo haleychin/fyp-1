@@ -1,12 +1,7 @@
-@(users: Seq[User])(implicit request: MessagesRequestHeader)
+@(users: Seq[User])(implicit flash: Flash,  request: RequestHeader, messagesProvider: MessagesProvider)
 
-@request.flash.get("success").map { key =>
-   @request.messages(key)
-}
-
-@request.flash.get("error").map { key =>
-   @request.messages(key)
-}
+@flash.get("success")
+@flash.get("error")
 
 <h1>Listing Users</h1>
 

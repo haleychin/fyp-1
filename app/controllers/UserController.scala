@@ -23,9 +23,10 @@ case class ProfileData(name: String, email: String)
 // User Controller
 class UserController @Inject()(
   repo: UserRepository,
+  authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
-MessagesAbstractController(cc) {
+AbstractController(cc) with play.api.i18n.I18nSupport {
 
   // Define Form Structure
   val userForm = Form {
@@ -41,6 +42,21 @@ MessagesAbstractController(cc) {
       "email" -> email
     )(ProfileData.apply)(ProfileData.unapply)
   }
+
+  // def authenticate[A](action: Action[A]) = Action.async(action.parser) { request =>
+  //   val optionalResult = request.session.get("email").map(repo.getByEmail(_))
+
+  //   optionalResult match {
+  //     case Some(futureResult) =>
+  //       futureResult.map(result =>
+  //         result match {
+  //           case Some(u) => action(new AuthenticatedRequest(u, request))
+  //           case None => Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
+  //         }
+  //       )
+  //     case None => Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
+  //   }
+  // }
 
   def index = Action.async { implicit request =>
     // val optionalResult = request.session.get("email").map(repo.getByEmail(_))
@@ -97,18 +113,23 @@ MessagesAbstractController(cc) {
     }
   }
 
-  def editUser(id: Long) = Action.async { implicit request =>
-    repo.get(id).map { result =>
-      result match {
-        case Some(u) =>
-          val filledForm = profileForm.fill(ProfileData(u.name, u.email))
-          Ok(views.html.user.editUser(id, filledForm))
-        case None => Ok(views.html.index())
+  def editUser(id: Long) = authenticatedAction.async { implicit request =>
+    if (request.user.id != id) {
+      println(request.user)
+      Future.successful(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
+    } else {
+      repo.get(id).map { result =>
+        result match {
+          case Some(u) =>
+            val filledForm = profileForm.fill(ProfileData(u.name, u.email))
+            Ok(views.html.user.editUser(id, filledForm))
+          case None => Ok(views.html.index())
+        }
       }
     }
   }
 
-  def updateUser(id: Long) = Action.async { implicit request =>
+  def updateUser(id: Long) = authenticatedAction.async { implicit request =>
     profileForm.bindFromRequest.fold(
       errorForm => {
         println(errorForm)

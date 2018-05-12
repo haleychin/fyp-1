@@ -1,4 +1,4 @@
-@(user: Form[UserData])(implicit request: MessagesRequestHeader)
+@(user: Form[UserData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 
 @import helper._
 

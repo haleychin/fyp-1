@@ -20,19 +20,21 @@ ActionBuilder[AuthenticatedRequest, AnyContent] {
   def invokeBlock[A](
       request: Request[A],
       block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
-    // repo.getByEmail return a Future[Option[User]]
-    // calling .map on it return a Option[User]
-    val optionalResult = request.session.get("email").map(repo.getByEmail(_))
+    val optionalEmail = request.session.get("email")
 
-    optionalResult.map { futureResult =>
-      futureResult.map{result =>
-        result.map { u =>
-          block(new AuthenticatedRequest(u, request))
+    optionalEmail match {
+      case Some(email) =>
+        repo.getByEmail(email).map { result =>
+          result match {
+            case Some(u) =>
+              Await.result(block(new AuthenticatedRequest(u, request)), 1 second)
+            case None => Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
+          }
         }
-      }
+      case None => Future.successful(Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first."))
     }
 
-    Future.successful(Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first."))
   }
+
 }
 

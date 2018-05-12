@@ -1,4 +1,4 @@
-@(id: Long, user: Form[ProfileData])(implicit request: MessagesRequestHeader)
+@(id: Long, user: Form[ProfileData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
 @import helper._
 
 <h1>Edit User</h1>
