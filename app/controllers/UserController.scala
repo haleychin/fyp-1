@@ -113,11 +113,18 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
-  def editUser(id: Long) = authenticatedAction.async { implicit request =>
+  def checkAuthorization[A](id: Long, action: Action[A]) = authenticatedAction.async(action.parser)
+  { implicit request =>
     if (request.user.id != id) {
       println(request.user)
       Future.successful(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
     } else {
+      action(request)
+    }
+  }
+
+  def editUser(id: Long) = checkAuthorization(id,
+    Action.async { implicit request =>
       repo.get(id).map { result =>
         result match {
           case Some(u) =>
@@ -127,7 +134,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         }
       }
     }
-  }
+  )
 
   def updateUser(id: Long) = authenticatedAction.async { implicit request =>
     profileForm.bindFromRequest.fold(
