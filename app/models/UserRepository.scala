@@ -12,13 +12,13 @@ import scala.concurrent.{ Future, ExecutionContext }
 
 @Singleton
 class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
-  private val dbConfig = dbConfigProvider.get[JdbcProfile]
+  val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._    // Bring db in scope
   import profile.api._ // Slick DSL
 
   // Define table
-  private class UserTable(tag: Tag) extends Table[User](tag, "users") {
+  class UserTable(tag: Tag) extends Table[User](tag, "users") {
 
     // Define columns
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)

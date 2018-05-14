@@ -43,34 +43,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )(ProfileData.apply)(ProfileData.unapply)
   }
 
-  // def authenticate[A](action: Action[A]) = Action.async(action.parser) { request =>
-  //   val optionalResult = request.session.get("email").map(repo.getByEmail(_))
-
-  //   optionalResult match {
-  //     case Some(futureResult) =>
-  //       futureResult.map(result =>
-  //         result match {
-  //           case Some(u) => action(new AuthenticatedRequest(u, request))
-  //           case None => Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
-  //         }
-  //       )
-  //     case None => Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
-  //   }
-  // }
-
   def index = Action.async { implicit request =>
-    // val optionalResult = request.session.get("email").map(repo.getByEmail(_))
-    // optionalResult match {
-    //   case Some(futureResult) =>
-    //     futureResult.map { result =>
-    //       result match {
-    //         case Some(u) => Ok(views.html.user.index(u))
-    //         case None => Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
-    //       }
-    //     }
-    //   case None =>
-    //     Future.successful(Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first."))
-    // }
     repo.list().map { users =>
       Ok(views.html.user.index(users))
     }

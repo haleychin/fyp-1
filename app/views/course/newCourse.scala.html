@@ -1,0 +1,13 @@
+@(course: Form[CourseData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+@import helper._
+
+<h1>New course</h1>
+
+@form(routes.CourseController.createCourse()) {
+  @inputText(course("title"))
+  @CSRF.formField
+
+  <div class="buttons">
+    <input type="submit" value="Update"/>
+  </div>
+}
