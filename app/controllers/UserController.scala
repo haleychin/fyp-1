@@ -55,11 +55,9 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def createUser = Action.async { implicit request =>
     userForm.bindFromRequest.fold(
-      // If Error
       errorForm => {
         Future.successful(Ok(views.html.user.newUser(errorForm)))
       },
-      // Success
       user => {
         val passwordHash = BCrypt.hashpw(user.password, BCrypt.gensalt());
         repo.create(user.name, user.email, passwordHash).map { result =>
@@ -68,7 +66,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
               val errorForm = userForm.withError("email", "already been taken")
               Ok(views.html.user.newUser(errorForm))
             case Success(_) =>
-              Redirect(routes.UserController.index).flashing("success" -> "Succesfully sign up")
+              Redirect(routes.UserController.index).flashing("success" -> "You have successfully sign up")
           }
         }
 
@@ -89,7 +87,6 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   def checkAuthorization[A](id: Long, action: Action[A]) = authenticatedAction.async(action.parser)
   { implicit request =>
     if (request.user.id != id) {
-      println(request.user)
       Future.successful(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
     } else {
       action(request)
@@ -112,12 +109,10 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   def updateUser(id: Long) = authenticatedAction.async { implicit request =>
     profileForm.bindFromRequest.fold(
       errorForm => {
-        println(errorForm)
         Future.successful(Ok(views.html.user.editUser(id, errorForm)))
       },
       user => {
         repo.update(id, user.name, user.email).map { result =>
-          println(result)
           if (result > 0) {
             Redirect(routes.UserController.showUser(id))
           } else {

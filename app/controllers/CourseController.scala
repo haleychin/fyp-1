@@ -34,7 +34,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
-  def newCourse = Action { implicit request =>
+  def newCourse = authenticatedAction { implicit request =>
     Ok(views.html.course.newCourse(courseForm))
   }
 
@@ -48,12 +48,46 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
-  def createCourse = Action { implicit request =>
-    Ok(views.html.index())
+  def createCourse = authenticatedAction.async { implicit request =>
+    courseForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.course.newCourse(errorForm)))
+      },
+      course => {
+        repo.create(course.title, request.user.id).map { result =>
+          Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully created.")
+        }
+      }
+    )
   }
 
-  def editCourse(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
+  class CourseRequest[A](val course: Course , request: AuthenticatedRequest[A]) extends WrappedRequest[A](request) {
+    def user = request.user
+  }
+
+  def CourseAction(courseId: Long)(implicit ec: ExecutionContext) = new ActionRefiner[AuthenticatedRequest, CourseRequest] {
+    def executionContext = ec
+    def refine[A](input: AuthenticatedRequest[A]) =  {
+      repo.get(courseId).map(result =>
+        result
+          .map(c => new CourseRequest(c, input))
+          .toRight(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
+      )
+    }
+  }
+
+  def PermissionCheckAction(implicit ec: ExecutionContext) = new ActionFilter[CourseRequest] {
+    def executionContext = ec
+    def filter[A](input: CourseRequest[A]) = Future.successful {
+        if (input.user.id != input.course.userId) {
+          Some(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
+        } else { None }
+    }
+  }
+
+  def editCourse(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction) { implicit request =>
+    val filledForm = courseForm.fill(CourseData(request.course.title))
+    Ok(views.html.course.editCourse(id, filledForm))
   }
 
   def updateCourse(id: Long) = Action { implicit request =>

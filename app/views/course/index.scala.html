@@ -11,6 +11,10 @@
   <li>
     @course.title
 
+    <ul>
+      <li><a href="@routes.CourseController.editCourse(course.id)">Edit</a></li>
+      <li><a href="@routes.CourseController.deleteCourse(course.id)">Delete</li>
+    </ul>
   </li>
 </a>
 }

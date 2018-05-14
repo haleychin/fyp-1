@@ -50,14 +50,14 @@ class CourseRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, user
   }
 
   // Create Course
-  def create(title: String): Future[Try[Course]] = {
+  def create(title: String, userId: Long): Future[Course] = {
     val seq = (
-    (courses.map(u => u.title)
-      returning courses.map(c => (c.id, c.userId, c.createdAt, c.updatedAt))
-      into ((courseTitle, c) => Course(c._1, c._2, courseTitle, c._3, c._4))
-      ) += (title)
+    (courses.map(u => (u.userId, u.title))
+      returning courses.map(c => (c.id, c.createdAt, c.updatedAt))
+      into ((course, c) => Course(c._1, course._1, course._2, c._2, c._3))
+      ) += (userId, title)
     )
-    db.run(seq.asTry)
+    db.run(seq)
   }
 
   def update(id: Long, title: String): Future[Int] = {
