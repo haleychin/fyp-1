@@ -106,27 +106,31 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   )
 
-  def updateUser(id: Long) = authenticatedAction.async { implicit request =>
-    profileForm.bindFromRequest.fold(
-      errorForm => {
-        Future.successful(Ok(views.html.user.editUser(id, errorForm)))
-      },
-      user => {
-        repo.update(id, user.name, user.email).map { result =>
-          if (result > 0) {
-            Redirect(routes.UserController.showUser(id))
-          } else {
-            Redirect(routes.UserController.editUser(id))
+  def updateUser(id: Long) = checkAuthorization(id,
+    Action.async { implicit request =>
+      profileForm.bindFromRequest.fold(
+        errorForm => {
+          Future.successful(Ok(views.html.user.editUser(id, errorForm)))
+        },
+        user => {
+          repo.update(id, user.name, user.email).map { result =>
+            if (result > 0) {
+              Redirect(routes.UserController.showUser(id))
+            } else {
+              Redirect(routes.UserController.editUser(id))
+            }
           }
         }
-      }
-    )
-  }
-
-  def deleteUser(id: Long) = Action.async { implicit requset =>
-    repo.delete(id).map { _ =>
-      Redirect(routes.UserController.index())
+      )
     }
-  }
+  )
+
+  def deleteUser(id: Long) = checkAuthorization(id,
+    Action.async { implicit requset =>
+      repo.delete(id).map { _ =>
+        Redirect(routes.UserController.index())
+      }
+    }
+  )
 }
 
