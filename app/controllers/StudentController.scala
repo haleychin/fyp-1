@@ -17,7 +17,7 @@ import models._
 case class StudentData(title: String)
 
 class StudentController @Inject()(
-  // repo: StudentRepository,
+  repo: StudentRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends

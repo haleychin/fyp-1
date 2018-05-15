@@ -31,5 +31,14 @@ GET    /courses/:id/edit    controllers.CourseController.editCourse(id: Long)
 POST   /courses/:id         controllers.CourseController.updateCourse(id: Long)
 GET    /courses/:id/delete  controllers.CourseController.deleteCourse(id: Long)
 
+# Student Routes
+GET    /students             controllers.StudentController.index
+GET    /students/new         controllers.StudentController.newStudent
+GET    /students/:id         controllers.StudentController.showStudent(id: Long)
+POST   /students             controllers.StudentController.createStudent
+GET    /students/:id/edit    controllers.StudentController.editStudent(id: Long)
+POST   /students/:id         controllers.StudentController.updateStudent(id: Long)
+GET    /students/:id/delete  controllers.StudentController.deleteStudent(id: Long)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
