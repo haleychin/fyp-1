@@ -103,8 +103,11 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )
   }
 
-  def deleteCourse(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
+  def deleteCourse(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    repo.delete(id).map { _ =>
+      Redirect(routes.CourseController.index).flashing("success" ->
+        "Course has been successfully deleted.")
+    }
   }
 
 }
