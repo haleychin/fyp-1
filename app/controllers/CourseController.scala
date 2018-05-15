@@ -90,8 +90,17 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     Ok(views.html.course.editCourse(id, filledForm))
   }
 
-  def updateCourse(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
+  def updateCourse(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    courseForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.course.editCourse(id, errorForm)))
+      },
+      course => {
+        repo.update(id, course.title).map { result =>
+          Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully updated.")
+        }
+      }
+    )
   }
 
   def deleteCourse(id: Long) = Action { implicit request =>
