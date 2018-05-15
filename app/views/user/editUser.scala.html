@@ -1,6 +1,8 @@
-@(id: Long, user: Form[ProfileData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+@(id: Long, user: Form[ProfileData])(implicit request: RequestHeader, flash:
+Flash, messagesProvider: MessagesProvider)
 @import helper._
 
+@main("Edit User") {
 <h1>Edit User</h1>
 
 @form(routes.UserController.updateUser(id)) {
@@ -11,4 +13,5 @@
   <div class="buttons">
     <input type="submit" value="Update"/>
   </div>
+}
 }

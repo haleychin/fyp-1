@@ -1,7 +1,6 @@
 @(title: String)(content: Html)(implicit flash: Flash, request: RequestHeader)
 
 <!DOCTYPE html>
-
 <html>
 
   <head>
@@ -15,14 +14,49 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
     <!-- Bootstrap core CSS -->
-    <link rel="stylesheet" href='@routes.Assets.versioned("css/bootstrap.min.css")'>
-    <!-- Material Design Bootstrap -->
+    <link rel="stylesheet" href='@routes.Assets.versioned("css/bootstrap.min.css")'> <!-- Material Design Bootstrap -->
     <link rel="stylesheet" href='@routes.Assets.versioned("css/mdb.min.css")'>
     <!-- Main stylesheet -->
     <link rel="stylesheet" href='@routes.Assets.versioned("css/main.css")'>
   </head>
 
   <body>
+    <header>
+      <nav class="navbar navbar-expand-lg navbar-dark indigo scrolling-navbar
+        mb-3">
+          <a class="navbar-brand" href="@routes.PageController.index"><strong>Momento</strong></a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              @if(request.session.get("email").isDefined) {
+                <li class="nav-item">
+                  <a class="nav-link"
+                    href="@routes.CourseController.index">Courses</a>
+                </li>
+              }
+            </ul>
+            <ul class="navbar-nav">
+              @if(request.session.get("email").isEmpty) {
+                <li class="nav-item">
+                  <a class="nav-link"
+                    href="@routes.UserController.newUser">Sign Up</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link"
+                    href="@routes.SessionController.newSession">Sign In</a>
+                </li>
+                } else {
+                  <li class="nav-item">
+                    <a class="nav-link"
+                      href="@routes.SessionController.destroySession">Sign out</a>
+                  </li>
+                }
+            </ul>
+          </div>
+      </nav>
+    </header>
     <div class="container">
       @flashClass(key: String) = @{
         if (key == "error") {

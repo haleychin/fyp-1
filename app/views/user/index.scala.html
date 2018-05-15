@@ -1,8 +1,6 @@
 @(users: Seq[User])(implicit flash: Flash,  request: RequestHeader, messagesProvider: MessagesProvider)
 
-@flash.get("success")
-@flash.get("error")
-
+@main("Users") {
 <h1>Listing Users</h1>
 
 <ul>
@@ -19,4 +17,4 @@
 </a>
 }
 </ul>
-
+}

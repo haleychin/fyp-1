@@ -1,6 +1,8 @@
-@(id: Long, course: Form[CourseData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+@(id: Long, course: Form[CourseData])(implicit request: RequestHeader, flash:
+Flash, messagesProvider: MessagesProvider)
 @import helper._
 
+@main("Edit Course") {
 <h1>Edit course</h1>
 
 @form(routes.CourseController.updateCourse(id)) {
@@ -10,4 +12,5 @@
   <div class="buttons">
     <input type="submit" value="Update"/>
   </div>
+}
 }

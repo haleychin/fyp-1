@@ -1,9 +1,11 @@
 @(courses: Seq[Course])(implicit flash: Flash,  request: RequestHeader, messagesProvider: MessagesProvider)
 
-@flash.get("success")
-@flash.get("error")
+@main("All Courses") {
+<div class="d-flex align-items-baseline">
+  <h1 class="mr-2">All Courses</h1>
+  <a href="@routes.CourseController.newCourse">Add Course</a>
+</div>
 
-<h1>Listing Course</h1>
 
 <ul>
 @for(course <- courses) {
@@ -19,4 +21,4 @@
 </a>
 }
 </ul>
-
+}

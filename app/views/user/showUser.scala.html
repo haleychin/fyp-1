@@ -1,4 +1,6 @@
-@(user: User)
+@(user: User)(implicit flash: Flash, request: RequestHeader)
 
+@main(user.name) {
 <h1>@user.name</h1>
 <p>@user.email</p>
+}

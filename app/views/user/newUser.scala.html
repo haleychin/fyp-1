@@ -1,7 +1,8 @@
-@(user: Form[UserData])(implicit request: RequestHeader, messagesProvider: MessagesProvider)
+@(user: Form[UserData])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
 
 @import helper._
 
+@main("Sign Up") {
 <h1>Sign Up</h1>
 
 @form(routes.UserController.createUser()) {
@@ -13,4 +14,5 @@
   <div class="buttons">
     <input type="submit" value="Sign Up"/>
   </div>
+}
 }

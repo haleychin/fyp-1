@@ -1,15 +1,8 @@
-@(user: Form[LoginData])(implicit request: MessagesRequestHeader)
+@(user: Form[LoginData])(implicit request: MessagesRequestHeader, flash: Flash)
 
 @import helper._
 
-@request.flash.get("success").map { key =>
-   @request.messages(key)
-}
-
-@request.flash.get("error").map { key =>
-   @request.messages(key)
-}
-
+@main("Login") {
 <h1>Login</h1>
 
 @form(routes.SessionController.createSession()) {
@@ -20,4 +13,5 @@
   <div class="buttons">
     <input type="submit" value="Login"/>
   </div>
+}
 }
