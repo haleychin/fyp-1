@@ -13,15 +13,15 @@ import scala.concurrent.{ Future, ExecutionContext }
 case class Course(id: Long, userId: Long, title: String, createdAt: Timestamp, updateAt: Timestamp)
 
 @Singleton
-class CourseRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, userRepository: UserRepository)(implicit ec: ExecutionContext) {
-  private val dbConfig = dbConfigProvider.get[JdbcProfile]
+class CourseRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, val userRepository: UserRepository)(implicit ec: ExecutionContext) {
+  val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._    // Bring db in scope
   import profile.api._ // Slick DSL
 
-  private val users = TableQuery[userRepository.UserTable]
+  val users = TableQuery[userRepository.UserTable]
   // Define table
-  private class CourseTable(tag: Tag) extends Table[Course](tag, "courses") {
+  class CourseTable(tag: Tag) extends Table[Course](tag, "courses") {
 
     // Define columns
     def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
