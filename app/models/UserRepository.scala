@@ -10,6 +10,8 @@ import slick.driver.PostgresDriver.api._
 
 import scala.concurrent.{ Future, ExecutionContext }
 
+case class User(id: Long, name: String, email: String, passwordHash: String,createdAt: Timestamp, updatedAt: Timestamp)
+
 @Singleton
 class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]

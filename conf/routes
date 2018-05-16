@@ -4,9 +4,6 @@
 
 # Home page
 GET     /                           controllers.PageController.index
-GET     /persons/new                controllers.PersonController.index
-POST    /person                     controllers.PersonController.addPerson
-GET     /persons                    controllers.PersonController.getPersons
 
 # Session Routes
 GET    /login     controllers.SessionController.newSession
