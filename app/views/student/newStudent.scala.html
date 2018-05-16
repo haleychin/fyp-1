@@ -1,0 +1,24 @@
+@(student: Form[StudentData])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
+@import helper._
+
+@main("New student") {
+<h1>New student</h1>
+
+@form(routes.StudentController.create()) {
+  @inputText(student("name"))
+  @inputText(student("email"))
+  @inputText(student("studentId"))
+  @inputText(student("icOrPassport"))
+  @inputText(student("nationality"))
+  @inputText(student("contactNumber"))
+  @inputText(student("birthDate"))
+  @inputText(student("programme"))
+  @inputText(student("intake"))
+  @inputText(student("semester"))
+  @CSRF.formField
+
+  <div class="buttons">
+    <input type="submit" value="Create student"/>
+  </div>
+}
+}

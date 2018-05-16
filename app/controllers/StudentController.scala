@@ -14,7 +14,12 @@ import play.api.data.validation.Constraints._
 // Model
 import models._
 
-case class StudentData(title: String)
+import java.sql.Date
+
+case class StudentData(name: String, email: String,
+  studentId: String, icOrPassport: String, nationality: String,
+  contactNumber: String, birthDate: Date, programme: String,
+  intake: String, semester: Int)
 
 class StudentController @Inject()(
   repo: StudentRepository,
@@ -25,35 +30,74 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   val studentForm = Form {
     mapping(
-      "title" -> nonEmptyText
+      "name" -> nonEmptyText,
+      "email" -> email,
+      "studentId" -> nonEmptyText,
+      "icOrPassport" -> nonEmptyText,
+      "nationality" -> nonEmptyText,
+      "contactNumber" -> nonEmptyText,
+      "birthDate" -> sqlDate,
+      "programme" -> nonEmptyText,
+      "intake" -> nonEmptyText,
+      "semester" -> number,
     )(StudentData.apply)(StudentData.unapply)
   }
 
-  def index = Action { implicit request =>
-    Ok(views.html.index())
+  def index = Action.async { implicit request =>
+    repo.list().map { students =>
+      Ok(views.html.student.index(students))
+    }
   }
 
   def newStudent = Action { implicit request =>
+    Ok(views.html.student.newStudent(studentForm))
+  }
+
+  def show(id: Long) = Action { implicit request =>
     Ok(views.html.index())
   }
 
-  def showStudent(id: Long) = Action { implicit request =>
+  def create = authenticatedAction.async { implicit request =>
+    studentForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.student.newStudent(errorForm)))
+      },
+      student => {
+        repo.create(
+          student.name,
+          student.email,
+          student.studentId,
+          student.icOrPassport,
+          student.nationality,
+          student.contactNumber,
+          student.birthDate,
+          student.programme,
+          student.intake,
+          student.semester
+        ).map { result =>
+          result match {
+            case Failure(t) =>
+              val errorForm = studentForm
+                .withError("email", "already been taken")
+                .withError("studentId", "already been taken")
+              Ok(views.html.student.newStudent(errorForm))
+            case Success(_) =>
+              Redirect(routes.StudentController.index).flashing("success" -> "Student has been successfully created.")
+          }
+        }
+      }
+    )
+  }
+
+  def edit(id: Long) = Action { implicit request =>
     Ok(views.html.index())
   }
 
-  def createStudent = Action { implicit request =>
+  def update(id: Long) = Action { implicit request =>
     Ok(views.html.index())
   }
 
-  def editStudent(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
-  }
-
-  def updateStudent(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
-  }
-
-  def deleteStudent(id: Long) = Action { implicit request =>
+  def delete(id: Long) = Action { implicit request =>
     Ok(views.html.index())
   }
 }

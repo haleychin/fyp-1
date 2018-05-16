@@ -55,25 +55,35 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
   // Define CRUD here.
   // =================
 
-  // List all students.
-  // def list(): Future[Seq[Student]] = db.run {
-  //   students.result
-  // }
+  def list(): Future[Seq[Student]] = db.run {
+    students.result
+  }
 
-  // def get(id: Long): Future[Option[Student]] = db.run {
-  //   students.filter(_.id === id).result.headOption
-  // }
+  def get(id: Long): Future[Option[Student]] = db.run {
+    students.filter(_.id === id).result.headOption
+  }
 
-  // // Create Student
-  // def create(name: String, email: String): Future[Try[Student]] = {
-  //   val seq = (
-  //   (students.map(u => (u.name, u.email, u.passwordHash))
-  //     returning students.map(u => (u.id, u.createdAt, u.updatedAt))
-  //     into ((form, student) => Student(student._1, form._1, form._2, form._3, student._2, student._3))
-  //     ) += (name, email, password)
-  //   )
-  //   db.run(seq.asTry)
-  // }
+  def create(name: String, email: String,
+    studentId: String, icOrPassport: String,
+    nationality: String, contactNumber: String,
+    birthDate: Date, programme: String,
+    intake: String, semester: Int): Future[Try[Student]] = {
+    val seq = (
+      (students.map(s =>
+        (s.name, s.email, s.studentId, s.icOrPassport, s.nationality,
+         s.contactNumber, s.birthDate, s.programme, s.intake,
+         s.semester)
+      )
+      returning students.map(s => (s.id, s.createdAt, s.updatedAt))
+      into ((form, student) =>
+          Student(student._1, form._1, form._2, form._3, form._4,
+            form._5, form._6, form._7, form._8, form._9, form._10,
+            student._2, student._3))
+      ) += (name, email, studentId, icOrPassport, nationality,
+      contactNumber, birthDate, programme, intake, semester)
+    )
+    db.run(seq.asTry)
+  }
 
   // def update(id: Long, name: String, email: String): Future[Int] = {
   //   val student = students.filter(_.id === id)
