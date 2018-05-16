@@ -46,38 +46,20 @@ class CourseStudentRepository @Inject() (
   private val coursesStudents = TableQuery[CourseStudentTable]
 
   // Print SQL command to create table
-  coursesStudents.schema.create.statements.foreach(println)
+  // coursesStudents.schema.create.statements.foreach(println)
 
-  // =================
-  // Define CRUD here.
-  // =================
-  // def list(): Future[Seq[Course]] = db.run {
-  //   courses.result
-  // }
+  def create(courseId: Long, studentId: Long): Future[CourseStudent] = {
+    val seq = (
+    (coursesStudents.map(cs => (cs.courseId, cs.studentId))
+      returning coursesStudents.map(cs => (cs.createdAt, cs.updatedAt))
+      into ((form, cs) => CourseStudent(form._1, form._2, cs._1, cs._2))
+      ) += (courseId, studentId)
+    )
+    db.run(seq)
+  }
 
-  // def get(id: Long): Future[Option[Course]] = db.run {
-  //   courses.filter(_.id === id).result.headOption
-  // }
-
-  // // Create Course
-  // def create(title: String, userId: Long): Future[Course] = {
-  //   val seq = (
-  //   (courses.map(u => (u.userId, u.title))
-  //     returning courses.map(c => (c.id, c.createdAt, c.updatedAt))
-  //     into ((course, c) => Course(c._1, course._1, course._2, c._2, c._3))
-  //     ) += (userId, title)
-  //   )
-  //   db.run(seq)
-  // }
-
-  // def update(id: Long, title: String): Future[Int] = {
-  //   val course = courses.filter(_.id === id)
-  //   val action = course.map(u => (u.title)).update(title)
-  //   db.run(action)
-  // }
-
-  // def delete(id: Long): Future[Int] = {
-  //   val action = courses.filter(_.id === id).delete
-  //   db.run(action)
-  // }
+  def delete(courseId: Long, studentId: Long): Future[Int] = {
+    val action = coursesStudents.filter(cs =>  cs.courseId === courseId && cs.studentId === studentId).delete
+    db.run(action)
+  }
 }
