@@ -102,10 +102,10 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     db.run(action)
   }
 
-  // def delete(id: Long): Future[Int] = {
-  //   val action = students.filter(_.id === id).delete
-  //   db.run(action)
-  // }
+  def delete(id: Long): Future[Int] = {
+    val action = students.filter(_.id === id).delete
+    db.run(action)
+  }
 }
 
 

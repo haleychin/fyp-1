@@ -1,5 +1,16 @@
-@(course: Course)(implicit request: RequestHeader, flash: Flash)
+@(student: Student)(implicit request: RequestHeader, flash: Flash)
 
-@main(course.title) {
-<h1>@course.title</h1>
+@main(student.name) {
+<h1>@student.name</h1>
+<ul>
+  <li>Email: @student.email</li>
+  <li>Student ID: @student.studentId</li>
+  <li>IC/Passport: @student.icOrPassport</li>
+  <li>Nationality: @student.nationality</li>
+  <li>Contact Number: @student.contactNumber</li>
+  <li>Birth Date: @student.birthDate</li>
+  <li>Programme: @student.programme</li>
+  <li>Intake: @student.intake</li>
+  <li>Semester: @student.semester</li>
+</ul>
 }

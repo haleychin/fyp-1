@@ -43,7 +43,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )(StudentData.apply)(StudentData.unapply)
   }
 
-  def index = Action.async { implicit request =>
+  def index = authenticatedAction.async { implicit request =>
     repo.list().map { students =>
       Ok(views.html.student.index(students))
     }
@@ -53,8 +53,14 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     Ok(views.html.student.newStudent(studentForm))
   }
 
-  def show(id: Long) = authenticatedAction { implicit request =>
-    Ok(views.html.index())
+  def show(id: Long) = authenticatedAction.async { implicit request =>
+    repo.get(id).map { result =>
+      result match {
+        case Some(s) =>
+          Ok(views.html.student.show(s))
+        case None => Ok(views.html.index())
+      }
+    }
   }
 
   def create = authenticatedAction.async { implicit request =>
@@ -142,7 +148,9 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )
   }
 
-  def delete(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
+  def delete(id: Long) = authenticatedAction.async { implicit request =>
+      repo.delete(id).map { _ =>
+        Redirect(routes.StudentController.index())
+      }
   }
 }
