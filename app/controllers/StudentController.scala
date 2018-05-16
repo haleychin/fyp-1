@@ -49,11 +49,11 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
-  def newStudent = Action { implicit request =>
+  def newStudent = authenticatedAction { implicit request =>
     Ok(views.html.student.newStudent(studentForm))
   }
 
-  def show(id: Long) = Action { implicit request =>
+  def show(id: Long) = authenticatedAction { implicit request =>
     Ok(views.html.index())
   }
 
@@ -89,12 +89,57 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )
   }
 
-  def edit(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
+  def edit(id: Long) = authenticatedAction.async { implicit request =>
+    repo.get(id).map { result =>
+      result match {
+        case Some(student) =>
+          val filledForm = studentForm.fill(
+            StudentData(
+              student.name,
+              student.email,
+              student.studentId,
+              student.icOrPassport,
+              student.nationality,
+              student.contactNumber,
+              student.birthDate,
+              student.programme,
+              student.intake,
+              student.semester
+            )
+          )
+          Ok(views.html.student.edit(id, filledForm))
+        case None => Ok(views.html.index())
+      }
+    }
   }
 
-  def update(id: Long) = Action { implicit request =>
-    Ok(views.html.index())
+  def update(id: Long) = authenticatedAction.async { implicit request =>
+    studentForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.student.edit(id, errorForm)))
+      },
+      student => {
+        repo.update(
+          id,
+          student.name,
+          student.email,
+          student.studentId,
+          student.icOrPassport,
+          student.nationality,
+          student.contactNumber,
+          student.birthDate,
+          student.programme,
+          student.intake,
+          student.semester
+        ).map { result =>
+          if (result > 0) {
+            Redirect(routes.StudentController.show(id)).flashing("success" -> "Student has been successfully updated.")
+          } else {
+            Redirect(routes.StudentController.edit(id))
+          }
+        }
+      }
+    )
   }
 
   def delete(id: Long) = Action { implicit request =>

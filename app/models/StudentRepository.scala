@@ -49,7 +49,7 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
   private val students = TableQuery[StudentTable]
 
   // Print SQL command to create table
-  students.schema.create.statements.foreach(println)
+  // students.schema.create.statements.foreach(println)
 
   // =================
   // Define CRUD here.
@@ -85,11 +85,22 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     db.run(seq.asTry)
   }
 
-  // def update(id: Long, name: String, email: String): Future[Int] = {
-  //   val student = students.filter(_.id === id)
-  //   val action = student.map(u => (u.name, u.email)).update(name, email)
-  //   db.run(action)
-  // }
+  def update(id: Long, name: String, email: String,
+    studentId: String, icOrPassport: String,
+    nationality: String, contactNumber: String,
+    birthDate: Date, programme: String,
+    intake: String, semester: Int): Future[Int] = {
+
+    val student = students.filter(_.id === id)
+    val action = student.map(s =>
+      (s.name, s.email, s.studentId, s.icOrPassport, s.nationality,
+       s.contactNumber, s.birthDate, s.programme, s.intake,
+       s.semester)
+    ).update(name, email, studentId, icOrPassport, nationality,
+      contactNumber, birthDate, programme, intake, semester)
+
+    db.run(action)
+  }
 
   // def delete(id: Long): Future[Int] = {
   //   val action = students.filter(_.id === id).delete

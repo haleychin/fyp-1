@@ -1,16 +1,25 @@
-@(id: Long, course: Form[CourseData])(implicit request: RequestHeader, flash:
+@(id: Long, student: Form[StudentData])(implicit request: RequestHeader, flash:
 Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Edit Course") {
-<h1>Edit course</h1>
+@main("Edit Student") {
+<h1>Edit student</h1>
 
-@form(routes.CourseController.updateCourse(id)) {
-  @inputText(course("title"))
+@form(routes.StudentController.update(id)) {
+  @inputText(student("name"))
+  @inputText(student("email"))
+  @inputText(student("studentId"))
+  @inputText(student("icOrPassport"))
+  @inputText(student("nationality"))
+  @inputText(student("contactNumber"))
+  @inputText(student("birthDate"))
+  @inputText(student("programme"))
+  @inputText(student("intake"))
+  @inputText(student("semester"))
   @CSRF.formField
 
   <div class="buttons">
-    <input type="submit" value="Update"/>
+    <input type="submit" value="Update student"/>
   </div>
 }
 }
