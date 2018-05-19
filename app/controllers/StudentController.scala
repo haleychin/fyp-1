@@ -20,9 +20,11 @@ case class StudentData(name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
   contactNumber: String, birthDate: Date, programme: String,
   intake: String, semester: Int)
+case class StudentAPI(student: Option[Student], courses: Seq[Course])
 
 class StudentController @Inject()(
   repo: StudentRepository,
+  csRepo: CourseStudentRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -53,11 +55,22 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     Ok(views.html.student.newStudent(studentForm))
   }
 
+  def getStudentDetail(id: Long): Future[StudentAPI] = {
+    val result = for {
+      student <- repo.get(id).map(r => r)
+      courses <- csRepo.getCourses(id).map(r => r)
+    } yield (student, courses)
+
+    result.map { result =>
+      StudentAPI(result._1, result._2)
+    }
+  }
+
   def show(id: Long) = authenticatedAction.async { implicit request =>
-    repo.get(id).map { result =>
-      result match {
+    getStudentDetail(id).map { studentApi =>
+      studentApi.student match {
         case Some(s) =>
-          Ok(views.html.student.show(s))
+          Ok(views.html.student.show(s, studentApi.courses))
         case None => Ok(views.html.index())
       }
     }

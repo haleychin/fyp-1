@@ -1,4 +1,4 @@
-@(student: Student)(implicit request: RequestHeader, flash: Flash)
+@(student: Student, courses: Seq[Course])(implicit request: RequestHeader, flash: Flash)
 
 @main(student.name) {
 <h1>@student.name</h1>
@@ -12,5 +12,13 @@
   <li>Programme: @student.programme</li>
   <li>Intake: @student.intake</li>
   <li>Semester: @student.semester</li>
+
+  <li>Courses:
+    <ul>
+      @for(course <- courses) {
+      <li>@course.title</li>
+      }
+    </ul>
+  </li>
 </ul>
 }

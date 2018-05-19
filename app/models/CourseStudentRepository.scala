@@ -63,6 +63,14 @@ class CourseStudentRepository @Inject() (
     result
   }
 
+  def getCourses(studentId: Long): Future[Seq[Course]] = {
+    val query = for {
+      (s, c) <- courseRepository.courses join coursesStudents on (_.id === _.studentId)
+    } yield s
+    val result = db.run(query.result)
+    result
+  }
+
   def delete(courseId: Long, studentId: Long): Future[Int] = {
     val action = coursesStudents.filter(cs =>  cs.courseId === courseId && cs.studentId === studentId).delete
     db.run(action)
