@@ -9,7 +9,20 @@
   @CSRF.formField
 
   <div class="buttons">
-    <input type="submit" value="Add"/>
+    <input class="btn btn-primary" type="submit" value="Add"/>
   </div>
+}
+
+<hr>
+
+<h1>Or import from excel files: </h1>
+@form(routes.UploadController.upload, 'enctype -> "multipart/form-data") {
+  @CSRF.formField
+  <input type="file" name="file">
+
+  <p>
+    <input class="btn btn-primary" type="submit" value="Import students">
+  </p>
+
 }
 }

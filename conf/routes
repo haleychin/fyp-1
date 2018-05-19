@@ -3,7 +3,7 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.PageController.index
+GET     /         controllers.PageController.index
 
 # Session Routes
 GET    /login     controllers.SessionController.newSession
@@ -11,22 +11,22 @@ POST   /login     controllers.SessionController.createSession
 GET    /logout    controllers.SessionController.destroySession
 
 # User Routes
-GET    /users             controllers.UserController.index
-GET    /users/new         controllers.UserController.newUser
-GET    /users/:id         controllers.UserController.showUser(id: Long)
-POST   /users             controllers.UserController.createUser
-GET    /users/:id/edit    controllers.UserController.editUser(id: Long)
-POST   /users/:id         controllers.UserController.updateUser(id: Long)
-GET    /users/:id/delete  controllers.UserController.deleteUser(id: Long)
+GET    /users                controllers.UserController.index
+GET    /users/new            controllers.UserController.newUser
+GET    /users/:id            controllers.UserController.showUser(id: Long)
+POST   /users                controllers.UserController.createUser
+GET    /users/:id/edit       controllers.UserController.editUser(id: Long)
+POST   /users/:id            controllers.UserController.updateUser(id: Long)
+GET    /users/:id/delete     controllers.UserController.deleteUser(id: Long)
 
-# Course Routes
-GET    /courses             controllers.CourseController.index
-GET    /courses/new         controllers.CourseController.newCourse
-GET    /courses/:id         controllers.CourseController.showCourse(id: Long)
-POST   /courses             controllers.CourseController.createCourse
-GET    /courses/:id/edit    controllers.CourseController.editCourse(id: Long)
-POST   /courses/:id         controllers.CourseController.updateCourse(id: Long)
-GET    /courses/:id/delete  controllers.CourseController.deleteCourse(id: Long)
+# Course Route s
+GET    /courses              controllers.CourseController.index
+GET    /courses/new          controllers.CourseController.newCourse
+GET    /courses/:id          controllers.CourseController.showCourse(id: Long)
+POST   /courses              controllers.CourseController.createCourse
+GET    /courses/:id/edit     controllers.CourseController.editCourse(id: Long)
+POST   /courses/:id          controllers.CourseController.updateCourse(id: Long)
+GET    /courses/:id/delete   controllers.CourseController.deleteCourse(id: Long)
 
 # Student Routes
 GET    /students             controllers.StudentController.index
@@ -38,9 +38,11 @@ POST   /students/:id         controllers.StudentController.update(id: Long)
 GET    /students/:id/delete  controllers.StudentController.delete(id: Long)
 
 # CourseStudent Routes
-GET    /courses/:id/add      controllers.CourseStudentController.newCourseStudent(id: Long)
-POST   /courses/:id/students controllers.CourseStudentController.create(id: Long)
-POST   /courses/:id/students/:studentId controllers.CourseStudentController.delete(id: Long, studentId: Long)
+GET    /courses/:id/add                   controllers.CourseStudentController.newCourseStudent(id: Long)
+POST   /courses/:id/students              controllers.CourseStudentController.create(id: Long)
+POST   /courses/:id/students/:studentId   controllers.CourseStudentController.delete(id: Long, studentId: Long)
 
+# Upload Routes
+POST  /uploads               controllers.UploadController.upload
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
