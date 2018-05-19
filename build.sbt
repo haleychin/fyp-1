@@ -17,6 +17,12 @@ libraryDependencies += "org.postgresql" % "postgresql" % "9.4-1200-jdbc41"
 // https://mvnrepository.com/artifact/org.mindrot/jbcrypt
 libraryDependencies += "org.mindrot" % "jbcrypt" % "0.4"
 
+libraryDependencies ++= Seq(
+  "org.apache.poi" % "poi" % "3.17",
+  "org.apache.poi" % "poi-ooxml" % "3.17",
+  "org.apache.poi" % "poi-ooxml-schemas" % "3.17"
+)
+
 libraryDependencies += specs2 % Test
 
 // Java 9
