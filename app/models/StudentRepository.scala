@@ -46,7 +46,7 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
       birthDate, programme, intake, semester, createdAt, updatedAt) <> (Student.tupled, Student.unapply)
   }
 
-  private val students = TableQuery[StudentTable]
+  val students = TableQuery[StudentTable]
 
   // Print SQL command to create table
   // students.schema.create.statements.foreach(println)

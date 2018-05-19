@@ -34,7 +34,7 @@ class UserRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(implic
     def * = (id, name, email, passwordHash, createdAt, updatedAt) <> (User.tupled, User.unapply)
   }
 
-  private val users = TableQuery[UserTable]
+  val users = TableQuery[UserTable]
 
   // Print SQL command to create table
   // users.schema.create.statements.foreach(println)

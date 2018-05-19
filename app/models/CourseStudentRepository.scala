@@ -15,19 +15,16 @@ case class CourseStudent(courseId: Long, studentId: Long, createdAt: Timestamp, 
 @Singleton
 class CourseStudentRepository @Inject() (
   dbConfigProvider: DatabaseConfigProvider,
-  courseRepository: CourseRepository,
-  studentRepository: StudentRepository
+  val courseRepository: CourseRepository,
+  val studentRepository: StudentRepository
  )(implicit ec: ExecutionContext) {
-  private val dbConfig = dbConfigProvider.get[JdbcProfile]
+  val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._    // Bring db in scope
   import profile.api._ // Slick DSL
 
-  private val coursesTable = TableQuery[courseRepository.CourseTable]
-  private val studentsTable = TableQuery[studentRepository.StudentTable]
-
   // Define table
-  private class CourseStudentTable(tag: Tag) extends Table[CourseStudent](tag, "courses_students") {
+  class CourseStudentTable(tag: Tag) extends Table[CourseStudent](tag, "courses_students") {
 
     // Define columns
     def courseId = column[Long]("course_id")
@@ -36,14 +33,14 @@ class CourseStudentRepository @Inject() (
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
     def pk = primaryKey("primary_key", (courseId, studentId))
 
-    def courses = foreignKey("fk_courses", courseId, coursesTable)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
-    def students = foreignKey("fk_students", studentId, studentsTable)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+    def courses = foreignKey("fk_courses", courseId, courseRepository.courses)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+    def students = foreignKey("fk_students", studentId, studentRepository.students)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 
     // Default Projection
     def * = (courseId, studentId, createdAt, updatedAt) <> (CourseStudent.tupled, CourseStudent.unapply)
   }
 
-  private val coursesStudents = TableQuery[CourseStudentTable]
+  val coursesStudents = TableQuery[CourseStudentTable]
 
   // Print SQL command to create table
   // coursesStudents.schema.create.statements.foreach(println)
@@ -56,6 +53,14 @@ class CourseStudentRepository @Inject() (
       ) += (courseId, studentId)
     )
     db.run(seq)
+  }
+
+  def getStudents(courseId: Long): Future[Seq[Student]] = {
+    val query = for {
+      (s, c) <- studentRepository.students join coursesStudents on (_.id === _.courseId)
+    } yield s
+    val result = db.run(query.result)
+    result
   }
 
   def delete(courseId: Long, studentId: Long): Future[Int] = {

@@ -4,7 +4,6 @@ import javax.inject._
 import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Failure}
-
 // For Form
 import play.api.data._
 import play.api.data.Forms._
@@ -14,9 +13,11 @@ import play.api.data.validation.Constraints._
 import models._
 
 case class CourseData(title: String)
+case class CourseAPI(course: Option[Course], students: Seq[Student])
 
 class CourseController @Inject()(
   repo: CourseRepository,
+  csRepo: CourseStudentRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -38,11 +39,22 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     Ok(views.html.course.newCourse(courseForm))
   }
 
+  def getCourseDetail(id: Long): Future[CourseAPI] = {
+    val results = for {
+      course <- repo.get(id).map(r => r)
+      students <- csRepo.getStudents(id).map(r => r)
+    } yield (course, students)
+
+    results.map { r =>
+      CourseAPI(r._1, r._2)
+    }
+  }
+
   def showCourse(id: Long) = Action.async { implicit request =>
-    repo.get(id).map { result =>
-      result match {
+    getCourseDetail(id).map { courseApi =>
+      courseApi.course match {
         case Some(c) =>
-          Ok(views.html.course.showCourse(c))
+          Ok(views.html.course.showCourse(c, courseApi.students))
         case None => Ok(views.html.index())
       }
     }

@@ -13,13 +13,16 @@ import scala.concurrent.{ Future, ExecutionContext }
 case class Course(id: Long, userId: Long, title: String, createdAt: Timestamp, updateAt: Timestamp)
 
 @Singleton
-class CourseRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, val userRepository: UserRepository)(implicit ec: ExecutionContext) {
+class CourseRepository @Inject() (
+  dbConfigProvider: DatabaseConfigProvider,
+  val userRepository: UserRepository
+)
+(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
   import dbConfig._    // Bring db in scope
   import profile.api._ // Slick DSL
 
-  val users = TableQuery[userRepository.UserTable]
   // Define table
   class CourseTable(tag: Tag) extends Table[Course](tag, "courses") {
 
@@ -29,16 +32,13 @@ class CourseRepository @Inject() (dbConfigProvider: DatabaseConfigProvider, val 
     def title = column[String]("title")
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
-    def user = foreignKey("user_fk", userId, users)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+    def user = foreignKey("user_fk", userId, userRepository.users)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 
     // Default Projection
     def * = (id, userId, title, createdAt, updatedAt) <> (Course.tupled, Course.unapply)
   }
 
-  private val courses = TableQuery[CourseTable]
-
-  // Print SQL command to create table
-  // courses.schema.create.statements.foreach(println)
+  val courses = TableQuery[CourseTable]
 
   // =================
   // Define CRUD here.

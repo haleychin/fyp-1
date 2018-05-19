@@ -1,6 +1,13 @@
-@(course: Course)(implicit request: RequestHeader, flash: Flash)
+@(course: Course, students: Seq[Student])(implicit request: RequestHeader, flash: Flash)
 
 @main(course.title) {
 <h1>@course.title</h1>
 <a href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+
+<h2>Students</h2>
+<ul>
+  @for(student <- students) {
+  <li>@student.name</li>
+  }
+</ul>
 }
