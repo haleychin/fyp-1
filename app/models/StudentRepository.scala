@@ -10,6 +10,7 @@ import slick.driver.PostgresDriver.api._
 
 import scala.concurrent.{ Future, ExecutionContext }
 
+
 case class Student(id: Long, name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
   contactNumber: String, birthDate: Date, programme: String,

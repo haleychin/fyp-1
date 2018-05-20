@@ -17,9 +17,11 @@ import org.apache.poi.ss.usermodel.{WorkbookFactory, DataFormatter}
 
 // Model
 import models._
+import util._
 
 class UploadController @Inject()(
   repo: CourseStudentRepository,
+  sRepo: StudentRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -29,28 +31,26 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     request.body.file("file").map { file =>
       val filename = Paths.get(file.filename).getFileName
       file.ref.moveTo(Paths.get(s"$filename"), replace = true)
-      println(file)
 
       import scala.collection.JavaConversions._
+
       val workbook = WorkbookFactory.create(new File(filename.toString()))
-        val formatter = new DataFormatter()
-        for {
-            // Iterate and print the sheets
-            (sheet, i) <- workbook.zipWithIndex
-            _ = println(s"Sheet $i of ${workbook.getNumberOfSheets}: ${sheet.getSheetName}")
+      val formatter = new DataFormatter()
+      val sheet = workbook.getSheetAt(0)
 
-            // Iterate and print the rows
-            row <- sheet
-            _ = println(s"\tRow ${row.getRowNum}")
-
-            // Iterate and print the cells
-            cell <- row
-        } {
-            println(s"\t\t${cell.getAddress}: ${formatter.formatCellValue(cell)}")
+      for (row <- sheet) {
+        if (row.getRowNum() == 0) {}
+        else {
+          val values = row.map(formatter.formatCellValue(_)).toArray
+          sRepo.create(values(0), values(1), values(2), values(3),
+            values(4), values(5), Utils.convertStringToDate(values(6)),
+            values(7), values(8), values(9).toInt)
         }
-        // Redirect(routes.PageController.index).flashing(
-        //   "success" -> "File uploaded successfully")
-        Ok("File uploaded")
+      }
+
+      // Redirect(routes.PageController.index).flashing(
+      //   "success" -> "File uploaded successfully")
+      Ok("File uploaded")
     }.getOrElse {
       Redirect(routes.PageController.index).flashing(
         "error" -> "Missing file")
