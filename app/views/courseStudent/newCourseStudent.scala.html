@@ -16,7 +16,7 @@
 <hr>
 
 <h1>Or import from excel files: </h1>
-@form(routes.UploadController.upload, 'enctype -> "multipart/form-data") {
+@form(routes.UploadController.upload(id), 'enctype -> "multipart/form-data") {
   @CSRF.formField
   <input type="file" name="file">
 

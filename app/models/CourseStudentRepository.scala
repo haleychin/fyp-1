@@ -57,16 +57,22 @@ class CourseStudentRepository @Inject() (
 
   def getStudents(courseId: Long): Future[Seq[Student]] = {
     val query = for {
-      (s, c) <- studentRepository.students join coursesStudents on (_.id === _.courseId)
-    } yield s
+      cs <- coursesStudents
+      courses <- cs.courses if courses.id === courseId
+      students <- cs.students
+    } yield students
+
     val result = db.run(query.result)
     result
   }
 
   def getCourses(studentId: Long): Future[Seq[Course]] = {
     val query = for {
-      (s, c) <- courseRepository.courses join coursesStudents on (_.id === _.studentId)
-    } yield s
+      cs <- coursesStudents
+      students <- cs.students if students.id === studentId
+      courses <- cs.courses
+    } yield courses
+
     val result = db.run(query.result)
     result
   }

@@ -43,6 +43,6 @@ POST   /courses/:id/students              controllers.CourseStudentController.cr
 POST   /courses/:id/students/:studentId   controllers.CourseStudentController.delete(id: Long, studentId: Long)
 
 # Upload Routes
-POST  /uploads               controllers.UploadController.upload
+POST  /uploads/:id               controllers.UploadController.upload(id: Long)
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

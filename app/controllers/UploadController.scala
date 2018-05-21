@@ -28,7 +28,7 @@ class UploadController @Inject()(
 (implicit ec: ExecutionContext) extends
 AbstractController(cc) with play.api.i18n.I18nSupport {
 
-  def upload = authenticatedAction(parse.multipartFormData) { implicit request =>
+  def upload(courseId: Long) = authenticatedAction(parse.multipartFormData) { implicit request =>
     request.body.file("file").map { file =>
       val filename = Paths.get(file.filename).getFileName
       file.ref.moveTo(Paths.get(s"$filename"), replace = true)
@@ -50,7 +50,9 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
             values(4), values(5), Utils.convertStringToDate(values(6)),
             values(7), values(8), values(9).toInt).map { r =>
               r match {
-                case Success(u) => successCount += 1
+                case Success(u) =>
+                  successCount += 1
+                  repo.create(courseId, u.id)
                 case Failure(e: PSQLException) =>
                   errorMessages += e.getServerErrorMessage().getDetail()
               }
