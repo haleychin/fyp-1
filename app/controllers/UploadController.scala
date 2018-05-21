@@ -4,6 +4,7 @@ import javax.inject._
 import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Failure}
+import org.postgresql.util.PSQLException
 
 // For Form
 import play.api.data._
@@ -33,10 +34,13 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       file.ref.moveTo(Paths.get(s"$filename"), replace = true)
 
       import scala.collection.JavaConversions._
+      import scala.collection.mutable.ArrayBuffer
 
       val workbook = WorkbookFactory.create(new File(filename.toString()))
       val formatter = new DataFormatter()
       val sheet = workbook.getSheetAt(0)
+      val errorMessages = ArrayBuffer[String]()
+      var successCount = 0
 
       for (row <- sheet) {
         if (row.getRowNum() == 0) {}
@@ -44,17 +48,24 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           val values = row.map(formatter.formatCellValue(_)).toArray
           sRepo.create(values(0), values(1), values(2), values(3),
             values(4), values(5), Utils.convertStringToDate(values(6)),
-            values(7), values(8), values(9).toInt)
+            values(7), values(8), values(9).toInt).map { r =>
+              r match {
+                case Success(u) => successCount += 1
+                case Failure(e: PSQLException) =>
+                  errorMessages += e.getServerErrorMessage().getDetail()
+              }
+            }
         }
       }
 
-      // Redirect(routes.PageController.index).flashing(
-      //   "success" -> "File uploaded successfully")
-      Ok("File uploaded")
+      Redirect(routes.PageController.index).flashing(
+        "success" -> s"Import $successCount students successfully",
+        "error" -> s"${errorMessages.mkString(" ")}")
     }.getOrElse {
       Redirect(routes.PageController.index).flashing(
         "error" -> "Missing file")
     }
+
   }
 
 }
