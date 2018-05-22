@@ -23,6 +23,10 @@ libraryDependencies ++= Seq(
   "org.apache.poi" % "poi-ooxml-schemas" % "3.17"
 )
 
+libraryDependencies ++= Seq(
+  ws
+)
+
 libraryDependencies += specs2 % Test
 
 // Java 9
