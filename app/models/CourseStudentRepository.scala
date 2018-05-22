@@ -8,7 +8,8 @@ import scala.util.{Try}
 import java.sql.Timestamp
 import slick.driver.PostgresDriver.api._
 
-import scala.concurrent.{ Future, ExecutionContext }
+import scala.concurrent.{ExecutionContext, Future, Await}
+import scala.concurrent.duration._
 
 case class CourseStudent(courseId: Long, studentId: Long, createdAt: Timestamp, updateAt: Timestamp)
 
@@ -53,6 +54,12 @@ class CourseStudentRepository @Inject() (
       ) += (courseId, studentId)
     )
     db.run(seq)
+  }
+
+  def createWithStudentId(courseId: Long, studentId: String): Future[CourseStudent] = {
+    // Blocking and Force Unwrap here
+    val student = Await.result(studentRepository.getByStudentId(studentId).map(_.get), 1 second)
+    create(courseId, student.id)
   }
 
   def getStudents(courseId: Long): Future[Seq[Student]] = {

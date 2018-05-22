@@ -64,6 +64,10 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     students.filter(_.id === id).result.headOption
   }
 
+  def getByStudentId(studentId: String): Future[Option[Student]] = db.run {
+    students.filter(_.studentId === studentId).result.headOption
+  }
+
   def create(name: String, email: String,
     studentId: String, icOrPassport: String,
     nationality: String, contactNumber: String,

@@ -54,6 +54,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
                   successCount += 1
                   repo.create(courseId, u.id)
                 case Failure(e: PSQLException) =>
+                  repo.createWithStudentId(courseId, values(2))
                   errorMessages += e.getServerErrorMessage().getDetail()
               }
             }
