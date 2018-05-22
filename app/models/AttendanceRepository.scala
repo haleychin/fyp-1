@@ -5,13 +5,14 @@ import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import scala.util.{Try}
 
-import java.sql.Timestamp
+import java.sql.{Timestamp, Date}
 import slick.driver.PostgresDriver.api._
 
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
-case class Attendance(courseId: Long, studentId: Long, attendanceType: String, createdAt: Timestamp, updateAt: Timestamp)
+case class Attendance(id: Long, courseId: Long, studentId: Long, date: Date,
+  attendanceType: String, createdAt: Timestamp, updateAt: Timestamp)
 
 @Singleton
 class AttendanceRepository @Inject() (
@@ -28,18 +29,19 @@ class AttendanceRepository @Inject() (
   class AttendanceTable(tag: Tag) extends Table[Attendance](tag, "attendances") {
 
     // Define columns
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def courseId = column[Long]("course_id")
     def studentId = column[Long]("student_id")
     def attendanceType = column[String]("attendance_type")
+    def date = column[Date]("date")
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
-    def pk = primaryKey("primary_key", (courseId, studentId))
 
     def courses = foreignKey("fk_courses", courseId, cRepo.courses)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
     def students = foreignKey("fk_students", studentId, sRepo.students)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 
     // Default Projection
-    def * = (courseId, studentId, attendanceType, createdAt, updatedAt) <> (Attendance.tupled, Attendance.unapply)
+    def * = (id, courseId, studentId, date, attendanceType, createdAt, updatedAt) <> (Attendance.tupled, Attendance.unapply)
   }
 
   val attendances = TableQuery[AttendanceTable]
@@ -47,21 +49,20 @@ class AttendanceRepository @Inject() (
   // Print SQL command to create table
   attendances.schema.create.statements.foreach(println)
 
-  def create(courseId: Long, studentId: Long, attendanceType: String): Future[Attendance] = {
+  // studentId here refer to the Student Id for student instead
+  // of the primary key of the Student record
+  def create(courseId: Long, studentId: String, date: Date, attendanceType: String): Future[Attendance] = {
+    // Blocking and Force Unwrap here
+    val student = Await.result(sRepo.getByStudentId(studentId).map(_.get), 1 second)
     val seq = (
-    (attendances.map(a => (a.courseId, a.studentId, attendanceType))
-      returning attendances.map(a => (a.createdAt, a.updatedAt))
-      into ((form, a) => Attendance(form._1, form._2, form._3, a._1, a._2))
-      ) += (courseId, studentId, attendanceType)
+    (attendances.map(a => (a.courseId, a.studentId, a.date, a.attendanceType))
+      returning attendances.map(a => (a.id, a.createdAt, a.updatedAt))
+      into ((form, a) => Attendance(a._1, form._1, form._2, form._3,
+        form._4, a._2, a._3))
+      ) += (courseId, student.id, date, attendanceType)
     )
     db.run(seq)
   }
-
-  // def createWithStudentId(courseId: Long, studentId: String): Future[Attendance] = {
-  //   // Blocking and Force Unwrap here
-  //   val student = Await.result(sRepo.getByStudentId(studentId).map(_.get), 1 second)
-  //   create(courseId, student.id)
-  // }
 
   // def getStudents(courseId: Long): Future[Seq[Student]] = {
   //   val query = for {

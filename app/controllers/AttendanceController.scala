@@ -38,10 +38,6 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     var attended = (json \ "attended").as[JsArray].value
     var excuse   = (json \ "excuse").as[JsArray].value
     var absent   = (json \ "absent").as[JsArray].value
-
-    println(attended)
-    println(excuse)
-    println(absent)
   }
 
   def index = Action { implicit request =>
@@ -58,7 +54,6 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         "group_id" -> "2")
       .get()
       .map { r =>
-        println(r)
         extractAttendanceDetail(r.json)
       }
 
