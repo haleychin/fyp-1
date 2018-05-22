@@ -18,7 +18,7 @@ import org.apache.poi.ss.usermodel.{WorkbookFactory, DataFormatter}
 
 // Model
 import models._
-import util._
+import utils._
 
 class UploadController @Inject()(
   repo: CourseStudentRepository,

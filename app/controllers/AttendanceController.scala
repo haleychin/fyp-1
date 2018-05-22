@@ -7,9 +7,9 @@ import scala.concurrent.duration._
 import play.api.libs.ws._
 import play.api.libs.json._
 
-
 // Model
 import models._
+import utils._
 
 class AttendanceController @Inject()(
   ws: WSClient,
@@ -35,9 +35,25 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def extractAttendanceDetail(json: JsValue) {
-    var attended = (json \ "attended").as[JsArray].value
-    var excuse   = (json \ "excuse").as[JsArray].value
-    var absent   = (json \ "absent").as[JsArray].value
+    val attended = (json \ "attended").as[JsArray].value
+    val excuse   = (json \ "excuse").as[JsArray].value
+    val absent   = (json \ "absent").as[JsArray].value
+    val courseId = (json \ "course_id").as[String].toLong
+    val dateString = (json \ "date").as[String]
+    val date     = Utils.convertStringToDate(dateString)
+
+    // Handle id not found?
+    // attended.foreach { id =>
+    //   repo.create(courseId, id.as[String], date, "attend")
+    // }
+
+    // excuse.foreach { id =>
+    //   repo.create(courseId, id.as[String], date, "excuse")
+    // }
+
+    // absent.foreach  { id =>
+    //   repo.create(courseId, id.as[String], date, "absent")
+    // }
   }
 
   def index = Action { implicit request =>
@@ -50,7 +66,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     wsRequest("http://localhost:4567/attendance")
       .addQueryStringParameters(
         "course_id" -> "1",
-        "date" -> "2017-07-19",
+        "date" -> "19/07/2017",
         "group_id" -> "2")
       .get()
       .map { r =>
