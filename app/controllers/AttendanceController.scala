@@ -14,6 +14,7 @@ import utils._
 class AttendanceController @Inject()(
   ws: WSClient,
   repo: AttendanceRepository,
+  cwRepo: CourseworkRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
