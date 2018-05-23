@@ -76,5 +76,10 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     Ok(views.html.index())
   }
 
+  def test = Action { implicit request =>
+    BlackboardParser.parse("BlackboardExport.txt")
+    Ok(views.html.index())
+  }
+
 }
 
