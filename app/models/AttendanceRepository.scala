@@ -3,7 +3,7 @@ package models
 import javax.inject.{ Inject, Singleton }
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
-import scala.util.{Try}
+import scala.util.{Success, Failure}
 
 import java.sql.{Timestamp, Date}
 import slick.driver.PostgresDriver.api._
@@ -51,17 +51,33 @@ class AttendanceRepository @Inject() (
 
   // studentId here refer to the Student Id for student instead
   // of the primary key of the Student record
-  def create(courseId: Long, studentId: String, date: Date, attendanceType: String): Future[Attendance] = {
-    // Blocking and Force Unwrap here
-    val student = Await.result(sRepo.getByStudentId(studentId).map(_.get), 1 second)
-    val seq = (
-    (attendances.map(a => (a.courseId, a.studentId, a.date, a.attendanceType))
-      returning attendances.map(a => (a.id, a.createdAt, a.updatedAt))
-      into ((form, a) => Attendance(a._1, form._1, form._2, form._3,
-        form._4, a._2, a._3))
-      ) += (courseId, student.id, date, attendanceType)
-    )
-    db.run(seq)
+  def create(courseId: Long, studentId: String, date: Date, attendanceType: String): Future[Option[Attendance]] = {
+    sRepo.getByStudentId(studentId).flatMap { s =>
+      s match {
+        case Some(student) =>
+          val seq = (
+          (attendances.map(a => (a.courseId, a.studentId, a.date, a.attendanceType))
+            returning attendances.map(a => (a.id, a.createdAt, a.updatedAt))
+            into ((form, a) => Attendance(a._1, form._1, form._2, form._3,
+              form._4, a._2, a._3))
+            ) += (courseId, student.id, date, attendanceType)
+          )
+          val result = db.run(seq.asTry)
+          result.map { r =>
+            r match {
+              case Success(a) =>
+                println(a)
+                Some(a)
+              case Failure(e) =>
+                println(e)
+                None
+            }
+          }
+        case None =>
+          Future(None)
+      }
+    }
+
   }
 
   // def getStudents(courseId: Long): Future[Seq[Student]] = {

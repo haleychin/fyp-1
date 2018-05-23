@@ -42,18 +42,18 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     val dateString = (json \ "date").as[String]
     val date     = Utils.convertStringToDate(dateString)
 
-    // Handle id not found?
-    // attended.foreach { id =>
-    //   repo.create(courseId, id.as[String], date, "attend")
-    // }
+    attended.foreach { id =>
+      repo.create(courseId, id.as[String], date, "attend").map(println(_))
+    }
 
-    // excuse.foreach { id =>
-    //   repo.create(courseId, id.as[String], date, "excuse")
-    // }
+    excuse.foreach { id =>
+      repo.create(courseId, id.as[String], date, "excuse").map(println(_))
+    }
 
-    // absent.foreach  { id =>
-    //   repo.create(courseId, id.as[String], date, "absent")
-    // }
+    println(absent)
+    absent.foreach  { id =>
+      repo.create(courseId, id.as[String], date, "absent").map(println(_))
+    }
   }
 
   def index = Action { implicit request =>
