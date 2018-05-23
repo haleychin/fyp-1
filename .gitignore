@@ -8,3 +8,7 @@ target
 /.project
 /.settings
 /RUNNING_PID
+
+# Ignore test files
+*.xlsx
+BlackboardExport.txt

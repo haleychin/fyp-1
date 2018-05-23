@@ -19,7 +19,7 @@ GET    /users/:id/edit       controllers.UserController.editUser(id: Long)
 POST   /users/:id            controllers.UserController.updateUser(id: Long)
 GET    /users/:id/delete     controllers.UserController.deleteUser(id: Long)
 
-# Course Route s
+# Course Routes
 GET    /courses              controllers.CourseController.index
 GET    /courses/new          controllers.CourseController.newCourse
 GET    /courses/:id          controllers.CourseController.showCourse(id: Long)
@@ -47,7 +47,8 @@ POST  /uploads/:id               controllers.UploadController.upload(id: Long)
 
 # Attendance Routes
 GET   /attendances           controllers.AttendanceController.index
-GET   /test                  controllers.AttendanceController.test
+GET   /blackboard            controllers.AttendanceController.blackboard
+GET   /finalExam                 controllers.AttendanceController.finalExam
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
