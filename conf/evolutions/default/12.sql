@@ -4,6 +4,7 @@ create table "courseworks" (
   "student_id" BIGINT NOT NULL,
   "name" VARCHAR NOT NULL,
   "mark" DOUBLE PRECISION NOT NULL,
+  "total_mark" DOUBLE PRECISION NOT NULL,
   "created_at" timestamp default now() NOT NULL,
   "updated_at" timestamp default now() NOT NULL
 )
