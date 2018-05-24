@@ -15,7 +15,6 @@ object BlackboardParser {
 
     if (lines.hasNext) {
       val header = extractHeader(lines.next)
-      println(header)
     }
 
     lines.foreach { line =>
@@ -29,16 +28,20 @@ object BlackboardParser {
   }
 
   def extractHeader(line: String): Map[String, Int] = {
+    println(extractResult("Project Part 1 [Total Pts: 10 Score] |17955"))
     val elements = line.split(",")
     elements.zipWithIndex.map { case (value, index) =>
-      println(s"$index: $value")
+      // println(s"$index: $value")
       (value, index)
     }.toMap
   }
 
   def extractResult(line: String): CourseworkData = {
-    // Extract using Regex here
-    CourseworkData("Project", 30.0)
+    val markRegex = """Total Pts: (\d*) Score""".r
+    val lines = line.split("\\[")
+    val mark = markRegex.findFirstMatchIn(lines(1)).get.group(1)
+
+    CourseworkData(lines(0).trim(), mark.toDouble)
   }
 
 }
