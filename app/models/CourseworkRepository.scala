@@ -46,9 +46,6 @@ class CourseworkRepository @Inject() (
 
   val courseworks = TableQuery[CourseworkTable]
 
-  // Print SQL command to create table
-  courseworks.schema.create.statements.foreach(println)
-
   // studentId here refer to the Student Id for student instead
   // of the primary key of the Student record
   def create(courseId: Long, studentId: String, name: String, mark: Double): Future[Option[Coursework]] = {

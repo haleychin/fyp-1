@@ -40,9 +40,12 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def getCourseDetail(id: Long): Future[CourseAPI] = {
+    val courseFuture = repo.get(id)
+    val studentsFuture = csRepo.getStudents(id)
+
     val results = for {
-      course <- repo.get(id).map(r => r)
-      students <- csRepo.getStudents(id).map(r => r)
+      course <- courseFuture
+      students <- studentsFuture
     } yield (course, students)
 
     results.map { r =>
