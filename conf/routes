@@ -47,8 +47,12 @@ POST  /uploads/:id               controllers.UploadController.upload(id: Long)
 
 # Attendance Routes
 GET   /attendances           controllers.AttendanceController.index
-GET   /blackboard            controllers.AttendanceController.blackboard
-GET   /finalExam                 controllers.AttendanceController.finalExam
+
+# Marks Routes
+GET   /blackboard/new/:id    controllers.CourseworkController.newImport(id: Long)
+POST  /blackboard/save/:id   controllers.CourseworkController.save(id: Long)
+GET   /blackboard            controllers.CourseworkController.blackboard
+GET   /finalExam             controllers.CourseworkController.finalExam
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
