@@ -76,23 +76,5 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
     Ok(views.html.index())
   }
-
-  def blackboard = Action { implicit request =>
-    BlackboardParser.parse(
-      "BlackboardExport.txt",
-      Array(
-        "Project Part 1 [Total Pts: 10 Score] |17955",
-        "Project Part 2 [Total Pts: 30 Score] |18144",
-        "MidTerm [Total Pts: 20 Score] |18278"
-      )
-    )
-    Ok(views.html.index())
-  }
-
-  def finalExam = Action { implicit request =>
-    FinalExamParser.parse("FinalExam.xlsx")
-    Ok(views.html.index())
-  }
-
 }
 

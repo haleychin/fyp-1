@@ -3,16 +3,21 @@ package utils
 import scala.io.Source
 import scala.io.Codec
 import scala.collection.mutable.ArrayBuffer
+import javax.inject._
+
+import models.CourseworkRepository
 
 case class CourseworkData(name: String, totalMark: Double)
 
-object BlackboardParser {
+@Singleton
+class BlackboardParser {
 
-  private var header: Map[String, Int] = Map[String, Int]()
-  private var courseworks: ArrayBuffer[CourseworkData] = new ArrayBuffer[CourseworkData]()
-  private var lines: ArrayBuffer[String] = new ArrayBuffer[String]()
+  var header: Map[String, Int] = Map[String, Int]()
+  var courseworks: ArrayBuffer[CourseworkData] = new ArrayBuffer[CourseworkData]()
+  var lines: ArrayBuffer[String] = new ArrayBuffer[String]()
+  var courseworkNames: ArrayBuffer[String] = new ArrayBuffer[String]()
 
-  def parse(file: String, courseworkNames: Array[String]) {
+  def parse(file: String) {
     Source
       .fromFile(file)(Codec("UTF-16LE"))
       .getLines.foreach { line => lines += line }
@@ -20,22 +25,28 @@ object BlackboardParser {
     if (lines.length > 0) {
       header = extractHeader(lines(0))
     }
+  }
 
+  def getCourseworks(courseworkNames: List[String]) {
     courseworkNames.foreach { c =>
-      val value = header.get(c).get
+      this.courseworkNames += c
       courseworks += extractResult(c)
     }
+  }
 
-    lines.foreach { line =>
+  def saveToDb(courseId: Long, repo: CourseworkRepository) {
+    lines.drop(1).foreach { line =>
       val courseCode = extractCommon(line, "First Name")
       val name = extractCommon(line, "Last Name")
       val studentId = extractCommon(line, "Username")
+      println(studentId)
       val courseworksMarks = courseworks.zipWithIndex.map { case (c, index) =>
-        val mark = extractCommon(line, courseworkNames(index))
-        mark
+        val name = courseworkNames(index)
+        val mark = extractCommon(line, name)
+        println(mark)
+        repo.create(courseId,studentId, c.name, mark.toDouble, c.totalMark)
       }
     }
-
   }
 
   def convertLine(line: String): String = {
@@ -48,9 +59,10 @@ object BlackboardParser {
   }
 
   def extractCoursework(line: String, name: String): CourseworkData = {
-    val index = header.get(name).get
+    val index = header.get(name).getOrElse(0)
     val newLine = line.split("\t")(index)
-    extractResult(line) }
+    extractResult(line)
+  }
 
   def extractHeader(line: String): Map[String, Int] = {
     val elements = line.split("\t")

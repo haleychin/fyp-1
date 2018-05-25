@@ -51,6 +51,8 @@ GET   /attendances           controllers.AttendanceController.index
 # Marks Routes
 GET   /blackboard/new/:id    controllers.CourseworkController.newImport(id: Long)
 POST  /blackboard/save/:id   controllers.CourseworkController.save(id: Long)
+GET   /blackboard/selection/:id  controllers.CourseworkController.selection(id: Long)
+POST  /blackboard/save_selection/:id   controllers.CourseworkController.saveSelection(id: Long)
 GET   /blackboard            controllers.CourseworkController.blackboard
 GET   /finalExam             controllers.CourseworkController.finalExam
 
