@@ -15,6 +15,7 @@ import utils._
 
 class ExamController @Inject()(
   // repo: ExamRepository,
+  eParser: FinalExamParser,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -29,6 +30,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       val filename = Paths.get(file.filename).getFileName
       file.ref.moveTo(Paths.get(s"$filename"), replace = true)
 
+      eParser.parse(filename.toString())
       Redirect(routes.ExamController.selection(courseId)).flashing(
         "success" -> s"Import final exam results successfully")
     }.getOrElse {

@@ -43,18 +43,16 @@ POST   /courses/:id/students              controllers.CourseStudentController.cr
 POST   /courses/:id/students/:studentId   controllers.CourseStudentController.delete(id: Long, studentId: Long)
 
 # Upload Routes
-POST  /uploads/:id               controllers.UploadController.upload(id: Long)
+POST  /uploads/:id                        controllers.UploadController.upload(id: Long)
 
 # Attendance Routes
-GET   /attendances           controllers.AttendanceController.index
+GET   /attendances                        controllers.AttendanceController.index
 
 # Marks Routes
-GET   /blackboard/new/:id              controllers.CourseworkController.newImport(id: Long)
-POST  /blackboard/save/:id             controllers.CourseworkController.save(id: Long)
-GET   /blackboard/selection/:id        controllers.CourseworkController.selection(id: Long)
-POST  /blackboard/save_selection/:id   controllers.CourseworkController.saveSelection(id: Long)
-GET   /blackboard                      controllers.CourseworkController.blackboard
-GET   /finalExam                       controllers.CourseworkController.finalExam
+GET   /blackboard/:id/new              controllers.CourseworkController.newImport(id: Long)
+POST  /blackboard/:id/save             controllers.CourseworkController.save(id: Long)
+GET   /blackboard/:id/selection        controllers.CourseworkController.selection(id: Long)
+POST  /blackboard/:id/save_selection   controllers.CourseworkController.saveSelection(id: Long)
 
 # Exam Routes
 GET   /exam/:id/new                    controllers.ExamController.newImport(id: Long)
@@ -63,4 +61,4 @@ GET   /exam/:id/selection              controllers.ExamController.selection(id: 
 
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                  controllers.Assets.versioned(path="/public", file: Asset)
