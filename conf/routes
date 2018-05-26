@@ -49,12 +49,18 @@ POST  /uploads/:id               controllers.UploadController.upload(id: Long)
 GET   /attendances           controllers.AttendanceController.index
 
 # Marks Routes
-GET   /blackboard/new/:id    controllers.CourseworkController.newImport(id: Long)
-POST  /blackboard/save/:id   controllers.CourseworkController.save(id: Long)
-GET   /blackboard/selection/:id  controllers.CourseworkController.selection(id: Long)
+GET   /blackboard/new/:id              controllers.CourseworkController.newImport(id: Long)
+POST  /blackboard/save/:id             controllers.CourseworkController.save(id: Long)
+GET   /blackboard/selection/:id        controllers.CourseworkController.selection(id: Long)
 POST  /blackboard/save_selection/:id   controllers.CourseworkController.saveSelection(id: Long)
-GET   /blackboard            controllers.CourseworkController.blackboard
-GET   /finalExam             controllers.CourseworkController.finalExam
+GET   /blackboard                      controllers.CourseworkController.blackboard
+GET   /finalExam                       controllers.CourseworkController.finalExam
+
+# Exam Routes
+GET   /exam/:id/new                    controllers.ExamController.newImport(id: Long)
+POST  /exam/:id/save                   controllers.ExamController.save(id: Long)
+GET   /exam/:id/selection              controllers.ExamController.selection(id: Long)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

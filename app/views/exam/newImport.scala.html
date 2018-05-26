@@ -1,0 +1,16 @@
+@(id: Long)(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
+@import helper._
+
+@main("Import Exam") {
+<h1>Import Exam Results</h1>
+
+@form(routes.ExamController.save(id), 'enctype -> "multipart/form-data") {
+  @CSRF.formField
+  <input type="file" name="file">
+
+  <p>
+    <input class="btn btn-primary" type="submit" value="Import">
+  </p>
+
+}
+}

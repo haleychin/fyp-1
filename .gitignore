@@ -12,3 +12,4 @@ target
 # Ignore test files
 *.xlsx
 BlackboardExport.txt
+*.csv
