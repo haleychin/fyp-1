@@ -13,8 +13,8 @@ import utils._
 
 class AttendanceController @Inject()(
   ws: WSClient,
+  aImporter: AttendanceImporter,
   repo: AttendanceRepository,
-  cwRepo: CourseworkRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -26,43 +26,22 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       .withRequestTimeout(10000.millis)
   }
 
-  def extractCourseDetail(json: JsValue) {
-    val array = (json \ "classes").as[JsArray].value
-
-    val map = array.map {r =>
-      val group_id = (r \ "group_id").as[Long]
-      val dates = (r \ "dates").as[JsArray].value
-    }
-  }
-
-  def extractAttendanceDetail(json: JsValue) {
-    val attended = (json \ "attended").as[JsArray].value
-    val excuse   = (json \ "excuse").as[JsArray].value
-    val absent   = (json \ "absent").as[JsArray].value
-    val courseId = (json \ "course_id").as[String].toLong
-    val groupId = (json \ "group_id").as[String].toInt
-    val dateString = (json \ "date").as[String]
-    val date     = Utils.convertStringToDate(dateString)
-
-    attended.foreach { id =>
-      repo.create(courseId, id.as[String], groupId, date, "attend").map(println(_))
-    }
-
-    excuse.foreach { id =>
-      repo.create(courseId, id.as[String], groupId, date, "excuse").map(println(_))
-    }
-
-    println(absent)
-    absent.foreach  { id =>
-      repo.create(courseId, id.as[String], groupId, date, "absent").map(println(_))
-    }
+  def newAttendance(id: Long) = authenticatedAction.async { implicit request =>
+    wsRequest(s"http://localhost:4567/courses/$id")
+      .get()
+      .map { r =>
+        val data = aImporter.extractCourseDetail(r.json)
+        println(data)
+        val dates = Array("2018", "2017")
+        Ok(views.html.attendance.newAttendance(id, dates))
+      }
   }
 
   def index = Action { implicit request =>
     wsRequest("http://localhost:4567/courses/3")
       .get()
       .map { r =>
-        extractCourseDetail(r.json)
+        // extractCourseDetail(r.json)
       }
 
     wsRequest("http://localhost:4567/attendance")
@@ -72,7 +51,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         "group_id" -> "2")
       .get()
       .map { r =>
-        extractAttendanceDetail(r.json)
+        // extractAttendanceDetail(r.json)
+        println(r.json)
       }
 
     Ok(views.html.index())

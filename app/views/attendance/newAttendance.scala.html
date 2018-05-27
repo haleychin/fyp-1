@@ -1,0 +1,12 @@
+@(id: Long, dates: Array[String])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
+
+@import helper._
+
+@main("Import Attendance") {
+<h1>Import Attendance</h1>
+
+@for(date <- dates) {
+  <a href="#">@date</a>
+}
+
+}

@@ -46,7 +46,7 @@ POST   /courses/:id/students/:studentId   controllers.CourseStudentController.de
 POST  /uploads/:id                        controllers.UploadController.upload(id: Long)
 
 # Attendance Routes
-GET   /attendances                        controllers.AttendanceController.index
+GET   /attendances/:id                        controllers.AttendanceController.newAttendance(id: Long)
 
 # Marks Routes
 GET   /blackboard/:id/new              controllers.CourseworkController.newImport(id: Long)
