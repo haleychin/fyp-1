@@ -14,7 +14,7 @@ import models._
 import utils._
 
 class ExamController @Inject()(
-  // repo: ExamRepository,
+  repo: ExamRepository,
   eParser: FinalExamParser,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
