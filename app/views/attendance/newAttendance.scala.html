@@ -1,12 +1,23 @@
-@(id: Long, dates: Array[String])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
-
+@import utils._
 @import helper._
+
+@(id: Long, details: IndexedSeq[ClassDetail])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
+
 
 @main("Import Attendance") {
 <h1>Import Attendance</h1>
 
-@for(date <- dates) {
-  <a href="#">@date</a>
+@for(d <- details) {
+<strong>Group: @d.groupId</strong>
+<ul>
+  @for(date <- d.dates) {
+  <li>
+    <a href="@routes.AttendanceController.fetch(id, d.groupId, date)">
+      @date
+    </a>
+  </li>
+  }
+</ul>
 }
 
 }

@@ -7,7 +7,7 @@ import scala.collection.mutable.ArrayBuffer
 
 import models.AttendanceRepository
 
-case class ClassDetail(groupId: Long, dates: ArrayBuffer[String])
+case class ClassDetail(groupId: Int, dates: ArrayBuffer[String])
 
 @Singleton
 class AttendanceImporter {
@@ -16,12 +16,12 @@ class AttendanceImporter {
     val array = (json \ "classes").as[JsArray].value
 
     array.map {r =>
-      val groupId = (r \ "group_id").as[Long]
+      val groupId = (r \ "group_id").as[Int]
       val datesValue = (r \ "dates").as[JsArray].value
 
       val dates = ArrayBuffer[String]()
       datesValue.foreach { d =>
-        dates += d.toString
+        dates += d.as[String]
       }
 
       ClassDetail(groupId, dates)

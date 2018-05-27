@@ -31,31 +31,23 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       .get()
       .map { r =>
         val data = aImporter.extractCourseDetail(r.json)
-        println(data)
-        val dates = Array("2018", "2017")
-        Ok(views.html.attendance.newAttendance(id, dates))
+        Ok(views.html.attendance.newAttendance(id, data))
       }
   }
 
-  def index = Action { implicit request =>
-    wsRequest("http://localhost:4567/courses/3")
-      .get()
-      .map { r =>
-        // extractCourseDetail(r.json)
-      }
-
+  def fetch(id: Long, groupId: Int, date: String) = authenticatedAction.async { implicit request =>
     wsRequest("http://localhost:4567/attendance")
       .addQueryStringParameters(
-        "course_id" -> "3",
-        "date" -> "19/07/2017",
-        "group_id" -> "2")
+        "course_id" -> id.toString,
+        "date" -> date,
+        "group_id" -> groupId.toString)
       .get()
       .map { r =>
         // extractAttendanceDetail(r.json)
         println(r.json)
+        Ok(views.html.index())
       }
-
-    Ok(views.html.index())
   }
+
 }
 
