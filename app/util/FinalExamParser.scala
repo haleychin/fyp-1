@@ -25,8 +25,8 @@ class FinalExamParser {
 
     for (row <- sheet) {
       // Since first two row is header.
-      if (row.getRowNum > 2) {
-        val studentId = row.getCell(0).getStringCellValue()
+      if (row.getRowNum > 1) {
+        val studentId = formatter.formatCellValue(row.getCell(0))
         val mark      = row.getCell(2).getNumericCellValue()
         val weightage = row.getCell(3).getNumericCellValue()
         println(s"$studentId: $mark\t$weightage")
