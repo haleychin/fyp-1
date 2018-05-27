@@ -42,11 +42,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     request.body.file("file").map { file =>
       val filename = Paths.get(file.filename).getFileName
       file.ref.moveTo(Paths.get(s"$filename"), replace = true)
-
-      // Start Parsing
       bbParser.parse(filename.toString())
-      println(bbParser.lines)
-
       Redirect(routes.CourseworkController.selection(courseId)).flashing(
         "success" -> s"Import courseworks successfully")
     }.getOrElse {

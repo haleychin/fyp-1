@@ -1,8 +1,8 @@
 # --- !Ups
 create table "attendances" (
-  "id" BIGSERIAL NOT NULL PRIMARY KEY,
   "course_id" BIGINT NOT NULL,
   "student_id" BIGINT NOT NULL,
+  "group_id" INTEGER NOT NULL,
   "date" DATE NOT NULL,
   "attendance_type" VARCHAR NOT NULL,
   "created_at" timestamp default now() NOT NULL,

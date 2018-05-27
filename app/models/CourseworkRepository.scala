@@ -66,6 +66,7 @@ class CourseworkRepository @Inject() (
           )
           val result = db.run(seq.asTry)
           result.map { r =>
+            println(r)
             r match {
               case Success(a) =>
                 println(a)
@@ -76,6 +77,7 @@ class CourseworkRepository @Inject() (
             }
           }
         case None =>
+          println("Cant find student")
           Future(None)
       }
     }

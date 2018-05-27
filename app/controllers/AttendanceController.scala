@@ -40,25 +40,26 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     val excuse   = (json \ "excuse").as[JsArray].value
     val absent   = (json \ "absent").as[JsArray].value
     val courseId = (json \ "course_id").as[String].toLong
+    val groupId = (json \ "group_id").as[String].toInt
     val dateString = (json \ "date").as[String]
     val date     = Utils.convertStringToDate(dateString)
 
     attended.foreach { id =>
-      repo.create(courseId, id.as[String], date, "attend").map(println(_))
+      repo.create(courseId, id.as[String], groupId, date, "attend").map(println(_))
     }
 
     excuse.foreach { id =>
-      repo.create(courseId, id.as[String], date, "excuse").map(println(_))
+      repo.create(courseId, id.as[String], groupId, date, "excuse").map(println(_))
     }
 
     println(absent)
     absent.foreach  { id =>
-      repo.create(courseId, id.as[String], date, "absent").map(println(_))
+      repo.create(courseId, id.as[String], groupId, date, "absent").map(println(_))
     }
   }
 
   def index = Action { implicit request =>
-    wsRequest("http://localhost:4567/courses/1")
+    wsRequest("http://localhost:4567/courses/3")
       .get()
       .map { r =>
         extractCourseDetail(r.json)
@@ -66,7 +67,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
     wsRequest("http://localhost:4567/attendance")
       .addQueryStringParameters(
-        "course_id" -> "1",
+        "course_id" -> "3",
         "date" -> "19/07/2017",
         "group_id" -> "2")
       .get()
