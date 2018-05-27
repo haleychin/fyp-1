@@ -11,17 +11,20 @@ import org.apache.poi.ss.usermodel.{WorkbookFactory, DataFormatter}
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ArrayBuffer
 
+// Model
+import models._
+
 @Singleton
 class FinalExamParser {
 
-  def parse(file: String) {
+  def save(file: String, courseId: Long, repo: ExamRepository) {
     val workbook = WorkbookFactory.create(new File(file))
     val formatter = new DataFormatter()
     val sheet = workbook.getSheetAt(0)
 
     val examInfoRow = sheet.getRow(1)
     val total = examInfoRow.getCell(2).getNumericCellValue()
-    val weightage = examInfoRow.getCell(3).getNumericCellValue()
+    val totalWeightage = examInfoRow.getCell(3).getNumericCellValue()
 
     for (row <- sheet) {
       // Since first two row is header.
@@ -29,7 +32,8 @@ class FinalExamParser {
         val studentId = formatter.formatCellValue(row.getCell(0))
         val mark      = row.getCell(2).getNumericCellValue()
         val weightage = row.getCell(3).getNumericCellValue()
-        println(s"$studentId: $mark\t$weightage")
+
+        repo.create(courseId, studentId, mark, total, weightage, totalWeightage)
       }
     }
 

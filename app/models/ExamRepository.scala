@@ -49,7 +49,6 @@ class ExamRepository @Inject() (
   }
 
   val exams = TableQuery[ExamTable]
-  exams.schema.create.statements.foreach(println)
 
   // studentId here refer to the Student Id for student instead
   // of the primary key of the Student record
