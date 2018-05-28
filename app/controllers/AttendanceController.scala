@@ -43,8 +43,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         "group_id" -> groupId.toString)
       .get()
       .map { r =>
-        // extractAttendanceDetail(r.json)
-        println(r.json)
+        aImporter.extractAttendanceDetail(r.json, repo)
         Ok(views.html.index())
       }
   }
