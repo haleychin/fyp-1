@@ -1,4 +1,4 @@
-@(course: Course, students: Seq[Student])(implicit request: RequestHeader, flash: Flash)
+@(course: Course, data: Iterable[StudentDetailsAPI])(implicit request: RequestHeader, flash: Flash)
 
 @main(course.title) {
 <h1>@course.title</h1>
@@ -12,20 +12,32 @@
    href="@routes.AttendanceController.newAttendance(course.id)">Import
    Attendance</a>
 
-<table class="table table-bordered">
+<table class="table table-bordered table-responsive table-sm w-auto">
   <thead>
     <tr>
       <th>Name</th>
+      @for(d <- data.head.attendances.keys) {
+      <th class="text-center">@d</th>
+      }
     </tr>
   </thead>
   <tbody>
-    @for(student <- students) {
+    @for(d <- data) {
     <tr>
       <td>
-        <a href="@routes.StudentController.show(student.id)">
-          @student.name
+        <a href="@routes.StudentController.show(d.student.id)">
+          @d.student.name
         </a>
       </td>
+      @for(attendance <- d.attendances) {
+      <td class="text-center">
+        @if(attendance._2 == "attend") {
+          <i class="fa fa-check green-text" aria-hidden="true"></i>
+        } else {
+          <i class="fa fa-close red-text" aria-hidden="true"></i>
+        }
+      </td>
+      }
     </tr>
     }
   </tbody>

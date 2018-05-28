@@ -11,6 +11,9 @@ import slick.driver.PostgresDriver.api._
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
+import scala.collection.mutable.HashMap
+
+case class StudentDetailsAPI(student: Student, var attendances: HashMap[String, String])
 case class Attendance(courseId: Long, studentId: Long, groupId: Int,
   date: Date, attendanceType: String, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -73,32 +76,33 @@ class AttendanceRepository @Inject() (
             }
           }
         case None =>
-          Future(None)
-      }
+          Future(None) }
     }
 
   }
 
-  // def getStudents(courseId: Long): Future[Seq[Student]] = {
-  //   val query = for {
-  //     cs <- attedances
-  //     courses <- cs.courses if courses.id === courseId
-  //     students <- cs.students
-  //   } yield students
+  def getAttendances(courseId: Long): Future[Iterable[StudentDetailsAPI]] = {
+    val query = for {
+      a <- attendances
+      courses <- a.courses if courses.id === courseId
+      students <- a.students
+    } yield (students, a)
 
-  //   val result = db.run(query.result)
-  //   result
-  // }
+    val result = db.run(query.result)
+    var studentMap = HashMap[Long, StudentDetailsAPI]()
+    result.map { r =>
+      r.foreach { case (student, a) =>
+        if (studentMap.contains(student.id)) {
+          studentMap.get(student.id).get.attendances += (a.date.toString -> a.attendanceType)
+        } else {
+          val data = HashMap[String, String](a.date.toString -> a.attendanceType)
+          studentMap += (student.id -> StudentDetailsAPI(student, data))
+        }
+      }
 
-  // def getCourses(studentId: Long): Future[Seq[Course]] = {
-  //   val query = for {
-  //     cs <- attedances
-  //     students <- cs.students if students.id === studentId
-  //     courses <- cs.courses
-  //   } yield courses
+      studentMap.values
+    }
 
-  //   val result = db.run(query.result)
-  //   result
-  // }
+  }
 
-}
+ }

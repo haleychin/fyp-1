@@ -13,11 +13,12 @@ import play.api.data.validation.Constraints._
 import models._
 
 case class CourseData(title: String)
-case class CourseAPI(course: Option[Course], students: Seq[Student])
+case class CourseAPI(course: Option[Course], students: Iterable[StudentDetailsAPI])
 
 class CourseController @Inject()(
   repo: CourseRepository,
   csRepo: CourseStudentRepository,
+  aRepo: AttendanceRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -41,7 +42,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getCourseDetail(id: Long): Future[CourseAPI] = {
     val courseFuture = repo.get(id)
-    val studentsFuture = csRepo.getStudents(id)
+    val studentsFuture = aRepo.getAttendances(id)
 
     val results = for {
       course <- courseFuture
