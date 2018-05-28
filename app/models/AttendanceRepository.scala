@@ -11,9 +11,10 @@ import slick.driver.PostgresDriver.api._
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
-import scala.collection.mutable.LinkedHashMap
+import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 
-case class StudentDetailsAPI(student: Student, var attendances: LinkedHashMap[String, String])
+case class AttendanceAPI(studentDetails: Iterable[StudentDetailsAPI], dates: LinkedHashSet[(Int, Date)])
+case class StudentDetailsAPI(student: Student, var attendances: LinkedHashMap[Date, String])
 case class Attendance(courseId: Long, studentId: Long, groupId: Int,
   date: Date, attendanceType: String, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -81,30 +82,34 @@ class AttendanceRepository @Inject() (
 
   }
 
-  def getAttendances(courseId: Long): Future[Iterable[StudentDetailsAPI]] = {
+  def getAttendances(courseId: Long): Future[AttendanceAPI] = {
     val query = (for {
       a <- attendances
       courses <- a.courses if courses.id === courseId
       students <- a.students
-    } yield (students, a)).sortBy(_._1.name).sortBy(_._2.date)
+    } yield (students, a)).sortBy(_._2.date)
 
     val result = db.run(query.result)
 
     var studentMap = LinkedHashMap[Long, StudentDetailsAPI]()
+    val groupIdDates = LinkedHashSet[(Int, Date)]()
+
     result.map { r =>
       r.foreach { case (student, a) =>
+        groupIdDates += ((a.groupId, a.date))
         if (studentMap.contains(student.id)) {
           println(s"Inserting ${student.name} attendance on ${a.date}")
-          studentMap.get(student.id).get.attendances += (a.date.toString -> a.attendanceType)
+          studentMap.get(student.id).get.attendances += (a.date -> a.attendanceType)
         } else {
-          val data = LinkedHashMap[String, String](a.date.toString -> a.attendanceType)
+          val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
           studentMap += (student.id -> StudentDetailsAPI(student, data))
         }
       }
 
-      studentMap.values
+      AttendanceAPI(studentMap.values, groupIdDates)
     }
 
   }
+
 
  }

@@ -13,7 +13,7 @@ import play.api.data.validation.Constraints._
 import models._
 
 case class CourseData(title: String)
-case class CourseAPI(course: Option[Course], students: Iterable[StudentDetailsAPI])
+case class CourseAPI(course: Option[Course], attendance: AttendanceAPI)
 
 class CourseController @Inject()(
   repo: CourseRepository,
@@ -42,12 +42,12 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getCourseDetail(id: Long): Future[CourseAPI] = {
     val courseFuture = repo.get(id)
-    val studentsFuture = aRepo.getAttendances(id)
+    val attendancesFuture = aRepo.getAttendances(id)
 
     val results = for {
       course <- courseFuture
-      students <- studentsFuture
-    } yield (course, students)
+      attendances <- attendancesFuture
+    } yield (course, attendances)
 
     results.map { r =>
       CourseAPI(r._1, r._2)
@@ -58,7 +58,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseDetail(id).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
-          Ok(views.html.course.showCourse(c, courseApi.students))
+          Ok(views.html.course.showCourse(c, courseApi.attendance))
         case None => Ok(views.html.index())
       }
     }

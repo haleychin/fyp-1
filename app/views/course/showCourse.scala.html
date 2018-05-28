@@ -1,4 +1,4 @@
-@(course: Course, data: Iterable[StudentDetailsAPI])(implicit request: RequestHeader, flash: Flash)
+@(course: Course, data: AttendanceAPI)(implicit request: RequestHeader, flash: Flash)
 
 @main(course.title) {
 <h1>@course.title</h1>
@@ -16,25 +16,31 @@
   <thead>
     <tr>
       <th>Name</th>
-      @for((d, _) <- data.head.attendances) {
+      @for((_, d) <- data.dates) {
       <th class="text-center">@d</th>
       }
     </tr>
   </thead>
   <tbody>
-    @for(d <- data) {
+    @for(d <- data.studentDetails) {
     <tr>
       <td>
         <a href="@routes.StudentController.show(d.student.id)">
           @d.student.name
         </a>
       </td>
-      @for(attendance <- d.attendances) {
+      @for((_, date) <- data.dates.toList) {
       <td class="text-center">
-        @if(attendance._2 == "attend") {
+        @{
+        val value = d.attendances.getOrElse(date, "")
+        println(date, value)
+        if (value == "attend") {
           <i class="fa fa-check green-text" aria-hidden="true"></i>
-        } else {
+        } else if (value == "absent") {
           <i class="fa fa-close red-text" aria-hidden="true"></i>
+        } else {
+          "-"
+        }
         }
       </td>
       }
