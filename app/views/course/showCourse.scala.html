@@ -16,7 +16,7 @@
   <thead>
     <tr>
       <th>Name</th>
-      @for(d <- data.head.attendances.keys) {
+      @for((d, _) <- data.head.attendances) {
       <th class="text-center">@d</th>
       }
     </tr>

@@ -11,9 +11,9 @@ import slick.driver.PostgresDriver.api._
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
-import scala.collection.mutable.HashMap
+import scala.collection.mutable.LinkedHashMap
 
-case class StudentDetailsAPI(student: Student, var attendances: HashMap[String, String])
+case class StudentDetailsAPI(student: Student, var attendances: LinkedHashMap[String, String])
 case class Attendance(courseId: Long, studentId: Long, groupId: Int,
   date: Date, attendanceType: String, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -82,20 +82,22 @@ class AttendanceRepository @Inject() (
   }
 
   def getAttendances(courseId: Long): Future[Iterable[StudentDetailsAPI]] = {
-    val query = for {
+    val query = (for {
       a <- attendances
       courses <- a.courses if courses.id === courseId
       students <- a.students
-    } yield (students, a)
+    } yield (students, a)).sortBy(_._1.name).sortBy(_._2.date)
 
     val result = db.run(query.result)
-    var studentMap = HashMap[Long, StudentDetailsAPI]()
+
+    var studentMap = LinkedHashMap[Long, StudentDetailsAPI]()
     result.map { r =>
       r.foreach { case (student, a) =>
         if (studentMap.contains(student.id)) {
+          println(s"Inserting ${student.name} attendance on ${a.date}")
           studentMap.get(student.id).get.attendances += (a.date.toString -> a.attendanceType)
         } else {
-          val data = HashMap[String, String](a.date.toString -> a.attendanceType)
+          val data = LinkedHashMap[String, String](a.date.toString -> a.attendanceType)
           studentMap += (student.id -> StudentDetailsAPI(student, data))
         }
       }
