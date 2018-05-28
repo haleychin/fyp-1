@@ -1,24 +1,35 @@
 @(students: Seq[Student])(implicit flash: Flash,  request: RequestHeader, messagesProvider: MessagesProvider)
 
 @main("All Students") {
-<div class="d-flex align-items-baseline">
-  <h1 class="mr-2">All Students</h1>
-  <a href="@routes.StudentController.newStudent">Add student</a>
-</div>
+<h1>All Students</h1>
 
+<a class="btn btn-outline-primary btn-sm"
+   href="@routes.StudentController.newStudent">Add student</a>
 
-<ul>
-@for(student <- students) {
-<a href="@routes.StudentController.show(student.id)">
-  <li>
-    @student.name
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for(student <- students) {
+    <tr>
+      <td>
+        <a href="@routes.StudentController.show(student.id)">
+          @student.name
+        </a>
+      </td>
+      <td>
+        <a class="btn btn-primary btn-sm"
+           href="@routes.StudentController.edit(student.id)">Edit</a>
+        <a class="btn btn-danger btn-sm"
+           href="@routes.StudentController.delete(student.id)">Delete</a>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
 
-    <ul>
-      <li><a href="@routes.StudentController.edit(student.id)">Edit</a></li>
-      <li><a href="@routes.StudentController.delete(student.id)">Delete</li>
-    </ul>
-  </li>
-</a>
-}
-</ul>
 }

@@ -3,6 +3,9 @@
 @main("All Courses") {
 <h1 class="mr-2">All Courses</h1>
 
+<a class="btn btn-outline-primary btn-sm"
+   href="@routes.CourseController.newCourse">Add Course</a>
+
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -28,7 +31,4 @@
     }
   </tbody>
 </table>
-
-<a class="btn btn-outline-primary btn-sm"
-   href="@routes.CourseController.newCourse">Add Course</a>
 }

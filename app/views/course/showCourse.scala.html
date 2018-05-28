@@ -2,16 +2,32 @@
 
 @main(course.title) {
 <h1>@course.title</h1>
-<a href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-<a href="@routes.CourseworkController.newImport(course.id)">Import coursework from Blackboard</a>
-<a href="@routes.ExamController.newImport(course.id)">Import final exam</a>
-<a href="@routes.AttendanceController.newAttendance(course.id)">Import
-  Attendance</a>
+<a class="btn btn-outline-primary btn-sm"
+   href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+<a class="btn btn-outline-primary btn-sm"
+   href="@routes.CourseworkController.newImport(course.id)">Import coursework from Blackboard</a>
+<a class="btn btn-outline-primary btn-sm"
+   href="@routes.ExamController.newImport(course.id)">Import final exam</a>
+<a class="btn btn-outline-primary btn-sm"
+   href="@routes.AttendanceController.newAttendance(course.id)">Import
+   Attendance</a>
 
-<h2>Students</h2>
-<ul>
-  @for(student <- students) {
-  <li>@student.name</li>
-  }
-</ul>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Name</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for(student <- students) {
+    <tr>
+      <td>
+        <a href="@routes.StudentController.show(student.id)">
+          @student.name
+        </a>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
 }
