@@ -13,8 +13,8 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 
-case class CourseworkAPI(courseworkDetails: Iterable[CourseworkDetailsAPI], courseworks: LinkedHashSet[String])
-case class CourseworkDetailsAPI(student: Student, var courseworks: LinkedHashMap[String, Double])
+case class CourseworkAPI(courseworkDetails: Iterable[CourseworkDetailsAPI], courseworks: LinkedHashSet[(String, Double)], total: Double)
+case class CourseworkDetailsAPI(student: Student, var courseworks: LinkedHashMap[String, Double], var total: Double, var status: String)
 case class Coursework(courseId: Long, studentId: Long, name: String,
   mark: Double, totalMark: Double, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -97,27 +97,41 @@ class CourseworkRepository @Inject() (
     val result = db.run(query.result)
 
     var studentMap = LinkedHashMap[Long, CourseworkDetailsAPI]()
-    val courseworkLists = LinkedHashSet[String]()
+    val courseworkLists = LinkedHashSet[(String, Double)]()
 
     result.map { r =>
       r.foreach { case (student, cw) =>
-        courseworkLists += cw.name
+        courseworkLists += ((cw.name, cw.totalMark))
         val value = cw.name -> cw.mark
         if (studentMap.contains(student.id)) {
-          studentMap.get(student.id).get.courseworks += value
+          val s = studentMap.get(student.id).get
+          s.courseworks += value
+          s.total += cw.mark
         } else {
           val data = LinkedHashMap[String, Double](value)
-          studentMap += (student.id -> CourseworkDetailsAPI(student, data))
+          studentMap += (student.id -> CourseworkDetailsAPI(student, data, cw.mark, ""))
         }
       }
 
-      // studentMap.foreach { case (_, s) =>
-      //   s.attendanceRate = calculateRate(s.courseworks)
-      // }
-      CourseworkAPI(studentMap.values, courseworkLists)
-    }
+      val total = courseworkLists.reduce( (x, y) =>
+        ("", x._2 + y._2)
+      )._2
 
+      studentMap.foreach { case (_, s) =>
+        s.status = calculatePass(s.total, total)
+      }
+
+      CourseworkAPI(studentMap.values, courseworkLists, total)
+    }
   }
 
+  def calculatePass(weightage: Double, totalWeightage: Double): String = {
+    val rate = weightage / totalWeightage * 100
+    if (rate <= 40) {
+      "Fail"
+    } else {
+      "Pass"
+    }
+  }
 
 }

@@ -1,12 +1,10 @@
 @(course: Course, data: CourseworkAPI)(implicit request: RequestHeader, flash: Flash)
 
-@rowColor(attendanceRate: Double) = @{
-  if (attendanceRate <= 25) {
-   "table-danger"
-  } else if (attendanceRate <= 50) {
-   "table-warning"
+@colColor(status: String) = @{
+  if (status == "Pass") {
+    "table-success"
   } else {
-    ""
+    "table-danger"
   }
 }
 
@@ -20,9 +18,13 @@
   <thead>
     <tr>
       <th>Name</th>
-      @for(name <- data.courseworks) {
-      <th class="text-center">@name</th>
+      @for(d <- data.courseworks) {
+      <th class="text-center">@d._1 (@{f"${d._2}%1.0f"} %)</th>
       }
+      <th class="text-center">Total
+        (@{ f"${data.total}%1.0f" } %)
+      </th>
+      <th class="text-center">Status</th>
     </tr>
   </thead>
   <tbody>
@@ -33,11 +35,13 @@
           @d.student.name
         </a>
       </td>
-      @for(name <- data.courseworks.toList) {
+      @for(c <- data.courseworks.toList) {
       <td class="text-center">
-        @d.courseworks.get(name)
+        @d.courseworks.get(c._1)
       </td>
       }
+      <td class="text-center">@d.total</td>
+      <td class="text-center @colColor(d.status)">@d.status</td>
     </tr>
     }
   </tbody>
