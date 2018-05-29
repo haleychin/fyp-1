@@ -15,6 +15,7 @@ class AttendanceController @Inject()(
   ws: WSClient,
   aImporter: AttendanceImporter,
   repo: AttendanceRepository,
+  cRepo: CourseRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -24,6 +25,32 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     ws.url(url)
       .addHttpHeaders("Accept" -> "application/json")
       .withRequestTimeout(10000.millis)
+  }
+
+  def getCourseDetail(id: Long): Future[CourseAPI] = {
+    val courseFuture = cRepo.get(id)
+    val attendancesFuture = repo.getAttendances(id)
+
+    val results = for {
+      course <- courseFuture
+      attendances <- attendancesFuture
+    } yield (course, attendances)
+
+
+    results.map { r =>
+      println(r._2)
+      CourseAPI(r._1, r._2)
+    }
+  }
+
+  def index(id: Long) = Action.async { implicit request =>
+    getCourseDetail(id).map { courseApi =>
+      courseApi.course match {
+        case Some(c) =>
+          Ok(views.html.course.showCourse(c, courseApi.attendance))
+        case None => Ok(views.html.index())
+      }
+    }
   }
 
   def newAttendance(id: Long) = authenticatedAction.async { implicit request =>

@@ -46,8 +46,9 @@ POST   /courses/:id/students/:studentId   controllers.CourseStudentController.de
 POST  /uploads/:id                        controllers.UploadController.upload(id: Long)
 
 # Attendance Routes
-GET   /attendances/:id                        controllers.AttendanceController.newAttendance(id: Long)
-GET   /attendances/:id/group/         controllers.AttendanceController.fetch(id: Long, groupId: Int, date: String)
+GET   /attendances/:id                 controllers.AttendanceController.index(id: Long)
+GET   /attendances/:id/new             controllers.AttendanceController.newAttendance(id: Long)
+GET   /attendances/:id/group/          controllers.AttendanceController.fetch(id: Long, groupId: Int, date: String)
 
 # Marks Routes
 GET   /blackboard/:id/new              controllers.CourseworkController.newImport(id: Long)
