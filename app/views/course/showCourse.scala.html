@@ -1,64 +1,14 @@
-@(course: Course, data: AttendanceAPI)(implicit request: RequestHeader, flash: Flash)
-
-@rowColor(attendanceRate: Double) = @{
-  if (attendanceRate <= 25) {
-   "table-danger"
-  } else if (attendanceRate <= 50) {
-   "table-warning"
-  } else {
-    ""
-  }
-}
+@(course: Course)(implicit request: RequestHeader, flash: Flash)
 
 @main(course.title) {
 <h1>@course.title</h1>
 <a class="btn btn-outline-primary btn-sm"
    href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
 <a class="btn btn-outline-primary btn-sm"
-   href="@routes.CourseworkController.newImport(course.id)">Import coursework from Blackboard</a>
+   href="@routes.CourseworkController.index(course.id)">View Coursework </a>
 <a class="btn btn-outline-primary btn-sm"
    href="@routes.ExamController.newImport(course.id)">Import final exam</a>
 <a class="btn btn-outline-primary btn-sm"
-   href="@routes.AttendanceController.newAttendance(course.id)">Import
-   Attendance</a>
+   href="@routes.AttendanceController.index(course.id)">View Attendance</a>
 
-<table class="table table-bordered table-responsive table-sm w-auto">
-  <thead>
-    <tr>
-      <th>Name</th>
-      @for((_, d) <- data.dates) {
-      <th class="text-center">@d</th>
-      }
-      <th>Attendance Rate</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for(d <- data.studentDetails) {
-    <tr class="@rowColor(d.attendanceRate)">
-      <td>
-        <a href="@routes.StudentController.show(d.student.id)">
-          @d.student.name
-        </a>
-      </td>
-      @for((_, date) <- data.dates.toList) {
-      <td class="text-center">
-        @{
-        val value = d.attendances.getOrElse(date, "")
-        if (value == "attend") {
-          <i class="fa fa-check green-text" aria-hidden="true"></i>
-        } else if (value == "absent") {
-          <i class="fa fa-close red-text" aria-hidden="true"></i>
-        } else {
-          "-"
-        }
-        }
-      </td>
-      }
-      <td class="text-center">
-        @d.attendanceRate %
-      </td>
-    </tr>
-    }
-  </tbody>
-</table>
 }

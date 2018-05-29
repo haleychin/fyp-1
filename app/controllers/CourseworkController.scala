@@ -19,9 +19,11 @@ import models._
 import utils._
 
 case class CourseworkFormData(courseworks: List[String])
+case class CourseCwAPI(course: Option[Course], courseworks: CourseworkAPI)
 
 class CourseworkController @Inject()(
   repo: CourseworkRepository,
+  cRepo: CourseRepository,
   bbParser: BlackboardParser,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
@@ -32,6 +34,31 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     mapping(
       "courseworks" -> list(text)
     )(CourseworkFormData.apply)(CourseworkFormData.unapply)
+  }
+
+  def getCourseworkDetail(id: Long): Future[CourseCwAPI] = {
+    val courseFuture = cRepo.get(id)
+    val courseworksFuture = repo.getCourseworks(id)
+
+    val results = for {
+      course <- courseFuture
+      courseworks <- courseworksFuture
+    } yield (course, courseworks)
+
+
+    results.map { r =>
+      CourseCwAPI(r._1, r._2)
+    }
+  }
+
+  def index(id: Long) = Action.async { implicit request =>
+    getCourseworkDetail(id).map { courseworkApi =>
+      courseworkApi.course match {
+        case Some(c) =>
+          Ok(views.html.coursework.index(c, courseworkApi.courseworks))
+        case None => Ok(views.html.index())
+      }
+    }
   }
 
   def newImport(courseId: Long) = authenticatedAction { implicit request =>

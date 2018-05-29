@@ -50,6 +50,9 @@ GET   /attendances/:id                 controllers.AttendanceController.index(id
 GET   /attendances/:id/new             controllers.AttendanceController.newAttendance(id: Long)
 GET   /attendances/:id/group/          controllers.AttendanceController.fetch(id: Long, groupId: Int, date: String)
 
+# Coursework Routes
+GET   /courseworks/:id                 controllers.CourseworkController.index(id: Long)
+
 # Marks Routes
 GET   /blackboard/:id/new              controllers.CourseworkController.newImport(id: Long)
 POST  /blackboard/:id/save             controllers.CourseworkController.save(id: Long)

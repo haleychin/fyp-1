@@ -11,6 +11,8 @@ import play.api.libs.json._
 import models._
 import utils._
 
+case class CourseAPI(course: Option[Course], attendance: AttendanceAPI)
+
 class AttendanceController @Inject()(
   ws: WSClient,
   aImporter: AttendanceImporter,
@@ -47,7 +49,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseDetail(id).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
-          Ok(views.html.course.showCourse(c, courseApi.attendance))
+          Ok(views.html.attendance.index(c, courseApi.attendance))
         case None => Ok(views.html.index())
       }
     }

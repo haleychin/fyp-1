@@ -13,7 +13,6 @@ import play.api.data.validation.Constraints._
 import models._
 
 case class CourseData(title: String)
-case class CourseAPI(course: Option[Course], attendance: AttendanceAPI)
 
 class CourseController @Inject()(
   repo: CourseRepository,
@@ -60,7 +59,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseDetail(id).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
-          Ok(views.html.course.showCourse(c, courseApi.attendance))
+          Ok(views.html.course.showCourse(c))
         case None => Ok(views.html.index())
       }
     }

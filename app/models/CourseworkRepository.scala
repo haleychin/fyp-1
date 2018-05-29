@@ -11,6 +11,10 @@ import slick.driver.PostgresDriver.api._
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
+import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
+
+case class CourseworkAPI(courseworkDetails: Iterable[CourseworkDetailsAPI], courseworks: LinkedHashSet[String])
+case class CourseworkDetailsAPI(student: Student, var courseworks: LinkedHashMap[String, Double])
 case class Coursework(courseId: Long, studentId: Long, name: String,
   mark: Double, totalMark: Double, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -81,29 +85,39 @@ class CourseworkRepository @Inject() (
           Future(None)
       }
     }
+  }
+
+  def getCourseworks(courseId: Long): Future[CourseworkAPI] = {
+    val query = for {
+      cw <- courseworks
+      courses <- cw.courses if courses.id === courseId
+      students <- cw.students
+    } yield (students, cw)
+
+    val result = db.run(query.result)
+
+    var studentMap = LinkedHashMap[Long, CourseworkDetailsAPI]()
+    val courseworkLists = LinkedHashSet[String]()
+
+    result.map { r =>
+      r.foreach { case (student, cw) =>
+        courseworkLists += cw.name
+        val value = cw.name -> cw.mark
+        if (studentMap.contains(student.id)) {
+          studentMap.get(student.id).get.courseworks += value
+        } else {
+          val data = LinkedHashMap[String, Double](value)
+          studentMap += (student.id -> CourseworkDetailsAPI(student, data))
+        }
+      }
+
+      // studentMap.foreach { case (_, s) =>
+      //   s.attendanceRate = calculateRate(s.courseworks)
+      // }
+      CourseworkAPI(studentMap.values, courseworkLists)
+    }
 
   }
 
-  // def getStudents(courseId: Long): Future[Seq[Student]] = {
-  //   val query = for {
-  //     cs <- attedances
-  //     courses <- cs.courses if courses.id === courseId
-  //     students <- cs.students
-  //   } yield students
-
-  //   val result = db.run(query.result)
-  //   result
-  // }
-
-  // def getCourses(studentId: Long): Future[Seq[Course]] = {
-  //   val query = for {
-  //     cs <- attedances
-  //     students <- cs.students if students.id === studentId
-  //     courses <- cs.courses
-  //   } yield courses
-
-  //   val result = db.run(query.result)
-  //   result
-  // }
 
 }
