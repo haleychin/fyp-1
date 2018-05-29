@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 
 case class AttendanceAPI(studentDetails: Iterable[StudentDetailsAPI], dates: LinkedHashSet[(Int, Date)])
-case class StudentDetailsAPI(student: Student, var attendances: LinkedHashMap[Date, String])
+case class StudentDetailsAPI(student: Student, var attendances: LinkedHashMap[Date, String], var attendanceRate: Double)
 case class Attendance(courseId: Long, studentId: Long, groupId: Int,
   date: Date, attendanceType: String, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -98,17 +98,33 @@ class AttendanceRepository @Inject() (
       r.foreach { case (student, a) =>
         groupIdDates += ((a.groupId, a.date))
         if (studentMap.contains(student.id)) {
-          println(s"Inserting ${student.name} attendance on ${a.date}")
+          // println(s"Inserting ${student.name} attendance on ${a.date}")
           studentMap.get(student.id).get.attendances += (a.date -> a.attendanceType)
         } else {
           val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
-          studentMap += (student.id -> StudentDetailsAPI(student, data))
+          studentMap += (student.id -> StudentDetailsAPI(student, data, 0.0))
         }
       }
 
+      studentMap.foreach { case (_, s) =>
+        s.attendanceRate = calculateRate(s.attendances)
+      }
       AttendanceAPI(studentMap.values, groupIdDates)
     }
 
+  }
+
+  def calculateRate(attendances: LinkedHashMap[Date,String]): Double = {
+    var attended = 0.0
+    attendances.foreach { case (_, value) =>
+      if (value == "attend") {
+        attended += 1
+      }
+    }
+
+    println(attended)
+
+    attended / attendances.size * 100
   }
 
 

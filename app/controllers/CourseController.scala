@@ -49,7 +49,9 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       attendances <- attendancesFuture
     } yield (course, attendances)
 
+
     results.map { r =>
+      println(r._2)
       CourseAPI(r._1, r._2)
     }
   }
