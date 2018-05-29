@@ -13,7 +13,9 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
 
-case class ExamDetailsAPI(student: Student, var exam: (Double, Double))
+case class Statistic(averageMark: Double, averageWeightage: Double, passCount: Int, failCount: Int)
+case class ExamAPI(examDetails: Iterable[ExamDetailsAPI], statistic: Statistic)
+case class ExamDetailsAPI(student: Student, var exam: (Double, Double, String))
 case class Exam(courseId: Long, studentId: Long,
   mark: Double, totalMark: Double,
   weightage: Double, totalWeightage: Double,
@@ -86,7 +88,7 @@ class ExamRepository @Inject() (
       }
   }
 
-  def getExams(courseId: Long): Future[Iterable[ExamDetailsAPI]] = {
+  def getExams(courseId: Long): Future[ExamAPI] = {
     val query = for {
       e <- exams
       courses <- e.courses if courses.id === courseId
@@ -99,11 +101,43 @@ class ExamRepository @Inject() (
     result.map { r =>
       r.foreach { case (student, e) =>
         println(e.weightage)
-        val data = (e.mark, e.weightage)
+        val pass = calculatePass(e.weightage, e.totalWeightage)
+        val data = (e.mark, e.weightage, pass)
         studentMap += (student.id -> ExamDetailsAPI(student, data))
       }
 
-      studentMap.values
+      val statistic = computeStatistic(studentMap.values)
+      ExamAPI(studentMap.values, statistic)
+    }
+  }
+
+  def computeStatistic(data: Iterable[ExamDetailsAPI]): Statistic = {
+    val size = data.size
+    var total = 0.0;
+    var totalWeightage = 0.0;
+    var passCount = 0;
+
+    data.foreach { d  =>
+      val exam = d.exam
+      total += exam._1
+      totalWeightage += exam._2
+
+      if (exam._3 == "Pass") { passCount += 1 }
+    }
+
+    val average = total / size
+    val averageWeightage = totalWeightage / size
+    val failCount = size - passCount
+
+    Statistic(average, averageWeightage, passCount, failCount)
+  }
+
+  def calculatePass(weightage: Double, totalWeightage: Double): String = {
+    val rate = weightage / totalWeightage * 100
+    if (rate <= 40) {
+      "Fail"
+    } else {
+      "Pass"
     }
   }
 }

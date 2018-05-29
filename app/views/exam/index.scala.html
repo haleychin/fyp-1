@@ -1,4 +1,12 @@
-@(course: Course, data: Iterable[ExamDetailsAPI])(implicit request: RequestHeader, flash: Flash)
+@(course: Course, data: ExamAPI)(implicit request: RequestHeader, flash: Flash)
+
+@colColor(status: String) = @{
+  if (status == "Pass") {
+    "table-success"
+  } else {
+    "table-danger"
+  }
+}
 
 @main(course.title) {
 <h1>@course.title</h1>
@@ -12,10 +20,11 @@
       <th>Name</th>
       <th class="text-center">Marks</th>
       <th class="text-center">Weightage</th>
+      <th class="text-center">Status</th>
     </tr>
   </thead>
   <tbody>
-    @for(d <- data) {
+    @for(d <- data.examDetails) {
     <tr>
       <td>
         <a href="@routes.StudentController.show(d.student.id)">
@@ -28,8 +37,28 @@
       <td class="text-center">
         @{f"${d.exam._2}%1.1f"} %
       </td>
+
+      <td class="text-center @colColor(d.exam._3)">
+        @d.exam._3
+      </td>
     </tr>
     }
+    <tr class="text-center">
+      <td>
+      </td>
+      <td>
+        <strong>Average: </strong>
+        @{f"${data.statistic.averageMark}%1.1f"}
+      </td>
+      <td>
+        <strong>Average: </strong>
+        @{f"${data.statistic.averageWeightage}%1.1f"}
+      </td>
+      <td>
+        <strong>Pass / Fail: </strong>
+        @data.statistic.passCount / @data.statistic.failCount
+      </td>
+    </tr>
   </tbody>
 </table>
 }

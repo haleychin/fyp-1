@@ -13,7 +13,7 @@ import java.io.File
 import models._
 import utils._
 
-case class CourseExamAPI(course: Option[Course], exams: Iterable[ExamDetailsAPI])
+case class CourseExamAPI(course: Option[Course], exams: ExamAPI)
 
 class ExamController @Inject()(
   repo: ExamRepository,
