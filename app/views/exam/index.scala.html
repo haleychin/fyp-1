@@ -1,0 +1,39 @@
+@(course: Course, data: Iterable[ExamDetailsAPI])(implicit request: RequestHeader, flash: Flash)
+
+@main(course.title) {
+<h1>@course.title</h1>
+<a class="btn btn-outline-primary btn-sm"
+   href="@routes.ExamController.newImport(course.id)">Import
+   Exam</a>
+
+<table class="table table-bordered table-sm">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th class="text-center">Marks</th>
+      <th class="text-center">Weightage</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for(d <- data) {
+    <tr>
+      <td>
+        <a href="@routes.StudentController.show(d.student.id)">
+          @d.student.name
+        </a>
+      </td>
+      <td class="text-center">
+        @d.exam._1
+      </td>
+      <td class="text-center">
+        @{f"${d.exam._2}%1.1f"} %
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+}
+
+
+
+

@@ -16,14 +16,13 @@
    href="@routes.CourseworkController.newImport(course.id)">Import
    Coursework</a>
 
-<table class="table table-bordered table-responsive table-sm w-auto">
+<table class="table table-bordered table-sm">
   <thead>
     <tr>
       <th>Name</th>
       @for(name <- data.courseworks) {
       <th class="text-center">@name</th>
       }
-      <th>Attendance Rate</th>
     </tr>
   </thead>
   <tbody>

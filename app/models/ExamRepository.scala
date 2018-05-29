@@ -11,6 +11,9 @@ import slick.driver.PostgresDriver.api._
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
+import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
+
+case class ExamDetailsAPI(student: Student, var exam: (Double, Double))
 case class Exam(courseId: Long, studentId: Long,
   mark: Double, totalMark: Double,
   weightage: Double, totalWeightage: Double,
@@ -81,6 +84,26 @@ class ExamRepository @Inject() (
             Future(None)
         }
       }
+  }
 
+  def getExams(courseId: Long): Future[Iterable[ExamDetailsAPI]] = {
+    val query = for {
+      e <- exams
+      courses <- e.courses if courses.id === courseId
+      students <- e.students
+    } yield (students, e)
+
+    val result = db.run(query.result)
+    val studentMap = LinkedHashMap[Long, ExamDetailsAPI]()
+
+    result.map { r =>
+      r.foreach { case (student, e) =>
+        println(e.weightage)
+        val data = (e.mark, e.weightage)
+        studentMap += (student.id -> ExamDetailsAPI(student, data))
+      }
+
+      studentMap.values
+    }
   }
 }

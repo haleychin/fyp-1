@@ -60,6 +60,7 @@ GET   /blackboard/:id/selection        controllers.CourseworkController.selectio
 POST  /blackboard/:id/save_selection   controllers.CourseworkController.saveSelection(id: Long)
 
 # Exam Routes
+GET   /exam/:id                        controllers.ExamController.index(id: Long)
 GET   /exam/:id/new                    controllers.ExamController.newImport(id: Long)
 POST  /exam/:id/save                   controllers.ExamController.save(id: Long)
 GET   /exam/:id/selection              controllers.ExamController.selection(id: Long)
