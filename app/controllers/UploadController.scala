@@ -46,8 +46,11 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         if (row.getRowNum() == 0) {}
         else {
           val values = row.map(formatter.formatCellValue(_)).toArray
+          val date = row.getCell(6).getDateCellValue()
+          val dateString = Utils.getDateAsString(date)
+
           sRepo.create(values(0), values(1), values(2), values(3),
-            values(4), values(5), Utils.convertStringToDate(values(6)),
+            values(4), values(5), Utils.convertStringToDate(dateString),
             values(7), values(8), values(9).toInt).map { r =>
               r match {
                 case Success(u) =>
