@@ -27,6 +27,7 @@ case class ExamAPI(
 
 case class ExamDetailsAPI(
   student: Student,
+  // (Total, Weightage, Pass/Fail)
   var exam: (Double, Double, String))
 
 case class Exam(courseId: Long, studentId: Long,
@@ -113,7 +114,6 @@ class ExamRepository @Inject() (
 
     result.map { r =>
       r.foreach { case (student, e) =>
-        println(e.weightage)
         val pass = calculatePass(e.weightage, e.totalWeightage)
         val data = (e.mark, e.weightage, pass)
         studentMap += (student.id -> ExamDetailsAPI(student, data))

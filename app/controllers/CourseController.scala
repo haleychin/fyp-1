@@ -11,13 +11,13 @@ import play.api.data.validation.Constraints._
 
 // Model
 import models._
+import utils._
 
 case class CourseData(title: String)
 case class CourseAPI(
   course: Option[Course],
   attendance: AttendanceAPI,
-  coursework: CourseworkAPI,
-  exam: ExamAPI)
+  coursework: CourseworkAPI)
 
 class CourseController @Inject()(
   repo: CourseRepository,
@@ -59,9 +59,9 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       exam        <- examFuture
     } yield (course, attendances, courseworks, exam)
 
-
     results.map { r =>
-      CourseAPI(r._1, r._2, r._3, r._4)
+      val combined = Utils.combineExamAndCoursework(r._3, r._4)
+      CourseAPI(r._1, r._2, combined)
     }
   }
 

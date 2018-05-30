@@ -12,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
+import utils._
 
 case class CwStatistic(
   averages: LinkedHashMap[String, Double],
@@ -21,7 +22,7 @@ case class CwStatistic(
 case class CourseworkAPI(
   courseworkDetails: LinkedHashMap[Long,CourseworkDetailsAPI],
   courseworks: LinkedHashSet[(String, Double)],
-  total: Double,
+  var total: Double,
   statistic: CwStatistic)
 
 case class CourseworkDetailsAPI(
@@ -112,6 +113,7 @@ class CourseworkRepository @Inject() (
     val result = db.run(query.result)
 
     var studentMap = LinkedHashMap[Long, CourseworkDetailsAPI]()
+    // (Name, Total Mark)
     val courseworkLists = LinkedHashSet[(String, Double)]()
 
     result.map { r =>
@@ -133,7 +135,7 @@ class CourseworkRepository @Inject() (
       )._2
 
       studentMap.foreach { case (_, s) =>
-        s.status = calculatePass(s.total, total)
+        s.status = Utils.calculatePass(s.total, total)
       }
 
       val statistic = computeStatistic(studentMap.values)
@@ -169,15 +171,6 @@ class CourseworkRepository @Inject() (
     averages.foreach { case (k, v) => averages.update(k, v / data.size) }
 
     CwStatistic(averages, passCount, failCount)
-  }
-
-  def calculatePass(weightage: Double, totalWeightage: Double): String = {
-    val rate = weightage / totalWeightage * 100
-    if (rate <= 40) {
-      "Fail"
-    } else {
-      "Pass"
-    }
   }
 
 }

@@ -1,7 +1,29 @@
 @(course: Course, data: CourseAPI)(implicit request: RequestHeader, flash: Flash)
 
-@getExamMark(id: Long) = @{
-  val mark = data.exam.examDetails.get(id).map(_.exam._2)
+@colColor(status: String) = @{
+  if (status == "Pass") {
+    "table-success"
+  } else {
+    "table-danger"
+  }
+}
+
+
+@action = {
+<a class="btn btn-primary"
+   href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+<a class="btn btn-primary"
+   href="@routes.CourseworkController.index(course.id)">View Coursework </a>
+<a class="btn btn-primary"
+   href="@routes.ExamController.index(course.id)">View Final Exam</a>
+<a class="btn btn-primary"
+   href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+}
+
+@getMark(id: Long, name: String) = @{
+  val mark = data.coursework.courseworkDetails
+    .get(id).flatMap(_.courseworks.get(name))
+
   if (mark.isDefined) {
     f"${mark.get}%1.1f"
   } else {
@@ -9,61 +31,52 @@
   }
 }
 
+@getTotalMark(id: Long) = @{
+  val mark = data.coursework.courseworkDetails
+    .get(id).map(_.total)
+
+  if (mark.isDefined) {
+    f"${mark.get}%1.1f"
+  } else {
+    "-"
+  }
+}
+
+@getStatus(id: Long) = @{
+  data.coursework.courseworkDetails
+    .get(id).map(_.status).getOrElse("-")
+}
+
 @main(course.title) {
-
-<div class="row">
-  <div class="col">
-    <div class="card">
-      <div class="card-body">
-        <h3>@course.title</h3>
-
-        <section class="mb-5">
-          <a class="btn btn-primary"
-             href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-          <a class="btn btn-primary"
-             href="@routes.CourseworkController.index(course.id)">View Coursework </a>
-          <a class="btn btn-primary"
-             href="@routes.ExamController.index(course.id)">View Final Exam</a>
-          <a class="btn btn-primary"
-             href="@routes.AttendanceController.index(course.id)">View Attendance</a>
-        </section>
-
-        <section>
-          <h4>Overview:</h4>
-          <table class="table table-bordered table-sm text-center">
-            <thead>
-              <tr>
-                <th>Student ID</th>
-                <th>Name</th>
-                <th>Attendance Rate</th>
-                @for(d <- data.coursework.courseworks) {
-                <th>@d._1 (@{f"${d._2}%1.0f"}%)</th>
-                }
-                <th>Exam (@data.exam.weightage%)</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for((id, a) <- data.attendance.studentDetails) {
-              <tr>
-                <td>@a.student.studentId</td>
-                <td>@a.student.name</td>
-                <td>@a.attendanceRate</td>
-                @for(c <- data.coursework.courseworks.toList) {
-                <td>
-                  @data.coursework.courseworkDetails.get(id).flatMap(_.courseworks.get(c._1)).getOrElse("-")</td>
-                }
-                <td>
-                  @getExamMark(id)
-                </td>
-              </tr>
-              }
-            </tbody>
-          </table>
-        </section>
-      </div>
-    </div>
-  </div>
-</div>
-
+@common.card(course.title)(action) {
+<h4>Overview:</h4>
+<table class="table table-bordered table-sm text-center">
+  <thead>
+    <tr>
+      <th>Student ID</th>
+      <th>Name</th>
+      <th>Attendance Rate</th>
+      @for(d <- data.coursework.courseworks) {
+      <th>@d._1 (@{f"${d._2}%1.0f"}%)</th>
+      }
+      <th>Total (@data.coursework.total)</th>
+      <th>Status</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for((id, a) <- data.attendance.studentDetails) {
+    <tr>
+      <td>@a.student.studentId</td>
+      <td>@a.student.name</td>
+      <td>@a.attendanceRate</td>
+      @for(c <- data.coursework.courseworks.toList) {
+        <td>@getMark(id, c._1)</td>
+      }
+      <td>@getTotalMark(id)</td>
+      <td class="@colColor(getStatus(id))">@getStatus(id)</td>
+    </tr>
+    }
+  </tbody>
+</table>
+}
 }
