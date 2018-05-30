@@ -9,13 +9,14 @@
     ""
   }
 }
-
-@main(course.title) {
-<h1>@course.title</h1>
-<a class="btn btn-outline-primary btn-sm"
+@action = {
+<a class="btn btn-primary"
    href="@routes.AttendanceController.newAttendance(course.id)">Import
    Attendance</a>
+}
 
+@main(course.title) {
+@common.card(course.title)(action) {
 <table class="table table-bordered table-responsive table-sm w-auto">
   <thead>
     <tr>
@@ -55,4 +56,5 @@
     }
   </tbody>
 </table>
+}
 }

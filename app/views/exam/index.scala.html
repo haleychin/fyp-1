@@ -8,12 +8,14 @@
   }
 }
 
-@main(course.title) {
-<h1>@course.title</h1>
-<a class="btn btn-outline-primary btn-sm"
+@action = {
+<a class="btn btn-primary"
    href="@routes.ExamController.newImport(course.id)">Import
    Exam</a>
+}
 
+@main(course.title) {
+@common.card(course.title)(action) {
 <table class="table table-bordered table-sm">
   <thead>
     <tr>
@@ -62,7 +64,4 @@
   </tbody>
 </table>
 }
-
-
-
-
+}

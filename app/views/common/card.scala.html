@@ -1,0 +1,19 @@
+@(title: String)(action: Html)(content: Html)
+
+<div class="row">
+  <div class="col">
+    <div class="card">
+      <div class="card-body">
+        <h3>@title</h3>
+
+        <section class="mb-5">
+          @action
+        </section>
+
+        <section>
+          @content
+        </section>
+      </div>
+    </div>
+  </div>
+</div>

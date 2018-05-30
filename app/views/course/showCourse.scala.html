@@ -16,54 +16,54 @@
     <div class="card">
       <div class="card-body">
         <h3>@course.title</h3>
-        <a class="btn btn-primary"
-           href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-        <a class="btn btn-primary"
-           href="@routes.CourseworkController.index(course.id)">View Coursework </a>
-        <a class="btn btn-primary"
-           href="@routes.ExamController.index(course.id)">View Final Exam</a>
-        <a class="btn btn-primary"
-           href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+
+        <section class="mb-5">
+          <a class="btn btn-primary"
+             href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+          <a class="btn btn-primary"
+             href="@routes.CourseworkController.index(course.id)">View Coursework </a>
+          <a class="btn btn-primary"
+             href="@routes.ExamController.index(course.id)">View Final Exam</a>
+          <a class="btn btn-primary"
+             href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+        </section>
+
+        <section>
+          <h4>Overview:</h4>
+          <table class="table table-bordered table-sm text-center">
+            <thead>
+              <tr>
+                <th>Student ID</th>
+                <th>Name</th>
+                <th>Attendance Rate</th>
+                @for(d <- data.coursework.courseworks) {
+                <th>@d._1 (@{f"${d._2}%1.0f"}%)</th>
+                }
+                <th>Exam (@data.exam.weightage%)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for((id, a) <- data.attendance.studentDetails) {
+              <tr>
+                <td>@a.student.studentId</td>
+                <td>@a.student.name</td>
+                <td>@a.attendanceRate</td>
+                @for(c <- data.coursework.courseworks.toList) {
+                <td>
+                  @data.coursework.courseworkDetails.get(id).flatMap(_.courseworks.get(c._1)).getOrElse("-")</td>
+                }
+                <td>
+                  @getExamMark(id)
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </section>
       </div>
     </div>
   </div>
 </div>
-
-  <!-- Main -->
-<div class="row">
-  <div class="col">
-    <table class="table table-bordered table-sm text-center">
-      <thead>
-        <tr>
-          <th>Student ID</th>
-          <th>Name</th>
-          <th>Attendance Rate</th>
-          @for(d <- data.coursework.courseworks) {
-          <th>@d._1 (@{f"${d._2}%1.0f"}%)</th>
-          }
-          <th>Exam (@data.exam.weightage%)</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for((id, a) <- data.attendance.studentDetails) {
-        <tr>
-          <td>@a.student.studentId</td>
-          <td>@a.student.name</td>
-          <td>@a.attendanceRate</td>
-          @for(c <- data.coursework.courseworks.toList) {
-          <td>
-            @data.coursework.courseworkDetails.get(id).flatMap(_.courseworks.get(c._1)).getOrElse("-")</td>
-          }
-          <td>
-            @getExamMark(id)
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </div>
-</div>
-
 
 }
