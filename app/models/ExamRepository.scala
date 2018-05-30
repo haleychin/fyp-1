@@ -21,6 +21,8 @@ case class Statistic(
 
 case class ExamAPI(
   examDetails: LinkedHashMap[Long,ExamDetailsAPI],
+  total: Int,
+  weightage: Int,
   statistic: Statistic)
 
 case class ExamDetailsAPI(
@@ -106,7 +108,7 @@ class ExamRepository @Inject() (
       students <- e.students
     } yield (students, e)
 
-    val result = db.run(query.result)
+    val result     = db.run(query.result)
     val studentMap = LinkedHashMap[Long, ExamDetailsAPI]()
 
     result.map { r =>
@@ -118,7 +120,9 @@ class ExamRepository @Inject() (
       }
 
       val statistic = computeStatistic(studentMap.values)
-      ExamAPI(studentMap, statistic)
+      val total     = r.head._2.totalMark.toInt
+      val weightage = r.head._2.totalWeightage.toInt
+      ExamAPI(studentMap, total, weightage, statistic)
     }
   }
 

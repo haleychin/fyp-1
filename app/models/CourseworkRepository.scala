@@ -23,6 +23,7 @@ case class CourseworkAPI(
   courseworks: LinkedHashSet[(String, Double)],
   total: Double,
   statistic: CwStatistic)
+
 case class CourseworkDetailsAPI(
   student: Student,
   var courseworks: LinkedHashMap[String, Double],

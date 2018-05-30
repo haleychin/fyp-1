@@ -13,28 +13,25 @@
 
 <div class="row">
   <div class="col">
-    <h1>@course.title</h1>
+    <div class="card">
+      <div class="card-body">
+        <h3>@course.title</h3>
+        <a class="btn btn-primary"
+           href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+        <a class="btn btn-primary"
+           href="@routes.CourseworkController.index(course.id)">View Coursework </a>
+        <a class="btn btn-primary"
+           href="@routes.ExamController.index(course.id)">View Final Exam</a>
+        <a class="btn btn-primary"
+           href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+      </div>
+    </div>
   </div>
 </div>
 
-<div class="row">
-
-  <!-- Sidebar -->
-  <div class="col-sm-4">
-    <div class="list-group">
-      <a class="list-group-item waves-effect"
-         href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-      <a class="list-group-item waves-effect"
-         href="@routes.CourseworkController.index(course.id)">View Coursework </a>
-      <a class="list-group-item waves-effect"
-         href="@routes.ExamController.index(course.id)">View Final Exam</a>
-      <a class="list-group-item waves-effect"
-         href="@routes.AttendanceController.index(course.id)">View Attendance</a>
-    </div>
-  </div>
-
   <!-- Main -->
-  <div class="col-sm-8">
+<div class="row">
+  <div class="col">
     <table class="table table-bordered table-sm text-center">
       <thead>
         <tr>
@@ -42,9 +39,9 @@
           <th>Name</th>
           <th>Attendance Rate</th>
           @for(d <- data.coursework.courseworks) {
-          <th>@d._1 (@{f"${d._2}%1.0f"} %)</th>
+          <th>@d._1 (@{f"${d._2}%1.0f"}%)</th>
           }
-          <th>Final Exam</th>
+          <th>Exam (@data.exam.weightage%)</th>
           <th>Status</th>
         </tr>
       </thead>
@@ -55,8 +52,8 @@
           <td>@a.student.name</td>
           <td>@a.attendanceRate</td>
           @for(c <- data.coursework.courseworks.toList) {
-            <td>
-              @data.coursework.courseworkDetails.get(id).flatMap(_.courseworks.get(c._1)).getOrElse("-")</td>
+          <td>
+            @data.coursework.courseworkDetails.get(id).flatMap(_.courseworks.get(c._1)).getOrElse("-")</td>
           }
           <td>
             @getExamMark(id)
@@ -67,5 +64,6 @@
     </table>
   </div>
 </div>
+
 
 }
