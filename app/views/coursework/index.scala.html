@@ -44,8 +44,20 @@
       <td class="text-center @colColor(d.status)">@d.status</td>
     </tr>
     }
+    <tr class="text-center">
+      <td></td>
+      @for((_, v) <- data.statistic.averages) {
+      <td>
+        <strong>Average: </strong>
+        @{f"$v%1.1f"}
+      </td>
+      }
+      <td>
+        <strong>Pass / Fail: </strong>
+        @data.statistic.passCount / @data.statistic.failCount
+      </td>
+    </tr>
   </tbody>
 </table>
 }
-
 

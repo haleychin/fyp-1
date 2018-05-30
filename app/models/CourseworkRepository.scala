@@ -13,8 +13,22 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 
-case class CourseworkAPI(courseworkDetails: Iterable[CourseworkDetailsAPI], courseworks: LinkedHashSet[(String, Double)], total: Double)
-case class CourseworkDetailsAPI(student: Student, var courseworks: LinkedHashMap[String, Double], var total: Double, var status: String)
+case class CwStatistic(
+  averages: LinkedHashMap[String, Double],
+  passCount: Int,
+  failCount: Int)
+
+case class CourseworkAPI(
+  courseworkDetails: Iterable[CourseworkDetailsAPI],
+  courseworks: LinkedHashSet[(String, Double)],
+  total: Double,
+  statistic: CwStatistic)
+case class CourseworkDetailsAPI(
+  student: Student,
+  var courseworks: LinkedHashMap[String, Double],
+  var total: Double,
+  var status: String)
+
 case class Coursework(courseId: Long, studentId: Long, name: String,
   mark: Double, totalMark: Double, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -121,8 +135,39 @@ class CourseworkRepository @Inject() (
         s.status = calculatePass(s.total, total)
       }
 
-      CourseworkAPI(studentMap.values, courseworkLists, total)
+      val statistic = computeStatistic(studentMap.values)
+
+      CourseworkAPI(studentMap.values, courseworkLists, total, statistic)
     }
+  }
+
+  def computeStatistic(data: Iterable[CourseworkDetailsAPI]): CwStatistic = {
+    var averages = LinkedHashMap[String, Double]()
+    val size = data.size
+    var passCount = 0;
+
+    data.foreach { d =>
+      val courseworksMap = d.courseworks
+
+      d.courseworks.foreach { case (key, value) =>
+        if (averages.contains(key)) {
+          averages.update(key, averages.get(key).get + value)
+        } else {
+          averages += (key -> value)
+        }
+      }
+
+      if (d.status == "Pass") { passCount += 1 }
+    }
+
+
+    val total = data.map(_.total).reduce(_ + _)
+    averages += ("Total" -> total)
+    val failCount = size - passCount
+
+    averages.foreach { case (k, v) => averages.update(k, v / data.size) }
+
+    CwStatistic(averages, passCount, failCount)
   }
 
   def calculatePass(weightage: Double, totalWeightage: Double): String = {
