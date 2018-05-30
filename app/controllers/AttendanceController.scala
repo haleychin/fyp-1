@@ -11,7 +11,7 @@ import play.api.libs.json._
 import models._
 import utils._
 
-case class CourseAPI(course: Option[Course], attendance: AttendanceAPI)
+case class CourseAttendanceAPI(course: Option[Course], attendance: AttendanceAPI)
 
 class AttendanceController @Inject()(
   ws: WSClient,
@@ -29,7 +29,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       .withRequestTimeout(10000.millis)
   }
 
-  def getCourseDetail(id: Long): Future[CourseAPI] = {
+  def getCourseDetail(id: Long): Future[CourseAttendanceAPI] = {
     val courseFuture = cRepo.get(id)
     val attendancesFuture = repo.getAttendances(id)
 
@@ -41,7 +41,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
     results.map { r =>
       println(r._2)
-      CourseAPI(r._1, r._2)
+      CourseAttendanceAPI(r._1, r._2)
     }
   }
 

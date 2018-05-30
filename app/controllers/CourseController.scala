@@ -13,11 +13,18 @@ import play.api.data.validation.Constraints._
 import models._
 
 case class CourseData(title: String)
+case class CourseAPI(
+  course: Option[Course],
+  attendance: AttendanceAPI,
+  coursework: CourseworkAPI,
+  exam: ExamAPI)
 
 class CourseController @Inject()(
   repo: CourseRepository,
   csRepo: CourseStudentRepository,
   aRepo: AttendanceRepository,
+  cwRepo: CourseworkRepository,
+  eRepo: ExamRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -40,18 +47,21 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def getCourseDetail(id: Long): Future[CourseAPI] = {
-    val courseFuture = repo.get(id)
+    val courseFuture      = repo.get(id)
     val attendancesFuture = aRepo.getAttendances(id)
+    val courseworksFuture = cwRepo.getCourseworks(id)
+    val examFuture        = eRepo.getExams(id)
 
     val results = for {
-      course <- courseFuture
+      course      <- courseFuture
       attendances <- attendancesFuture
-    } yield (course, attendances)
+      courseworks <- courseworksFuture
+      exam        <- examFuture
+    } yield (course, attendances, courseworks, exam)
 
 
     results.map { r =>
-      println(r._2)
-      CourseAPI(r._1, r._2)
+      CourseAPI(r._1, r._2, r._3, r._4)
     }
   }
 
@@ -59,7 +69,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseDetail(id).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
-          Ok(views.html.course.showCourse(c))
+          Ok(views.html.course.showCourse(c, courseApi))
         case None => Ok(views.html.index())
       }
     }

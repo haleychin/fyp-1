@@ -1,14 +1,71 @@
-@(course: Course)(implicit request: RequestHeader, flash: Flash)
+@(course: Course, data: CourseAPI)(implicit request: RequestHeader, flash: Flash)
+
+@getExamMark(id: Long) = @{
+  val mark = data.exam.examDetails.get(id).map(_.exam._2)
+  if (mark.isDefined) {
+    f"${mark.get}%1.1f"
+  } else {
+    "-"
+  }
+}
 
 @main(course.title) {
-<h1>@course.title</h1>
-<a class="btn btn-outline-primary btn-sm"
-   href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-<a class="btn btn-outline-primary btn-sm"
-   href="@routes.CourseworkController.index(course.id)">View Coursework </a>
-<a class="btn btn-outline-primary btn-sm"
-   href="@routes.ExamController.index(course.id)">View Final Exam</a>
-<a class="btn btn-outline-primary btn-sm"
-   href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+
+<div class="row">
+  <div class="col">
+    <h1>@course.title</h1>
+  </div>
+</div>
+
+<div class="row">
+
+  <!-- Sidebar -->
+  <div class="col-sm-4">
+    <div class="list-group">
+      <a class="list-group-item waves-effect"
+         href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+      <a class="list-group-item waves-effect"
+         href="@routes.CourseworkController.index(course.id)">View Coursework </a>
+      <a class="list-group-item waves-effect"
+         href="@routes.ExamController.index(course.id)">View Final Exam</a>
+      <a class="list-group-item waves-effect"
+         href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+    </div>
+  </div>
+
+  <!-- Main -->
+  <div class="col-sm-8">
+    <table class="table table-bordered table-sm text-center">
+      <thead>
+        <tr>
+          <th>Student ID</th>
+          <th>Name</th>
+          <th>Attendance Rate</th>
+          @for(d <- data.coursework.courseworks) {
+          <th>@d._1 (@{f"${d._2}%1.0f"} %)</th>
+          }
+          <th>Final Exam</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for((id, a) <- data.attendance.studentDetails) {
+        <tr>
+          <td>@a.student.studentId</td>
+          <td>@a.student.name</td>
+          <td>@a.attendanceRate</td>
+          @for(c <- data.coursework.courseworks.toList) {
+            <td>
+              @data.coursework.courseworkDetails.get(id).flatMap(_.courseworks.get(c._1)).getOrElse("-")</td>
+          }
+          <td>
+            @getExamMark(id)
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
 
 }

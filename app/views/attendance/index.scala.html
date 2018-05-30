@@ -27,7 +27,7 @@
     </tr>
   </thead>
   <tbody>
-    @for(d <- data.studentDetails) {
+    @for((_, d) <- data.studentDetails) {
     <tr class="@rowColor(d.attendanceRate)">
       <td>
         <a href="@routes.StudentController.show(d.student.id)">

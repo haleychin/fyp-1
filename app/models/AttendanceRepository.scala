@@ -13,7 +13,7 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 
-case class AttendanceAPI(studentDetails: Iterable[StudentDetailsAPI], dates: LinkedHashSet[(Int, Date)])
+case class AttendanceAPI(studentDetails: LinkedHashMap[Long, StudentDetailsAPI], dates: LinkedHashSet[(Int, Date)])
 case class StudentDetailsAPI(student: Student, var attendances: LinkedHashMap[Date, String], var attendanceRate: Double)
 case class Attendance(courseId: Long, studentId: Long, groupId: Int,
   date: Date, attendanceType: String, createdAt: Timestamp,
@@ -109,7 +109,7 @@ class AttendanceRepository @Inject() (
       studentMap.foreach { case (_, s) =>
         s.attendanceRate = calculateRate(s.attendances)
       }
-      AttendanceAPI(studentMap.values, groupIdDates)
+      AttendanceAPI(studentMap, groupIdDates)
     }
 
   }
@@ -121,8 +121,6 @@ class AttendanceRepository @Inject() (
         attended += 1
       }
     }
-
-    println(attended)
 
     attended / attendances.size * 100
   }

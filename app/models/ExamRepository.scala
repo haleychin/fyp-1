@@ -13,9 +13,20 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
 
-case class Statistic(averageMark: Double, averageWeightage: Double, passCount: Int, failCount: Int)
-case class ExamAPI(examDetails: Iterable[ExamDetailsAPI], statistic: Statistic)
-case class ExamDetailsAPI(student: Student, var exam: (Double, Double, String))
+case class Statistic(
+  averageMark: Double,
+  averageWeightage: Double,
+  passCount: Int,
+  failCount: Int)
+
+case class ExamAPI(
+  examDetails: LinkedHashMap[Long,ExamDetailsAPI],
+  statistic: Statistic)
+
+case class ExamDetailsAPI(
+  student: Student,
+  var exam: (Double, Double, String))
+
 case class Exam(courseId: Long, studentId: Long,
   mark: Double, totalMark: Double,
   weightage: Double, totalWeightage: Double,
@@ -107,7 +118,7 @@ class ExamRepository @Inject() (
       }
 
       val statistic = computeStatistic(studentMap.values)
-      ExamAPI(studentMap.values, statistic)
+      ExamAPI(studentMap, statistic)
     }
   }
 

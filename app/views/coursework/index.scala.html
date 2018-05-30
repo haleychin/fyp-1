@@ -28,7 +28,7 @@
     </tr>
   </thead>
   <tbody>
-    @for(d <- data.courseworkDetails) {
+    @for((id, d) <- data.courseworkDetails) {
     <tr>
       <td>
         <a href="@routes.StudentController.show(d.student.id)">

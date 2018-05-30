@@ -19,7 +19,7 @@ case class CwStatistic(
   failCount: Int)
 
 case class CourseworkAPI(
-  courseworkDetails: Iterable[CourseworkDetailsAPI],
+  courseworkDetails: LinkedHashMap[Long,CourseworkDetailsAPI],
   courseworks: LinkedHashSet[(String, Double)],
   total: Double,
   statistic: CwStatistic)
@@ -137,7 +137,7 @@ class CourseworkRepository @Inject() (
 
       val statistic = computeStatistic(studentMap.values)
 
-      CourseworkAPI(studentMap.values, courseworkLists, total, statistic)
+      CourseworkAPI(studentMap, courseworkLists, total, statistic)
     }
   }
 
