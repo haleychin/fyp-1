@@ -120,8 +120,8 @@ class ExamRepository @Inject() (
       }
 
       val statistic = computeStatistic(studentMap.values)
-      val total     = r.head._2.totalMark.toInt
-      val weightage = r.head._2.totalWeightage.toInt
+      val total     = r.headOption.map(_._2.totalMark.toInt).getOrElse(0)
+      val weightage = r.headOption.map(_._2.totalWeightage.toInt).getOrElse(0)
       ExamAPI(studentMap, total, weightage, statistic)
     }
   }

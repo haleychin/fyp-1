@@ -130,10 +130,9 @@ class CourseworkRepository @Inject() (
         }
       }
 
-      val total = courseworkLists.reduce( (x, y) =>
-        ("", x._2 + y._2)
-      )._2
-
+      val total = courseworkLists.reduceOption( (x, y) =>
+          ("", x._2 + y._2)
+        ).map(_._2).getOrElse(0.0)
       studentMap.foreach { case (_, s) =>
         s.status = Utils.calculatePass(s.total, total)
       }
@@ -164,7 +163,7 @@ class CourseworkRepository @Inject() (
     }
 
 
-    val total = data.map(_.total).reduce(_ + _)
+    val total = data.map(_.total).reduceOption(_ + _).getOrElse(0.0)
     averages += ("Total" -> total)
     val failCount = size - passCount
 
@@ -173,4 +172,4 @@ class CourseworkRepository @Inject() (
     CwStatistic(averages, passCount, failCount)
   }
 
-}
+ }
