@@ -1,24 +1,78 @@
 @(student: Student, courses: Seq[Course])(implicit request: RequestHeader, flash: Flash)
 
-@main(student.name) {
-<h1>@student.name</h1>
-<ul>
-  <li>Email: @student.email</li>
-  <li>Student ID: @student.studentId</li>
-  <li>IC/Passport: @student.icOrPassport</li>
-  <li>Nationality: @student.nationality</li>
-  <li>Contact Number: @student.contactNumber</li>
-  <li>Birth Date: @student.birthDate</li>
-  <li>Programme: @student.programme</li>
-  <li>Intake: @student.intake</li>
-  <li>Semester: @student.semester</li>
+@action = {
 
-  <li>Courses:
-    <ul>
+}
+
+@main(student.name) {
+@common.card(student.name)(action) {
+<div class="row">
+  <div class="col">
+    <h4>Detail:</h4>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <table class="table table-bordered table-sm">
+      <tr>
+        <th>Email</th>
+        <td>@student.email</td>
+      </tr>
+      <tr>
+        <th>Student ID</th>
+        <td>@student.studentId</td>
+      </tr>
+      <tr>
+        <th>IC/Passport</th>
+        <td>@student.icOrPassport</td>
+      </tr>
+      <tr>
+        <th>Nationality</th>
+        <td>@student.nationality</td>
+      </tr>
+      <tr>
+        <th>Contact Number</th>
+        <td>@student.contactNumber</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="col">
+    <table class="table table-bordered table-sm">
+      <tr>
+        <th>Birth Date</th>
+        <td>@student.birthDate</td>
+      </tr>
+      <tr>
+        <th>Programme</th>
+        <td>@student.programme</td>
+      </tr>
+      <tr>
+        <th>Intake</th>
+        <td>@student.intake</td>
+      </tr>
+      <tr>
+        <th>Semester</th>
+        <td>@student.semester</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col">
+    <h4>Courses taken: </h4>
+
+    <table class="table table-bordered table-sm">
       @for(course <- courses) {
-      <li>@course.title</li>
+      <tr>
+        <td>@course.title</td>
+      </tr>
       }
-    </ul>
-  </li>
-</ul>
+    </table>
+  </div>
+</div>
+}
 }
