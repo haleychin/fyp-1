@@ -4,19 +4,19 @@
 }
 
 @attendances(data: StudentAPI, id: Long) = @{
-  data.attendances.studentDetails.get(id).get
+  data.attendances.studentDetails.get(id)
 }
 
 @courseworks(data: StudentAPI, id: Long) = @{
-  data.courseworks.courseworkDetails.get(id).get
+  data.courseworks.courseworkDetails.get(id)
 }
 
 @exams(data: StudentAPI, id: Long) = @{
-  data.exams.examDetails.get(id).get
+  data.exams.examDetails.get(id)
 }
 
 @getStatus(data: StudentAPI, id: Long) = @{
-  courseworks(data, id).status
+  courseworks(data, id).get.status
 }
 
 @colColor(value: String) = @{
@@ -87,18 +87,20 @@
 <div class="row">
   <div class="col">
     @for(course <- data.courses) {
-    <div class="bq-primary px-4 py-2">
+    <div class="bq-primary px-4 py-2 mt-2">
         <h3 class="bq-title font-weight-normal">@course.title</h3>
+
         <h5>Attendances:</h5>
+        @if(attendances(data, course.id).isDefined) {
         <table class="table table-bordered table-sm text-center">
           <thead>
-            @for((d, v) <- attendances(data, course.id).attendances) {
+            @for((d, v) <- attendances(data, course.id).get.attendances) {
             <th>@d</th>
             }
             <th>Attendance Rate</th>
           </thead>
           <tbody>
-            @for((d, v) <- attendances(data, course.id).attendances) {
+            @for((d, v) <- attendances(data, course.id).get.attendances) {
             <td>
               @{
               if (v == "attend") {
@@ -111,44 +113,55 @@
               }
             </td>
             }
-            <td>@attendances(data, course.id).attendanceRate%</td>
+            <td>@attendances(data, course.id).get.attendanceRate%</td>
           </tbody>
         </table>
+        } else {
+          <p>No data available yet</p>
+        }
 
         <h5>Courseworks:</h5>
+        @if(courseworks(data, course.id).isDefined) {
         <table class="table table-bordered table-sm text-center">
           <thead>
-            @for((title, _) <- courseworks(data, course.id).courseworks) {
+            @for((title, _) <- courseworks(data, course.id).get.courseworks) {
             <th>@title</th>
             }
-            <th>Total (@courseworks(data, course.id).fullMark%)</th>
+            <th>Total (@courseworks(data, course.id).get.fullMark%)</th>
             <th>Status</th>
           </thead>
           <tbody>
-            @for((title, mark) <- courseworks(data, course.id).courseworks) {
+            @for((title, mark) <- courseworks(data, course.id).get.courseworks) {
               <td>@mark</td>
             }
-            <td>@courseworks(data, course.id).totalMark%</td>
+            <td>@courseworks(data, course.id).get.totalMark%</td>
             <td class="@colColor(getStatus(data, course.id))">@getStatus(data, course.id)</td>
           </tbody>
         </table>
+        } else {
+          <p>No data available yet</p>
+        }
 
         <h5>Finals:</h5>
+        @if(exams(data, course.id).isDefined) {
         <table class="table table-bordered table-sm text-center">
           <thead>
-            <th>Mark (@exams(data, course.id).fullMark%)</th>
-            <th>Weightage (@exams(data, course.id).fullWeightage%)</th>
+            <th>Mark (@exams(data, course.id).get.fullMark%)</th>
+            <th>Weightage (@exams(data, course.id).get.fullWeightage%)</th>
             <th>Status</th>
           </thead>
           <tbody>
-            <td>@exams(data, course.id).exam._1</td>
-            <td>@exams(data, course.id).exam._2%</td>
-            <td class="@colColor(exams(data, course.id).exam._3)">
-              @exams(data, course.id).exam._3
+            <td>@exams(data, course.id).get.exam._1</td>
+            <td>@exams(data, course.id).get.exam._2%</td>
+            <td class="@colColor(exams(data, course.id).get.exam._3)">
+              @exams(data, course.id).get.exam._3
             </td>
           </tbody>
         </table>
-    </blockquote>
+        } else {
+        <p>No data available yet</p>
+        }
+    </div>
     }
   </div>
 </div>
