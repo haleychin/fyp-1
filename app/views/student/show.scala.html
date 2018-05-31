@@ -87,10 +87,10 @@
 <div class="row">
   <div class="col">
     @for(course <- data.courses) {
-    <div class="bq-primary px-4 py-2 mt-2">
-        <h3 class="bq-title font-weight-normal">@course.title</h3>
+    <div class="mt-2">
+        <h5>@course.title</h5>
 
-        <h5>Attendances:</h5>
+        <h6>Attendances:</h6>
         @if(attendances(data, course.id).isDefined) {
         <table class="table table-bordered table-sm text-center">
           <thead>
@@ -120,7 +120,7 @@
           <p>No data available yet</p>
         }
 
-        <h5>Courseworks:</h5>
+        <h6>Courseworks:</h6>
         @if(courseworks(data, course.id).isDefined) {
         <table class="table table-bordered table-sm text-center">
           <thead>
@@ -142,7 +142,7 @@
           <p>No data available yet</p>
         }
 
-        <h5>Finals:</h5>
+        <h6>Finals:</h6>
         @if(exams(data, course.id).isDefined) {
         <table class="table table-bordered table-sm text-center">
           <thead>

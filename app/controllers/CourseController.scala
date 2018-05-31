@@ -16,6 +16,7 @@ import utils._
 case class CourseData(title: String)
 case class CourseAPI(
   course: Option[Course],
+  students: Seq[Student],
   attendance: AttendanceAPI,
   coursework: CourseworkAPI)
 
@@ -48,20 +49,22 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getCourseDetail(id: Long): Future[CourseAPI] = {
     val courseFuture      = repo.get(id)
+    val studentFuture     = csRepo.getStudents(id)
     val attendancesFuture = aRepo.getAttendances(id)
     val courseworksFuture = cwRepo.getCourseworks(id)
     val examFuture        = eRepo.getExams(id)
 
     val results = for {
       course      <- courseFuture
+      students    <- studentFuture
       attendances <- attendancesFuture
       courseworks <- courseworksFuture
       exam        <- examFuture
-    } yield (course, attendances, courseworks, exam)
+    } yield (course, students, attendances, courseworks, exam)
 
     results.map { r =>
-      val combined = Utils.combineExamAndCoursework(r._3, r._4)
-      CourseAPI(r._1, r._2, combined)
+      val combined = Utils.combineExamAndCoursework(r._4, r._5)
+      CourseAPI(r._1, r._2, r._3, combined)
     }
   }
 

@@ -64,16 +64,16 @@
     </tr>
   </thead>
   <tbody>
-    @for((id, a) <- data.attendance.studentDetails) {
+    @for(s <- data.students) {
     <tr>
-      <td>@a.student.studentId</td>
-      <td>@a.student.name</td>
-      <td>@a.attendanceRate</td>
+      <td>@s.studentId</td>
+      <td>@s.name</td>
+      <td>@data.attendance.studentDetails.get(s.id).map(_.attendanceRate).getOrElse("-")</td>
       @for(c <- data.coursework.courseworks.toList) {
-        <td>@getMark(id, c._1)</td>
+        <td>@getMark(s.id, c._1)</td>
       }
-      <td>@getTotalMark(id)</td>
-      <td class="@colColor(getStatus(id))">@getStatus(id)</td>
+      <td>@getTotalMark(s.id)</td>
+      <td class="@colColor(getStatus(s.id))">@getStatus(s.id)</td>
     </tr>
     }
   </tbody>
