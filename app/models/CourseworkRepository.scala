@@ -31,6 +31,16 @@ case class CourseworkDetailsAPI(
   var total: Double,
   var status: String)
 
+case class CCourseworkAPI(
+  courseworkDetails: LinkedHashMap[Long,CCourseworkDetailsAPI])
+
+case class CCourseworkDetailsAPI(
+  course: Course,
+  var courseworks: LinkedHashMap[String, Double],
+  var totalMark: Double,
+  var fullMark: Double,
+  var status: String)
+
 case class Coursework(courseId: Long, studentId: Long, name: String,
   mark: Double, totalMark: Double, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -140,6 +150,38 @@ class CourseworkRepository @Inject() (
       val statistic = computeStatistic(studentMap.values)
 
       CourseworkAPI(studentMap, courseworkLists, total, statistic)
+    }
+  }
+
+  def getCoursesCourseworks(studentId: Long): Future[CCourseworkAPI] = {
+    val query = for {
+      cw <- courseworks
+      courses <- cw.courses
+      students <- cw.students if students.id === studentId
+    } yield (courses, cw)
+
+    val result = db.run(query.result)
+    var courseMap = LinkedHashMap[Long, CCourseworkDetailsAPI]()
+
+    result.map { r =>
+      r.foreach { case (course, cw) =>
+        val value = cw.name -> cw.mark
+        if (courseMap.contains(course.id)) {
+          val s = courseMap.get(course.id).get
+          s.courseworks += value
+          s.totalMark += cw.mark
+          s.fullMark += cw.totalMark
+        } else {
+          val data = LinkedHashMap[String, Double](value)
+          courseMap += (course.id -> CCourseworkDetailsAPI(course, data, cw.mark, cw.totalMark, ""))
+        }
+      }
+
+      courseMap.foreach { case (_, s) =>
+        s.status = Utils.calculatePass(s.totalMark, s.fullMark)
+      }
+
+      CCourseworkAPI(courseMap)
     }
   }
 

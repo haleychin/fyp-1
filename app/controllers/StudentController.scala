@@ -18,7 +18,8 @@ import java.sql.Date
 case class StudentAPI(
   student: Option[Student],
   courses: Seq[Course],
-  attendances: CAttendanceAPI)
+  attendances: CAttendanceAPI,
+  courseworks: CCourseworkAPI)
 
 case class StudentData(name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
@@ -29,6 +30,8 @@ class StudentController @Inject()(
   repo: StudentRepository,
   csRepo: CourseStudentRepository,
   aRepo: AttendanceRepository,
+  cwRepo: CourseworkRepository,
+  eRepo: ExamRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -63,15 +66,17 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     val studentFuture = repo.get(id)
     val coursesFuture = csRepo.getCourses(id)
     val attendanceFuture = aRepo.getCoursesAttendance(id)
+    var courseworkFuture = cwRepo.getCoursesCourseworks(id)
 
     val result = for {
       student <- studentFuture
       courses <- coursesFuture
       attendance <- attendanceFuture
-    } yield (student, courses, attendance)
+      coursework <- courseworkFuture
+    } yield (student, courses, attendance, coursework)
 
     result.map { result =>
-      StudentAPI(result._1, result._2, result._3)
+      StudentAPI(result._1, result._2, result._3, result._4)
     }
   }
 

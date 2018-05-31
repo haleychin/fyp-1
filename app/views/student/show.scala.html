@@ -7,6 +7,22 @@
   data.attendances.studentDetails.get(id).get
 }
 
+@courseworks(data: StudentAPI, id: Long) = @{
+  data.courseworks.courseworkDetails.get(id).get
+}
+
+@getStatus(data: StudentAPI, id: Long) = @{
+  courseworks(data, id).status
+}
+
+@colColor(value: String) = @{
+  if (value == "Pass") {
+    "table-success"
+  } else {
+  "table-danger"
+  }
+}
+
 @main(student.name) {
 @common.card(student.name)(action) {
 <div class="row">
@@ -92,6 +108,24 @@
             </td>
             }
             <td>@attendances(data, course.id).attendanceRate%</td>
+          </tbody>
+        </table>
+
+        <h5>Courseworks:</h5>
+        <table class="table table-bordered table-sm text-center">
+          <thead>
+            @for((title, _) <- courseworks(data, course.id).courseworks) {
+            <th>@title</th>
+            }
+            <th>Total (@courseworks(data, course.id).fullMark%)</th>
+            <th>Status</th>
+          </thead>
+          <tbody>
+            @for((title, mark) <- courseworks(data, course.id).courseworks) {
+              <td>@mark</td>
+            }
+            <td>@courseworks(data, course.id).totalMark%</td>
+            <td class="@colColor(getStatus(data, course.id))">@getStatus(data, course.id)</td>
           </tbody>
         </table>
     </blockquote>

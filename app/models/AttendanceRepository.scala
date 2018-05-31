@@ -136,7 +136,6 @@ class AttendanceRepository @Inject() (
     } yield (courses, a)).sortBy(_._2.date)
 
     val result = db.run(query.result)
-
     var courseMap = LinkedHashMap[Long, CourseDetailsAPI]()
 
     result.map { r =>
