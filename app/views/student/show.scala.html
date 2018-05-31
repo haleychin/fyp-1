@@ -1,7 +1,10 @@
-@(student: Student, courses: Seq[Course])(implicit request: RequestHeader, flash: Flash)
+@(student: Student, data: StudentAPI)(implicit request: RequestHeader, flash: Flash)
 
 @action = {
+}
 
+@attendances(data: StudentAPI, id: Long) = @{
+  data.attendances.studentDetails.get(id).get
 }
 
 @main(student.name) {
@@ -63,15 +66,36 @@
 
 <div class="row">
   <div class="col">
-    <h4>Courses taken: </h4>
-
-    <table class="table table-bordered table-sm">
-      @for(course <- courses) {
-      <tr>
-        <td>@course.title</td>
-      </tr>
-      }
-    </table>
+    @for(course <- data.courses) {
+    <div class="bq-primary px-4 py-2">
+        <h3 class="bq-title font-weight-normal">@course.title</h3>
+        <h5>Attendances:</h5>
+        <table class="table table-bordered table-sm text-center">
+          <thead>
+            @for((d, v) <- attendances(data, course.id).attendances) {
+            <th>@d</th>
+            }
+            <th>Attendance Rate</th>
+          </thead>
+          <tbody>
+            @for((d, v) <- attendances(data, course.id).attendances) {
+            <td>
+              @{
+              if (v == "attend") {
+              <i class="fa fa-check green-text" aria-hidden="true"></i>
+              } else if (v == "absent") {
+              <i class="fa fa-close red-text" aria-hidden="true"></i>
+              } else {
+              "-"
+              }
+              }
+            </td>
+            }
+            <td>@attendances(data, course.id).attendanceRate%</td>
+          </tbody>
+        </table>
+    </blockquote>
+    }
   </div>
 </div>
 }

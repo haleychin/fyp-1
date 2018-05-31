@@ -1,4 +1,3 @@
-
 package controllers
 
 import javax.inject._
@@ -16,15 +15,20 @@ import models._
 
 import java.sql.Date
 
+case class StudentAPI(
+  student: Option[Student],
+  courses: Seq[Course],
+  attendances: CAttendanceAPI)
+
 case class StudentData(name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
   contactNumber: String, birthDate: Date, programme: String,
   intake: String, semester: Int)
-case class StudentAPI(student: Option[Student], courses: Seq[Course])
 
 class StudentController @Inject()(
   repo: StudentRepository,
   csRepo: CourseStudentRepository,
+  aRepo: AttendanceRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -58,14 +62,16 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   def getStudentDetail(id: Long): Future[StudentAPI] = {
     val studentFuture = repo.get(id)
     val coursesFuture = csRepo.getCourses(id)
+    val attendanceFuture = aRepo.getCoursesAttendance(id)
 
     val result = for {
       student <- studentFuture
       courses <- coursesFuture
-    } yield (student, courses)
+      attendance <- attendanceFuture
+    } yield (student, courses, attendance)
 
     result.map { result =>
-      StudentAPI(result._1, result._2)
+      StudentAPI(result._1, result._2, result._3)
     }
   }
 
@@ -73,7 +79,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getStudentDetail(id).map { studentApi =>
       studentApi.student match {
         case Some(s) =>
-          Ok(views.html.student.show(s, studentApi.courses))
+          Ok(views.html.student.show(s, studentApi))
         case None => Ok(views.html.index())
       }
     }

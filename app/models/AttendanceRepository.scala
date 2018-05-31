@@ -13,8 +13,23 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 
-case class AttendanceAPI(studentDetails: LinkedHashMap[Long, StudentDetailsAPI], dates: LinkedHashSet[(Int, Date)])
-case class StudentDetailsAPI(student: Student, var attendances: LinkedHashMap[Date, String], var attendanceRate: Double)
+case class AttendanceAPI(
+  studentDetails: LinkedHashMap[Long,StudentDetailsAPI],
+  dates: LinkedHashSet[(Int, Date)])
+
+case class StudentDetailsAPI(
+  student: Student,
+  var attendances: LinkedHashMap[Date,String],
+  var attendanceRate: Double)
+
+case class CAttendanceAPI(
+  studentDetails: LinkedHashMap[Long,CourseDetailsAPI])
+
+case class CourseDetailsAPI(
+  coures: Course,
+  var attendances: LinkedHashMap[Date,String],
+  var attendanceRate: Double)
+
 case class Attendance(courseId: Long, studentId: Long, groupId: Int,
   date: Date, attendanceType: String, createdAt: Timestamp,
   updateAt: Timestamp)
@@ -110,6 +125,35 @@ class AttendanceRepository @Inject() (
         s.attendanceRate = calculateRate(s.attendances)
       }
       AttendanceAPI(studentMap, groupIdDates)
+    }
+  }
+
+  def getCoursesAttendance(studentId: Long): Future[CAttendanceAPI] = {
+    val query = (for {
+      a <- attendances
+      courses <- a.courses
+      students <- a.students if students.id === studentId
+    } yield (courses, a)).sortBy(_._2.date)
+
+    val result = db.run(query.result)
+
+    var courseMap = LinkedHashMap[Long, CourseDetailsAPI]()
+
+    result.map { r =>
+      r.foreach { case (course, a) =>
+        if (courseMap.contains(course.id)) {
+          courseMap.get(course.id).get.attendances += (a.date -> a.attendanceType)
+        } else {
+          val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
+          courseMap += (course.id -> CourseDetailsAPI(course, data, 0.0))
+        }
+      }
+
+      courseMap.foreach { case (_, c) =>
+        c.attendanceRate = calculateRate(c.attendances)
+      }
+
+      CAttendanceAPI(courseMap)
     }
 
   }
