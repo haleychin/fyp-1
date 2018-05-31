@@ -4,16 +4,19 @@ import javax.inject._
 import play.api.mvc._
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Success, Failure}
+
 // For Form
 import play.api.data._
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 
+import java.sql.Date
+
 // Model
 import models._
 import utils._
 
-case class CourseData(title: String)
+case class CourseData(title: String, startDate: Date)
 case class CourseAPI(
   course: Option[Course],
   students: Seq[Student],
@@ -33,7 +36,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   val courseForm = Form {
     mapping(
-      "title" -> nonEmptyText
+      "title" -> nonEmptyText,
+      "startDate" -> sqlDate
     )(CourseData.apply)(CourseData.unapply)
   }
 
@@ -84,7 +88,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         Future.successful(Ok(views.html.course.newCourse(errorForm)))
       },
       course => {
-        repo.create(course.title, request.user.id).map { result =>
+        repo.create(course.title, course.startDate, request.user.id).map { result =>
           Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully created.")
         }
       }
@@ -116,7 +120,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def editCourse(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction) { implicit request =>
-    val filledForm = courseForm.fill(CourseData(request.course.title))
+    val filledForm = courseForm.fill(
+      CourseData(request.course.title, request.course.startDate))
     Ok(views.html.course.editCourse(id, filledForm))
   }
 
@@ -126,7 +131,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         Future.successful(Ok(views.html.course.editCourse(id, errorForm)))
       },
       course => {
-        repo.update(id, course.title).map { result =>
+        repo.update(id, course.title, course.startDate).map { result =>
           Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully updated.")
         }
       }

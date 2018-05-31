@@ -47,6 +47,15 @@
     .get(id).map(_.status).getOrElse("-")
 }
 
+@getAttendanceRate(id: Long) = @{
+  val rate = data.attendance.studentDetails.get(id).map(_.attendanceRate)
+  if (rate.isDefined) {
+    f"${rate.get}%1.1f"
+  } else {
+    "-"
+  }
+}
+
 @main(course.title) {
 @common.card(course.title)(action) {
 <h4>Overview:</h4>
@@ -68,7 +77,7 @@
     <tr>
       <td>@s.studentId</td>
       <td>@s.name</td>
-      <td>@data.attendance.studentDetails.get(s.id).map(_.attendanceRate).getOrElse("-")</td>
+      <td>@getAttendanceRate(s.id)</td>
       @for(c <- data.coursework.courseworks.toList) {
         <td>@getMark(s.id, c._1)</td>
       }

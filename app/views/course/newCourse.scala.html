@@ -6,6 +6,7 @@
 
 @form(routes.CourseController.createCourse()) {
   @inputText(course("title"))
+  @inputText(course("startDate"))
   @CSRF.formField
 
   <div class="buttons">
