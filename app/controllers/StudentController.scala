@@ -19,7 +19,8 @@ case class StudentAPI(
   student: Option[Student],
   courses: Seq[Course],
   attendances: CAttendanceAPI,
-  courseworks: CCourseworkAPI)
+  courseworks: CCourseworkAPI,
+  exams: CExamAPI)
 
 case class StudentData(name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
@@ -67,16 +68,18 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     val coursesFuture = csRepo.getCourses(id)
     val attendanceFuture = aRepo.getCoursesAttendance(id)
     var courseworkFuture = cwRepo.getCoursesCourseworks(id)
+    var examFuture = eRepo.getCoursesExam(id)
 
     val result = for {
       student <- studentFuture
       courses <- coursesFuture
       attendance <- attendanceFuture
       coursework <- courseworkFuture
-    } yield (student, courses, attendance, coursework)
+      exam <- examFuture
+    } yield (student, courses, attendance, coursework, exam)
 
     result.map { result =>
-      StudentAPI(result._1, result._2, result._3, result._4)
+      StudentAPI(result._1, result._2, result._3, result._4, result._5)
     }
   }
 

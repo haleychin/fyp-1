@@ -11,6 +11,10 @@
   data.courseworks.courseworkDetails.get(id).get
 }
 
+@exams(data: StudentAPI, id: Long) = @{
+  data.exams.examDetails.get(id).get
+}
+
 @getStatus(data: StudentAPI, id: Long) = @{
   courseworks(data, id).status
 }
@@ -126,6 +130,22 @@
             }
             <td>@courseworks(data, course.id).totalMark%</td>
             <td class="@colColor(getStatus(data, course.id))">@getStatus(data, course.id)</td>
+          </tbody>
+        </table>
+
+        <h5>Finals:</h5>
+        <table class="table table-bordered table-sm text-center">
+          <thead>
+            <th>Mark (@exams(data, course.id).fullMark%)</th>
+            <th>Weightage (@exams(data, course.id).fullWeightage%)</th>
+            <th>Status</th>
+          </thead>
+          <tbody>
+            <td>@exams(data, course.id).exam._1</td>
+            <td>@exams(data, course.id).exam._2%</td>
+            <td class="@colColor(exams(data, course.id).exam._3)">
+              @exams(data, course.id).exam._3
+            </td>
           </tbody>
         </table>
     </blockquote>

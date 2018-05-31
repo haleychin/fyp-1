@@ -30,6 +30,16 @@ case class ExamDetailsAPI(
   // (Total, Weightage, Pass/Fail)
   var exam: (Double, Double, String))
 
+case class CExamAPI(
+  examDetails: LinkedHashMap[Long,CExamDetailsAPI])
+
+case class CExamDetailsAPI(
+  course: Course,
+  // (Total, Weightage, Pass/Fail)
+  var exam: (Double, Double, String),
+  fullMark: Int,
+  fullWeightage: Int)
+
 case class Exam(courseId: Long, studentId: Long,
   mark: Double, totalMark: Double,
   weightage: Double, totalWeightage: Double,
@@ -123,6 +133,27 @@ class ExamRepository @Inject() (
       val total     = r.headOption.map(_._2.totalMark.toInt).getOrElse(0)
       val weightage = r.headOption.map(_._2.totalWeightage.toInt).getOrElse(0)
       ExamAPI(studentMap, total, weightage, statistic)
+    }
+  }
+
+  def getCoursesExam(studentId: Long): Future[CExamAPI] = {
+    val query = for {
+      e <- exams
+      courses <- e.courses
+      students <- e.students if students.id === studentId
+    } yield (courses, e)
+
+    val result     = db.run(query.result)
+    val courseMap = LinkedHashMap[Long, CExamDetailsAPI]()
+
+    result.map { r =>
+      r.foreach { case (course, e) =>
+        val pass = calculatePass(e.weightage, e.totalWeightage)
+        val data = (e.mark, e.weightage, pass)
+        courseMap += (course.id -> CExamDetailsAPI(course, data, e.totalMark.toInt, e.totalWeightage.toInt))
+      }
+
+      CExamAPI(courseMap)
     }
   }
 
