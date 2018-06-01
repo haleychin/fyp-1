@@ -12,6 +12,7 @@ import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
+import utils.{Stats, DescriptiveStatistic}
 
 case class Statistic(
   averageMark: Double,
@@ -23,7 +24,8 @@ case class ExamAPI(
   examDetails: LinkedHashMap[Long,ExamDetailsAPI],
   total: Int,
   weightage: Int,
-  statistic: Statistic)
+  statistic: Statistic,
+  descStat: DescriptiveStatistic)
 
 case class ExamDetailsAPI(
   student: Student,
@@ -132,7 +134,9 @@ class ExamRepository @Inject() (
       val statistic = computeStatistic(studentMap.values)
       val total     = r.headOption.map(_._2.totalMark.toInt).getOrElse(0)
       val weightage = r.headOption.map(_._2.totalWeightage.toInt).getOrElse(0)
-      ExamAPI(studentMap, total, weightage, statistic)
+      val marks     = studentMap.values.map(_.exam._1).toSeq
+      val descStat  = Stats.computeDescriptiveStatistic(marks)
+      ExamAPI(studentMap, total, weightage, statistic, descStat)
     }
   }
 

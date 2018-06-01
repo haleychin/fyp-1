@@ -1,4 +1,5 @@
 @(course: Course, data: ExamAPI)(implicit request: RequestHeader, flash: Flash)
+@import common.formatDouble
 
 @colColor(status: String) = @{
   if (status == "Pass") {
@@ -63,5 +64,37 @@
     </tr>
   </tbody>
 </table>
+
+<h4>Overall Descriptive Statistic:</h4>
+<p class="blockquote"><em>Based on total marks.</em></p>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-responsive table-sm w-auto">
+    <tr>
+      <th>Max score: </th>
+      <td>@formatDouble(data.descStat.max)</td>
+    </tr>
+    <tr>
+      <th>Mean: </th>
+      <td>@formatDouble(data.descStat.mean)</td>
+    </tr>
+    <tr>
+      <th>Median: </th>
+      <td>@formatDouble(data.descStat.median)</td>
+    </tr>
+    <tr>
+      <th>Mode: </th>
+      <td>@formatDouble(data.descStat.mode)</td>
+    </tr>
+    <tr>
+      <th>Standard Deviation: </th>
+      <td>@formatDouble(data.descStat.standardDeviation)</td>
+    </tr>
+    <tr>
+      <th>Variance: </th>
+      <td>@formatDouble(data.descStat.variance)</td>
+    </tr>
+  </table>
+</div>
 }
 }
