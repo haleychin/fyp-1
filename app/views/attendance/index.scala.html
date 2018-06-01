@@ -1,4 +1,5 @@
 @(course: Course, data: AttendanceAPI)(implicit request: RequestHeader, flash: Flash)
+@import util._
 
 @rowColor(attendanceRate: Double) = @{
   if (attendanceRate <= 25) {
@@ -17,44 +18,40 @@
 
 @main(course.title) {
 @common.card(course.title)(action) {
-<table class="table table-bordered table-responsive table-sm w-auto">
-  <thead>
-    <tr>
-      <th>Name</th>
-      @for((_, d) <- data.dates) {
-      <th class="text-center">@d</th>
-      }
-      <th>Attendance Rate</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for((_, d) <- data.studentDetails) {
-    <tr class="@rowColor(d.attendanceRate)">
-      <td>
-        <a href="@routes.StudentController.show(d.student.id)">
-          @d.student.name
-        </a>
-      </td>
-      @for((_, date) <- data.dates.toList) {
-      <td class="text-center">
-        @{
-        val value = d.attendances.getOrElse(date, "")
-        if (value == "attend") {
-          <i class="fa fa-check green-text" aria-hidden="true"></i>
-        } else if (value == "absent") {
-          <i class="fa fa-close red-text" aria-hidden="true"></i>
-        } else {
-          "-"
-        }
-        }
-      </td>
-      }
-      <td class="text-center">
-        @{f"${d.attendanceRate}%1.1f"}%
-      </td>
-    </tr>
+@common.responsiveTable {
+  <tr>
+    <th>Name</th>
+    @for((_, d) <- data.dates) {
+    <th class="text-center">@d</th>
     }
-  </tbody>
-</table>
+    <th>Attendance Rate</th>
+  </tr>
+  @for((_, d) <- data.studentDetails) {
+  <tr class="@rowColor(d.attendanceRate)">
+    <td>
+      <a href="@routes.StudentController.show(d.student.id)">
+        @d.student.name
+      </a>
+    </td>
+    @for((_, date) <- data.dates.toList) {
+    <td class="text-center">
+      @{
+      val value = d.attendances.getOrElse(date, "")
+      if (value == "attend") {
+        <i class="fa fa-check green-text" aria-hidden="true"></i>
+      } else if (value == "absent") {
+        <i class="fa fa-close red-text" aria-hidden="true"></i>
+      } else {
+        "-"
+      }
+      }
+    </td>
+    }
+    <td class="text-center">
+      @formatDouble(d.attendanceRate)%
+    </td>
+  </tr>
+  }
+}
 }
 }
