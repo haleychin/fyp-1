@@ -19,11 +19,13 @@ case class CwStatistic(
   passCount: Int,
   failCount: Int)
 
+// Return a map of Student Id -> Courseworks Details
 case class CourseworkAPI(
   courseworkDetails: LinkedHashMap[Long,CourseworkDetailsAPI],
   courseworks: LinkedHashSet[(String, Double)],
-  var total: Double,
-  statistic: CwStatistic)
+  var total: Double, // Maximum mark for the total of courseworks
+  statistic: CwStatistic,
+  var descStat: DescriptiveStatistic)
 
 case class CourseworkDetailsAPI(
   student: Student,
@@ -31,9 +33,9 @@ case class CourseworkDetailsAPI(
   var total: Double,
   var status: String)
 
+// Return a map of Course Id -> Courseworks Details
 case class CCourseworkAPI(
   courseworkDetails: LinkedHashMap[Long,CCourseworkDetailsAPI])
-
 case class CCourseworkDetailsAPI(
   course: Course,
   var courseworks: LinkedHashMap[String, Double],
@@ -148,8 +150,10 @@ class CourseworkRepository @Inject() (
       }
 
       val statistic = computeStatistic(studentMap.values)
+      val marks = studentMap.values.map(_.total).toSeq
+      val descStat  = Stats.computeDescriptiveStatistic(marks)
 
-      CourseworkAPI(studentMap, courseworkLists, total, statistic)
+      CourseworkAPI(studentMap, courseworkLists, total, statistic, descStat)
     }
   }
 

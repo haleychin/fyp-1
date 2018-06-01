@@ -1,5 +1,7 @@
 @(course: Course, data: CourseAPI)(implicit request: RequestHeader, flash: Flash)
 
+@import common.formatDouble
+
 @colColor(status: String) = @{
   if (status == "Pass") {
     "table-success"
@@ -59,33 +61,63 @@
 @main(course.title) {
 @common.card(course.title)(action) {
 <h4>Overview:</h4>
-<table class="table table-bordered table-sm text-center">
-  <thead>
-    <tr>
-      <th>Student ID</th>
-      <th>Name</th>
-      <th>Attendance Rate</th>
-      @for(d <- data.coursework.courseworks) {
-      <th>@d._1 (@{f"${d._2}%1.0f"}%)</th>
-      }
-      <th>Total (@data.coursework.total)</th>
-      <th>Status</th>
-    </tr>
-  </thead>
-  <tbody>
-    @for(s <- data.students) {
-    <tr>
-      <td>@s.studentId</td>
-      <td>@s.name</td>
-      <td>@getAttendanceRate(s.id)</td>
-      @for(c <- data.coursework.courseworks.toList) {
-        <td>@getMark(s.id, c._1)</td>
-      }
-      <td>@getTotalMark(s.id)</td>
-      <td class="@colColor(getStatus(s.id))">@getStatus(s.id)</td>
-    </tr>
+<div class="table-responsive">
+<table class="table table-bordered table-responsive table-sm text-center">
+  <tr>
+    <th>Student ID</th>
+    <th>Name</th>
+    <th>Attendance Rate</th>
+    @for(d <- data.coursework.courseworks) {
+    <th>@d._1 (@{f"${d._2}%1.0f"}%)</th>
     }
-  </tbody>
+    <th>Total (@data.coursework.total)</th>
+    <th>Status</th>
+  </tr>
+  @for(s <- data.students) {
+  <tr>
+    <td>@s.studentId</td>
+    <td>@s.name</td>
+    <td>@getAttendanceRate(s.id)</td>
+    @for(c <- data.coursework.courseworks.toList) {
+      <td>@getMark(s.id, c._1)</td>
+    }
+    <td>@getTotalMark(s.id)</td>
+    <td class="@colColor(getStatus(s.id))">@getStatus(s.id)</td>
+  </tr>
+  }
 </table>
+</div>
+
+<h4>Overall Descriptive Statistic:</h4>
+<p class="blockquote"><em>Based on total score.</em></p>
+
+<div class="table-responsive">
+  <table class="table table-bordered table-responsive table-sm w-auto">
+    <tr>
+      <th>Max score: </th>
+      <td>@formatDouble(data.coursework.descStat.max)</td>
+    </tr>
+    <tr>
+      <th>Mean: </th>
+      <td>@formatDouble(data.coursework.descStat.mean)</td>
+    </tr>
+    <tr>
+      <th>Median: </th>
+      <td>@formatDouble(data.coursework.descStat.median)</td>
+    </tr>
+    <tr>
+      <th>Mode: </th>
+      <td>@formatDouble(data.coursework.descStat.mode)</td>
+    </tr>
+    <tr>
+      <th>Standard Deviation: </th>
+      <td>@formatDouble(data.coursework.descStat.standardDeviation)</td>
+    </tr>
+    <tr>
+      <th>Variance: </th>
+      <td>@formatDouble(data.coursework.descStat.variance)</td>
+    </tr>
+  </table>
+</div>
 }
 }

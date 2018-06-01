@@ -44,6 +44,9 @@ object Utils {
       }
     }
 
+    val marks = courseworks.courseworkDetails.values.map(_.total).toSeq
+    courseworks.descStat = Stats.computeDescriptiveStatistic(marks)
+
     courseworks
   }
 }
