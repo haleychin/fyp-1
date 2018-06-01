@@ -66,6 +66,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       exam        <- examFuture
     } yield (course, students, attendances, courseworks, exam)
 
+    println(Stats.computeDescriptiveStatistic(Seq(1,2,3,4)))
     results.map { r =>
       val combined = Utils.combineExamAndCoursework(r._4, r._5)
       CourseAPI(r._1, r._2, r._3, combined)
