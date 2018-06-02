@@ -14,6 +14,7 @@ import scala.concurrent.duration._
 import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
 import utils.{Stats, DescriptiveStatistic}
 
+case class Grade(name: String, reason: String)
 case class Statistic(
   averageMark: Double,
   averageWeightage: Double,

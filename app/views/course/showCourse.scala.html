@@ -12,6 +12,14 @@
    href="@routes.AttendanceController.index(course.id)">View Attendance</a>
 }
 
+@gradeColColor(value: String)  = @{
+  if (value == "F" || value == "F*") {
+    "table-danger"
+  } else {
+    "table-success"
+  }
+}
+
 @getMark(id: Long, name: String) = @{
   val mark = data.coursework.courseworkDetails
     .get(id).flatMap(_.courseworks.get(name))
@@ -52,7 +60,7 @@
 @common.card(course.title)(action) {
 <h4>Overview:</h4>
 @common.responsiveTable {
-  <tr>
+  <tr class="text-center">
     <th>Student ID</th>
     <th>Name</th>
     <th>Attendance Rate</th>
@@ -60,10 +68,10 @@
     <th>@d._1 (@formatDouble(d._2)%)</th>
     }
     <th>Total (@data.coursework.total)</th>
-    <th>Status</th>
+    <th>Grade</th>
   </tr>
   @for(s <- data.students) {
-  <tr>
+  <tr class="text-center">
     <td>@s.studentId</td>
     <td>@s.name</td>
     <td>@getAttendanceRate(s.id)</td>
@@ -71,7 +79,7 @@
       <td>@getMark(s.id, c._1)</td>
     }
     <td>@getTotalMark(s.id)</td>
-    <td class="@colColor(getStatus(s.id))">@getStatus(s.id)</td>
+    <td class="@gradeColColor(getStatus(s.id))">@getStatus(s.id)</td>
   </tr>
   }
 }
