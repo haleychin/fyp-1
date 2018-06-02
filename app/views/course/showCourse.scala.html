@@ -44,9 +44,13 @@
 
 @getStatus(id: Long) = @{
   data.coursework.courseworkDetails
-    .get(id).map(_.status).getOrElse("-")
+    .get(id).map(_.grade.name).getOrElse("-")
 }
 
+@getStatusReason(id: Long) = @{
+  data.coursework.courseworkDetails
+    .get(id).map(_.grade.reason).getOrElse("-")
+}
 @getAttendanceRate(id: Long) = @{
   val rate = data.attendance.studentDetails.get(id).map(_.attendanceRate)
   if (rate.isDefined) {
@@ -79,7 +83,9 @@
       <td>@getMark(s.id, c._1)</td>
     }
     <td>@getTotalMark(s.id)</td>
-    <td class="@gradeColColor(getStatus(s.id))">@getStatus(s.id)</td>
+    <td class="grade @gradeColColor(getStatus(s.id))"
+        title="@getStatusReason(s.id)"
+      >@getStatus(s.id)</td>
   </tr>
   }
 }

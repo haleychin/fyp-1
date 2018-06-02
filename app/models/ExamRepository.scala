@@ -12,9 +12,9 @@ import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
-import utils.{Stats, DescriptiveStatistic}
+import utils.{Utils, Stats, DescriptiveStatistic}
 
-case class Grade(name: String, reason: String)
+
 case class Statistic(
   averageMark: Double,
   averageWeightage: Double,
@@ -127,7 +127,7 @@ class ExamRepository @Inject() (
 
     result.map { r =>
       r.foreach { case (student, e) =>
-        val pass = calculatePass(e.weightage, e.totalWeightage)
+        val pass = Utils.calculatePass(e.weightage, e.totalWeightage)
         val data = (e.mark, e.weightage, pass)
         studentMap += (student.id -> ExamDetailsAPI(student, data))
       }
@@ -153,7 +153,7 @@ class ExamRepository @Inject() (
 
     result.map { r =>
       r.foreach { case (course, e) =>
-        val pass = calculatePass(e.weightage, e.totalWeightage)
+        val pass = Utils.calculatePass(e.weightage, e.totalWeightage)
         val data = (e.mark, e.weightage, pass)
         courseMap += (course.id -> CExamDetailsAPI(course, data, e.totalMark.toInt, e.totalWeightage.toInt))
       }
@@ -183,12 +183,4 @@ class ExamRepository @Inject() (
     Statistic(average, averageWeightage, passCount, failCount)
   }
 
-  def calculatePass(weightage: Double, totalWeightage: Double): String = {
-    val rate = weightage / totalWeightage * 100
-    if (rate <= 40) {
-      "Fail"
-    } else {
-      "Pass"
-    }
-  }
 }

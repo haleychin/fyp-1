@@ -14,6 +14,7 @@ import scala.concurrent.duration._
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 import utils._
 
+case class Status(name: String, reason: String = "")
 case class CwStatistic(
   averages: LinkedHashMap[String, Double],
   passCount: Int,
@@ -31,7 +32,8 @@ case class CourseworkDetailsAPI(
   student: Student,
   var courseworks: LinkedHashMap[String, Double],
   var total: Double,
-  var status: String)
+  var status: String,
+  var grade: Status)
 
 // Return a map of Course Id -> Courseworks Details
 case class CCourseworkAPI(
@@ -138,7 +140,7 @@ class CourseworkRepository @Inject() (
           s.total += cw.mark
         } else {
           val data = LinkedHashMap[String, Double](value)
-          studentMap += (student.id -> CourseworkDetailsAPI(student, data, cw.mark, ""))
+          studentMap += (student.id -> CourseworkDetailsAPI(student, data, cw.mark, "", Status("")))
         }
       }
 

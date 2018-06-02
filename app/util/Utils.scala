@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.sql.Date
 
-import models.{CourseworkAPI, ExamAPI}
+import models.{CourseworkAPI, ExamAPI, Status}
 
 object Utils {
   val DATE_FORMAT = "dd/MM/yyyy"
@@ -30,6 +30,27 @@ object Utils {
     } else {
       "Pass"
     }
+  }
+
+  def calculateStatus(cw: Double, exam: Double, total: Double): Status = {
+    var reason = ""
+    var grade  = "F"
+    if (cw < 40) {
+      grade = "F*"
+      reason = "Fail coursework"
+    }
+    else if (exam < 40)   {
+      grade = "F*"
+      if (reason != "") { reason += " & " }
+      reason += "Fail exam"
+    }
+    else if (total >= 70) { grade = "A" }
+    else if (total >= 60) { grade = "B" }
+    else if (total >= 50) { grade = "C" }
+    else if (total >= 40) { grade = "D" }
+    else                  { grade = "F" }
+
+    Status(grade, reason)
   }
 
   def calculateGrade(cw: Double, exam: Double, total: Double): String = {
@@ -61,6 +82,10 @@ object Utils {
         val examPercent = calculatePercent(mark, exam.weightage)
 
         c.status = calculateGrade(
+          cwPercent,
+          examPercent,
+          c.total)
+        c.grade  = calculateStatus(
           cwPercent,
           examPercent,
           c.total)
