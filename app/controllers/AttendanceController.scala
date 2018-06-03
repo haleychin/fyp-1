@@ -40,7 +40,6 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
 
     results.map { r =>
-      println(r._2)
       CourseAttendanceAPI(r._1, r._2)
     }
   }

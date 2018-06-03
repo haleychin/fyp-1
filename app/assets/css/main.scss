@@ -1,5 +1,11 @@
 .table-bordered a {
   &:hover {
-    color: #4285f4
+    color: #4285f4;
+  }
+}
+
+.table {
+  tr {
+    cursor: pointer;
   }
 }

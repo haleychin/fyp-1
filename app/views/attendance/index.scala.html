@@ -1,15 +1,24 @@
 @(course: Course, data: AttendanceAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
 
-@rowColor(attendanceRate: Double) = @{
-  if (attendanceRate <= 25) {
+@rowColor(dangerLevel: Int) = @{
+  if (dangerLevel == 2) {
    "table-danger"
-  } else if (attendanceRate <= 50) {
+  } else if (dangerLevel == 1) {
    "table-warning"
   } else {
     ""
   }
 }
+
+@getReason(d: StudentDetailsAPI) = @{
+  val string = d.insight.reasons.map { r =>
+    s"<li>$r</li>"
+  }.mkString("")
+
+  s"<ul>$string</ul>"
+}
+
 @action = {
 <a class="btn btn-primary"
    href="@routes.AttendanceController.newAttendance(course.id)">Import
@@ -25,9 +34,11 @@
     <th class="text-center">@d</th>
     }
     <th>Attendance Rate</th>
+    <th>Danger Level</th>
   </tr>
   @for((_, d) <- data.studentDetails) {
-  <tr class="@rowColor(d.stat.attendanceRate)">
+  <tr class="@rowColor(d.insight.dangerLevel)"
+    >
     <td>
       <a href="@routes.StudentController.show(d.student.id)">
         @d.student.name
@@ -50,10 +61,15 @@
     <td class="text-center">
       @formatDouble(d.stat.attendanceRate)%
     </td>
-    <td>
-      @d.stat
+    <td class="text-center"
+      data-toggle="popover"
+      data-trigger="focus"
+      data-placement="bottom"
+      title="Reasons"
+      data-content="@getReason(d)"
+      >
+      @d.insight.dangerLevel
     </td>
-
   </tr>
   }
 }

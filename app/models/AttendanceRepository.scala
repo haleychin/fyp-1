@@ -13,12 +13,19 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{ArrayBuffer, LinkedHashMap, LinkedHashSet}
 
-case class Insight(dangerLevel: Int, reason: Iterable[String])
+import util.Analyser
+
+case class Insight(
+  dangerLevel: Int = 0,
+  reasons: Iterable[String] = Array[String]()
+)
+
 case class AStat(
-  absent: Int,
-  attend: Int,
-  attendanceRate: Double,
-  consecutiveMissed: ArrayBuffer[ArrayBuffer[Date]] = ArrayBuffer[ArrayBuffer[Date]]())
+  absent: Int = 0,
+  attend: Int = 0,
+  attendanceRate: Double = 0.0,
+  consecutiveMissed: ArrayBuffer[ArrayBuffer[Date]] = ArrayBuffer[ArrayBuffer[Date]]()
+)
 
 case class AttendanceAPI(
   studentDetails: LinkedHashMap[Long,StudentDetailsAPI],
@@ -27,7 +34,8 @@ case class AttendanceAPI(
 case class StudentDetailsAPI(
   student: Student,
   var attendances: LinkedHashMap[Date,String],
-  var stat: AStat)
+  var stat: AStat = AStat(),
+  var insight: Insight = Insight())
 
 case class CAttendanceAPI(
   studentDetails: LinkedHashMap[Long,CourseDetailsAPI])
@@ -124,13 +132,15 @@ class AttendanceRepository @Inject() (
           studentMap.get(student.id).get.attendances += (a.date -> a.attendanceType)
         } else {
           val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
-          studentMap += (student.id -> StudentDetailsAPI(student, data, AStat(0,0,0.0)))
+          studentMap += (student.id -> StudentDetailsAPI(student, data))
         }
       }
 
       studentMap.foreach { case (_, s) =>
         s.stat = calculateRate(s.attendances)
+        s.insight = Analyser.analyseAttendance(s.stat)
       }
+
       AttendanceAPI(studentMap, groupIdDates)
     }
   }
