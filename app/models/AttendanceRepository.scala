@@ -11,7 +11,14 @@ import slick.driver.PostgresDriver.api._
 import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
-import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
+import scala.collection.mutable.{ArrayBuffer, LinkedHashMap, LinkedHashSet}
+
+case class Insight(dangerLevel: Int, reason: Iterable[String])
+case class AStat(
+  absent: Int,
+  attend: Int,
+  attendanceRate: Double,
+  consecutiveMissed: ArrayBuffer[ArrayBuffer[Date]] = ArrayBuffer[ArrayBuffer[Date]]())
 
 case class AttendanceAPI(
   studentDetails: LinkedHashMap[Long,StudentDetailsAPI],
@@ -20,7 +27,7 @@ case class AttendanceAPI(
 case class StudentDetailsAPI(
   student: Student,
   var attendances: LinkedHashMap[Date,String],
-  var attendanceRate: Double)
+  var stat: AStat)
 
 case class CAttendanceAPI(
   studentDetails: LinkedHashMap[Long,CourseDetailsAPI])
@@ -117,12 +124,12 @@ class AttendanceRepository @Inject() (
           studentMap.get(student.id).get.attendances += (a.date -> a.attendanceType)
         } else {
           val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
-          studentMap += (student.id -> StudentDetailsAPI(student, data, 0.0))
+          studentMap += (student.id -> StudentDetailsAPI(student, data, AStat(0,0,0.0)))
         }
       }
 
       studentMap.foreach { case (_, s) =>
-        s.attendanceRate = calculateRate(s.attendances)
+        s.stat = calculateRate(s.attendances)
       }
       AttendanceAPI(studentMap, groupIdDates)
     }
@@ -149,7 +156,7 @@ class AttendanceRepository @Inject() (
       }
 
       courseMap.foreach { case (_, c) =>
-        c.attendanceRate = calculateRate(c.attendances)
+        c.attendanceRate = oldCalculateRate(c.attendances)
       }
 
       CAttendanceAPI(courseMap)
@@ -157,16 +164,44 @@ class AttendanceRepository @Inject() (
 
   }
 
-  def calculateRate(attendances: LinkedHashMap[Date,String]): Double = {
-    var attended = 0.0
+  def oldCalculateRate(attendances: LinkedHashMap[Date,String]): Double = {
+    var attend = 0.0
     attendances.foreach { case (_, value) =>
       if (value == "attend") {
-        attended += 1
+        attend += 1
       }
     }
 
-    attended / attendances.size * 100
+     attend / attendances.size * 100
   }
 
+  def calculateRate(attendances: LinkedHashMap[Date,String]): AStat = {
+    var attend = 0.0
+    var absent = 0
+    var previous = ""
+    val consecutiveMissed = ArrayBuffer[ArrayBuffer[Date]]()
 
+    attendances.foreach { case (date, value) =>
+      if (value == "attend") {
+        previous = "attend"
+        attend += 1
+
+      } else {
+        if (consecutiveMissed.isEmpty || previous == "attend") {
+          consecutiveMissed += ArrayBuffer(date)
+        }
+        if (previous == "absent") {
+          consecutiveMissed.last += date
+        }
+        absent += 1
+        previous = "absent"
+      }
+    }
+
+    AStat(
+      absent,
+      attend.toInt,
+      attend / attendances.size * 100,
+      consecutiveMissed)
+  }
  }

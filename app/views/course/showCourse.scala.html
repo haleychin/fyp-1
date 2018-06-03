@@ -52,7 +52,7 @@
     .get(id).map(_.grade.reason).getOrElse("-")
 }
 @getAttendanceRate(id: Long) = @{
-  val rate = data.attendance.studentDetails.get(id).map(_.attendanceRate)
+  val rate = data.attendance.studentDetails.get(id).map(_.stat.attendanceRate)
   if (rate.isDefined) {
     f"${rate.get}%1.1f"
   } else {

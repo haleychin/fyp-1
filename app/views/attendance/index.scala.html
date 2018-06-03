@@ -27,7 +27,7 @@
     <th>Attendance Rate</th>
   </tr>
   @for((_, d) <- data.studentDetails) {
-  <tr class="@rowColor(d.attendanceRate)">
+  <tr class="@rowColor(d.stat.attendanceRate)">
     <td>
       <a href="@routes.StudentController.show(d.student.id)">
         @d.student.name
@@ -48,8 +48,12 @@
     </td>
     }
     <td class="text-center">
-      @formatDouble(d.attendanceRate)%
+      @formatDouble(d.stat.attendanceRate)%
     </td>
+    <td>
+      @d.stat
+    </td>
+
   </tr>
   }
 }
