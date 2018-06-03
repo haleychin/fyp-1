@@ -5,7 +5,7 @@ $(document).ready(function() {
     html: true
   })
 
-  $('#example').DataTable();
+  $('.sortable').DataTable();
   $('.dataTables_wrapper').find('label').each(function() {
     $(this).parent().append($(this).children());
   });

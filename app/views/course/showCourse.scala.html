@@ -54,6 +54,7 @@
   data.coursework.courseworkDetails
     .get(id).map(_.grade.reason).getOrElse("-")
 }
+
 @getAttendanceRate(id: Long) = @{
   val rate = data.attendance.studentDetails.get(id).map(_.stat.attendanceRate)
   if (rate.isDefined) {
@@ -66,7 +67,8 @@
 @main(course.title) {
 @common.card(course.title)(action) {
 <h4>Overview:</h4>
-@common.responsiveTable {
+@common.sortableTable {
+  <thead>
   <tr class="text-center">
     <th>Student ID</th>
     <th>Name</th>
@@ -77,6 +79,8 @@
     <th>Total (@data.coursework.total)</th>
     <th>Grade</th>
   </tr>
+  </thead>
+  <tbody>
   @for(s <- data.students) {
   <tr class="text-center">
     <td>@s.studentId</td>
@@ -91,6 +95,7 @@
       >@getStatus(s.id)</td>
   </tr>
   }
+  </tbody>
 }
 
 <h4>Overall Descriptive Statistic:</h4>

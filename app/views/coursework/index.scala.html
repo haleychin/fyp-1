@@ -24,18 +24,21 @@
 }
 @main(course.title) {
 @common.card(course.title)(action) {
-@common.responsiveTable {
-  <tr>
-    <th>Name</th>
-    @for(d <- data.courseworks) {
-    <th class="text-center">@d._1 (@formatDouble(d._2)%)</th>
-    }
-    <th class="text-center">Total
-      (@formatDouble(data.total)%)
-    </th>
-    <th class="text-center">Status</th>
-    <th>Danger Level</th>
-  </tr>
+@common.sortableTable {
+  <thead>
+    <tr>
+      <th>Name</th>
+      @for(d <- data.courseworks) {
+      <th class="text-center">@d._1 (@formatDouble(d._2)%)</th>
+      }
+      <th class="text-center">Total
+        (@formatDouble(data.total)%)
+      </th>
+      <th class="text-center">Status</th>
+      <th>Danger Level</th>
+    </tr>
+  </thead>
+  <tbody>
   @for(s <- students) {
   <tr>
     <td>
@@ -61,19 +64,22 @@
       >@getCourseworkData(s.id).map(_.insight.dangerLevel).getOrElse("-")</td>
   </tr>
   }
-  <tr class="text-center">
-    <td></td>
-    @for((_, v) <- data.statistic.averages) {
-    <td>
-      <strong>Average: </strong>
-      @formatDouble(v)
-    </td>
-    }
-    <td>
-      <strong>Pass / Fail: </strong>
-      @data.statistic.passCount / @data.statistic.failCount
-    </td>
-  </tr>
+  </tbody>
+  <tfoot>
+    <tr class="text-center">
+      <td></td>
+      @for((_, v) <- data.statistic.averages) {
+      <td>
+        <strong>Average: </strong>
+        @formatDouble(v)
+      </td>
+      }
+      <td>
+        <strong>Pass / Fail: </strong>
+        @data.statistic.passCount / @data.statistic.failCount
+      </td>
+    </tr>
+  </tfoot>
 }
 <h4>Overall Descriptive Statistic:</h4>
 <p class="blockquote"><em>Based on total coursework mark.</em></p>

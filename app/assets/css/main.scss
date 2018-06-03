@@ -4,6 +4,28 @@
   }
 }
 
+.table-responsive .table-bordered {
+  border: 0;
+}
+
+table.table-bordered.dataTable th, table.table-bordered.dataTable td {
+  border-left-width: thin;
+}
+
+table.table thead th {
+  border-top: 1px solid #dee2e6;
+}
+
+table.table-bordered.dataTable th:last-child, table.table-bordered.dataTable
+th:last-child, table.table-bordered.dataTable td:last-child,
+table.table-bordered.dataTable td:last-child {
+  border-right-width: thin;
+}
+
+table.table-bordered.dataTable tbody td {
+  border-bottom-width: thin;
+}
+
 .table {
   tr {
     cursor: pointer;

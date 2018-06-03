@@ -18,7 +18,7 @@
   val examDetails = getExamDetail(id)
 
   if (examDetails.isDefined) {
-    s"$formatDouble(examDetails.get.exam._2)%"
+    formatDouble(examDetails.get.exam._2) + "%"
   } else {
     "-"
   }
@@ -32,13 +32,16 @@
 
 @main(course.title) {
 @common.card(course.title)(action) {
-@common.responsiveTable {
-  <tr>
-    <th>Name</th>
-    <th class="text-center">Marks (@data.total marks)</th>
-    <th class="text-center">Weightage (@data.weightage%)</th>
-    <th class="text-center">Status</th>
-  </tr>
+@common.sortableTable {
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th class="text-center">Marks (@data.total marks)</th>
+      <th class="text-center">Weightage (@data.weightage%)</th>
+      <th class="text-center">Status</th>
+    </tr>
+  </thead>
+  <tbody>
   @for(s <- students) {
   <tr>
     <td>
@@ -59,6 +62,8 @@
     </td>
   </tr>
   }
+  </tbody>
+  <tfoot>
   <tr class="text-center">
     <td>
     </td>
@@ -75,6 +80,7 @@
       @data.statistic.passCount / @data.statistic.failCount
     </td>
   </tr>
+  </tfoot>
 }
 
 <h4>Overall Descriptive Statistic:</h4>
