@@ -102,7 +102,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       form => {
         bbParser.getCourseworks(form.courseworks)
         bbParser.saveToDb(courseId, repo)
-        Ok(views.html.index())
+        Redirect(routes.CourseController.showCourse(courseId)).flashing("success" -> "Successfully fetch attendnace.")
       }
     )
   }

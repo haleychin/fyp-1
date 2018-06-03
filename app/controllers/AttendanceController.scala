@@ -72,7 +72,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       .get()
       .map { r =>
         aImporter.extractAttendanceDetail(r.json, repo)
-        Ok(views.html.index())
+        Redirect(routes.AttendanceController.index(id)).flashing("success" -> "Successfully fetch attendance.")
       }
   }
 

@@ -65,16 +65,12 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       file.ref.moveTo(Paths.get(s"$filename"), replace = true)
 
       eParser.save(filename.toString(), courseId, repo)
-      Redirect(routes.ExamController.selection(courseId)).flashing(
+      Redirect(routes.CourseController.showCourse(courseId)).flashing(
         "success" -> s"Import final exam results successfully")
     }.getOrElse {
       Redirect(routes.PageController.index).flashing(
         "error" -> "Missing file")
     }
-  }
-
-  def selection(courseId: Long) = authenticatedAction { implicit request =>
-    Ok(views.html.index())
   }
 }
 

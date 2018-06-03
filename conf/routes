@@ -63,7 +63,6 @@ POST  /blackboard/:id/save_selection   controllers.CourseworkController.saveSele
 GET   /exam/:id                        controllers.ExamController.index(id: Long)
 GET   /exam/:id/new                    controllers.ExamController.newImport(id: Long)
 POST  /exam/:id/save                   controllers.ExamController.save(id: Long)
-GET   /exam/:id/selection              controllers.ExamController.selection(id: Long)
 
 
 # Map static resources from the /public folder to the /assets URL path
