@@ -1,5 +1,28 @@
-@(course: Course, data: ExamAPI)(implicit request: RequestHeader, flash: Flash)
+@(course: Course, students: Seq[Student], data: ExamAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
+
+
+@getExamDetail(id: Long) = @{
+  data.examDetails.get(id)
+}
+
+@getTotal(id: Long) = @{
+  getExamDetail(id).map(_.exam._1).getOrElse("-")
+}
+
+@getStatus(id: Long) = @{
+  getExamDetail(id).map(_.exam._3).getOrElse("-")
+}
+
+@getWeightage(id: Long) = @{
+  val examDetails = getExamDetail(id)
+
+  if (examDetails.isDefined) {
+    s"$formatDouble(examDetails.get.exam._2)%"
+  } else {
+    "-"
+  }
+}
 
 @action = {
 <a class="btn btn-primary"
@@ -16,22 +39,23 @@
     <th class="text-center">Weightage (@data.weightage%)</th>
     <th class="text-center">Status</th>
   </tr>
-  @for((id, d) <- data.examDetails) {
+  @for(s <- students) {
   <tr>
     <td>
-      <a href="@routes.StudentController.show(d.student.id)">
-        @d.student.name
+      <a href="@routes.StudentController.show(s.id)">
+        @s.name
       </a>
     </td>
     <td class="text-center">
-      @d.exam._1
+      @getTotal(s.id)
     </td>
     <td class="text-center">
-      @formatDouble(d.exam._2)%
+      @getWeightage(s.id)
     </td>
 
-    <td class="text-center @colColor(d.exam._3)">
-      @d.exam._3
+    <td class="text-center
+      @colColor(getStatus(s.id))">
+      @getStatus(s.id)
     </td>
   </tr>
   }

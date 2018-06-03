@@ -2,20 +2,7 @@
 @import helper._
 
 @main("Add Student to  Course") {
-<h1>Add student to course</h1>
-
-@form(routes.CourseStudentController.create(id)) {
-  @inputText(courseStudent("studentId"))
-  @CSRF.formField
-
-  <div class="buttons">
-    <input class="btn btn-primary" type="submit" value="Add"/>
-  </div>
-}
-
-<hr>
-
-<h1>Or import from excel files: </h1>
+<h1>Import from excel files: </h1>
 @form(routes.UploadController.upload(id), 'enctype -> "multipart/form-data") {
   @CSRF.formField
   <input type="file" name="file">

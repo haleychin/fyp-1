@@ -176,8 +176,12 @@ class ExamRepository @Inject() (
       if (exam._3 == "Pass") { passCount += 1 }
     }
 
-    val average = total / size
-    val averageWeightage = totalWeightage / size
+    val average = if (size > 0) {
+      total / size
+    } else { 0.0 }
+    val averageWeightage =  if (size > 0) {
+      totalWeightage / size
+    } else { 0.0 }
     val failCount = size - passCount
 
     Statistic(average, averageWeightage, passCount, failCount)

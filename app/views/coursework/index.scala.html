@@ -1,5 +1,22 @@
-@(course: Course, data: CourseworkAPI)(implicit request: RequestHeader, flash: Flash)
+@(course: Course, students: Seq[Student], data: CourseworkAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
+
+@getCourseworkData(id: Long) = @{
+  data.courseworkDetails.get(id)
+}
+
+@getMark(id: Long, c: String) = @{
+  getCourseworkData(id).map(_.courseworks.get(c)).getOrElse("-")
+}
+
+@getTotal(id: Long) = @{
+  getCourseworkData(id).map(_.total).getOrElse("-")
+}
+
+@getStatus(id: Long) = @{
+  getCourseworkData(id).map(_.status).getOrElse("-")
+}
+
 
 @action = {
 <a class="btn btn-primary" href="@routes.CourseworkController.newImport(course.id)">Import
@@ -19,27 +36,29 @@
     <th class="text-center">Status</th>
     <th>Danger Level</th>
   </tr>
-  @for((id, d) <- data.courseworkDetails) {
+  @for(s <- students) {
   <tr>
     <td>
-      <a href="@routes.StudentController.show(d.student.id)">
-        @d.student.name
+      <a href="@routes.StudentController.show(s.id)">
+        @s.name
       </a>
     </td>
     @for(c <- data.courseworks.toList) {
     <td class="text-center">
-      @d.courseworks.get(c._1)
+      @getMark(s.id, c._1)
     </td>
     }
-    <td class="text-center">@d.total</td>
-    <td class="text-center @colColor(d.status)">@d.status</td>
+    <td
+      class="text-center">@getTotal(s.id)</td>
+    <td class="text-center
+      @colColor(getStatus(s.id))">@getStatus(s.id)</td>
     <td class="text-center"
       data-toggle="popover"
       data-trigger="focus"
       data-placement="bottom"
       title="Reasons"
-      data-content="@getReason(d.insight)"
-      >@d.insight.dangerLevel</td>
+      data-content="@getReason(getCourseworkData(s.id).map(_.insight).getOrElse(Insight()))"
+      >@getCourseworkData(s.id).map(_.insight.dangerLevel).getOrElse("-")</td>
   </tr>
   }
   <tr class="text-center">
@@ -56,7 +75,6 @@
     </td>
   </tr>
 }
-
 <h4>Overall Descriptive Statistic:</h4>
 <p class="blockquote"><em>Based on total coursework mark.</em></p>
 

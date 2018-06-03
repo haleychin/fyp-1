@@ -222,7 +222,13 @@ class CourseworkRepository @Inject() (
     averages += ("Total" -> total)
     val failCount = size - passCount
 
-    averages.foreach { case (k, v) => averages.update(k, v / data.size) }
+    averages.foreach { case (k, v) =>
+      if (data.size > 0) {
+        averages.update(k, v / data.size)
+      } else {
+        averages.update(k, 0.0)
+      }
+    }
 
     CwStatistic(averages, passCount, failCount)
   }

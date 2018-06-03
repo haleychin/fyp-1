@@ -19,10 +19,14 @@ import models._
 import utils._
 
 case class CourseworkFormData(courseworks: List[String])
-case class CourseCwAPI(course: Option[Course], courseworks: CourseworkAPI)
+case class CourseCwAPI(
+  course: Option[Course],
+  students: Seq[Student],
+  courseworks: CourseworkAPI)
 
 class CourseworkController @Inject()(
   repo: CourseworkRepository,
+  csRepo: CourseStudentRepository,
   cRepo: CourseRepository,
   bbParser: BlackboardParser,
   authenticatedAction: AuthenticatedAction,
@@ -38,16 +42,18 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getCourseworkDetail(id: Long): Future[CourseCwAPI] = {
     val courseFuture = cRepo.get(id)
+    val studentFuture = csRepo.getStudents(id)
     val courseworksFuture = repo.getCourseworks(id)
 
     val results = for {
       course <- courseFuture
+      students <- studentFuture
       courseworks <- courseworksFuture
-    } yield (course, courseworks)
+    } yield (course, students, courseworks)
 
 
     results.map { r =>
-      CourseCwAPI(r._1, r._2)
+      CourseCwAPI(r._1, r._2, r._3)
     }
   }
 
@@ -55,7 +61,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseworkDetail(id).map { courseworkApi =>
       courseworkApi.course match {
         case Some(c) =>
-          Ok(views.html.coursework.index(c, courseworkApi.courseworks))
+          Ok(views.html.coursework.index(c, courseworkApi.students, courseworkApi.courseworks))
         case None => Ok(views.html.index())
       }
     }

@@ -13,10 +13,14 @@ import java.io.File
 import models._
 import utils._
 
-case class CourseExamAPI(course: Option[Course], exams: ExamAPI)
+case class CourseExamAPI(
+  course: Option[Course],
+  students: Seq[Student],
+  exams: ExamAPI)
 
 class ExamController @Inject()(
   repo: ExamRepository,
+  csRepo: CourseStudentRepository,
   cRepo: CourseRepository,
   eParser: FinalExamParser,
   authenticatedAction: AuthenticatedAction,
@@ -26,16 +30,18 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getExamDetails(courseId: Long): Future[CourseExamAPI] = {
     val courseFuture = cRepo.get(courseId)
+    val studentFuture = csRepo.getStudents(courseId)
     val examsFuture = repo.getExams(courseId)
 
     val results = for {
       course <- courseFuture
+      students <- studentFuture
       exams <- examsFuture
-    } yield (course, exams)
+    } yield (course, students, exams)
 
 
     results.map { r =>
-      CourseExamAPI(r._1, r._2)
+      CourseExamAPI(r._1, r._2, r._3)
     }
   }
 
@@ -43,7 +49,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getExamDetails(courseId).map { examApi =>
       examApi.course match {
         case Some(c) =>
-          Ok(views.html.exam.index(c, examApi.exams))
+          Ok(views.html.exam.index(c, examApi.students, examApi.exams))
         case None => Ok(views.html.index())
       }
     }

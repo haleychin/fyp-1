@@ -13,8 +13,11 @@
 }
 
 @gradeColColor(value: String)  = @{
+  println(value)
   if (value == "F" || value == "F*") {
     "table-danger"
+  } else if (value == "-") {
+    ""
   } else {
     "table-success"
   }
