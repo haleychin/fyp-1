@@ -19,50 +19,56 @@
 
 @main(course.title) {
 @common.card(course.title)(action) {
-@common.responsiveTable {
-  <tr>
-    <th>Name</th>
-    @for((_, d) <- data.dates) {
-    <th class="text-center">@d</th>
-    }
-    <th>Attendance Rate</th>
-    <th>Danger Level</th>
-  </tr>
-  @for((_, d) <- data.studentDetails) {
-  <tr class="@rowColor(d.insight.dangerLevel)"
-    >
-    <td>
-      <a href="@routes.StudentController.show(d.student.id)">
-        @d.student.name
-      </a>
-    </td>
-    @for((_, date) <- data.dates.toList) {
-    <td class="text-center">
-      @{
-      val value = d.attendances.getOrElse(date, "")
-      if (value == "attend") {
-        <i class="fa fa-check green-text" aria-hidden="true"></i>
-      } else if (value == "absent") {
-        <i class="fa fa-close red-text" aria-hidden="true"></i>
-      } else {
-        "-"
+
+<div class="table-responsive">
+<table id="example" class="table table-sm table-bordered table-responsive w-auto">
+  <thead>
+    <tr>
+      <th>Name</th>
+      @for((_, d) <- data.dates) {
+      <th class="text-center">@d</th>
       }
+      <th>Attendance Rate</th>
+      <th>Danger Level</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for((_, d) <- data.studentDetails) {
+    <tr class="@rowColor(d.insight.dangerLevel)"
+      >
+      <td>
+        <a href="@routes.StudentController.show(d.student.id)">
+          @d.student.name
+        </a>
+      </td>
+      @for((_, date) <- data.dates.toList) {
+      <td class="text-center">
+        @{
+        val value = d.attendances.getOrElse(date, "")
+        if (value == "attend") {
+          <i class="fa fa-check green-text" aria-hidden="true"></i>
+        } else if (value == "absent") {
+          <i class="fa fa-close red-text" aria-hidden="true"></i>
+        } else {
+          "-"
+        }
+        }
+      </td>
       }
-    </td>
+      <td class="text-center">
+        @formatDouble(d.stat.attendanceRate)%
+      </td>
+      <td class="text-center"
+        data-toggle="popover"
+        data-trigger="focus"
+        data-placement="bottom"
+        title="Reasons"
+        data-content="@getReason(d.insight)">
+        @d.insight.dangerLevel </td>
+    </tr>
     }
-    <td class="text-center">
-      @formatDouble(d.stat.attendanceRate)%
-    </td>
-    <td class="text-center"
-      data-toggle="popover"
-      data-trigger="focus"
-      data-placement="bottom"
-      title="Reasons"
-      data-content="@getReason(d.insight)">
-      @d.insight.dangerLevel
-    </td>
-  </tr>
-  }
-}
+  </tbody>
+</table>
+</div>
 }
 }
