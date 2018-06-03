@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 import utils._
 
-case class Status(name: String, reason: String = "")
+case class Status(name: String = "", reason: String = "")
 case class CwStatistic(
   averages: LinkedHashMap[String, Double],
   passCount: Int,
@@ -31,9 +31,11 @@ case class CourseworkAPI(
 case class CourseworkDetailsAPI(
   student: Student,
   var courseworks: LinkedHashMap[String, Double],
+  var courseworksTotal: LinkedHashMap[String,Double],
   var total: Double,
-  var status: String,
-  var grade: Status)
+  var status: String = "",
+  var grade: Status = Status(),
+  var insight: Insight = Insight())
 
 // Return a map of Course Id -> Courseworks Details
 case class CCourseworkAPI(
@@ -134,21 +136,26 @@ class CourseworkRepository @Inject() (
       r.foreach { case (student, cw) =>
         courseworkLists += ((cw.name, cw.totalMark))
         val value = cw.name -> cw.mark
+        val totalValue = cw.name -> cw.totalMark
         if (studentMap.contains(student.id)) {
           val s = studentMap.get(student.id).get
           s.courseworks += value
+          s.courseworksTotal += totalValue
           s.total += cw.mark
         } else {
-          val data = LinkedHashMap[String, Double](value)
-          studentMap += (student.id -> CourseworkDetailsAPI(student, data, cw.mark, "", Status("")))
+          val data = LinkedHashMap[String,Double](value)
+          val totalData = LinkedHashMap[String,Double](totalValue)
+          studentMap += (student.id -> CourseworkDetailsAPI(student, data, totalData, cw.mark))
         }
       }
 
       val total = courseworkLists.reduceOption( (x, y) =>
           ("", x._2 + y._2)
         ).map(_._2).getOrElse(0.0)
+
       studentMap.foreach { case (_, s) =>
         s.status = Utils.calculatePass(s.total, total)
+        println(Analyser.analyseCoursework(s))
       }
 
       val statistic = computeStatistic(studentMap.values)

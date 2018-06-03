@@ -23,9 +23,10 @@ object Utils {
   def calculatePercent(weightage: Double, totalWeightage: Double): Double = {
     weightage / totalWeightage * 100
   }
+
   def calculatePass(weightage: Double, totalWeightage: Double): String = {
     val rate = calculatePercent(weightage, totalWeightage)
-    if (rate <= 40) {
+    if (rate < 40) {
       "Fail"
     } else {
       "Pass"

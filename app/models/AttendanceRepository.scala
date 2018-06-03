@@ -13,7 +13,7 @@ import scala.concurrent.duration._
 
 import scala.collection.mutable.{ArrayBuffer, LinkedHashMap, LinkedHashSet}
 
-import util.Analyser
+import utils.Analyser
 
 case class Insight(
   dangerLevel: Int = 0,
