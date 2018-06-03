@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.sql.Date
 
-import models.{CourseworkAPI, ExamAPI, Status}
+import models.{AttendanceAPI,CourseworkAPI,ExamAPI,Status,Insight}
 
 object Utils {
   val DATE_FORMAT = "dd/MM/yyyy"
@@ -61,6 +61,21 @@ object Utils {
     else if (total >= 50) { "C" }
     else if (total >= 40) { "D" }
     else { "F" }
+  }
+
+  def combineInsight(attendance: AttendanceAPI, coursework: CourseworkAPI): CourseworkAPI = {
+    attendance.studentDetails.foreach { case (k, v) =>
+      coursework.courseworkDetails.get(k).map { courseworkDetail =>
+        val dangerLevel =
+          (v.insight.dangerLevel + courseworkDetail.insight.dangerLevel) / 2
+        courseworkDetail.insight = Insight(
+          dangerLevel,
+          v.insight.reasons ++ courseworkDetail.insight.reasons
+        )
+      }
+    }
+
+    coursework
   }
 
   def combineExamAndCoursework(courseworks: CourseworkAPI, exam: ExamAPI): CourseworkAPI = {

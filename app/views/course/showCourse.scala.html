@@ -13,7 +13,6 @@
 }
 
 @gradeColColor(value: String)  = @{
-  println(value)
   if (value == "F" || value == "F*") {
     "table-danger"
   } else if (value == "-") {
@@ -64,6 +63,10 @@
   }
 }
 
+@getInsight(id: Long) = @{
+  data.coursework.courseworkDetails.get(id).map(_.insight).getOrElse(Insight())
+}
+
 @main(course.title) {
 @common.card(course.title)(action) {
 <h4>Overview:</h4>
@@ -78,6 +81,7 @@
     }
     <th>Total (@data.coursework.total)</th>
     <th>Grade</th>
+    <th>Danger Level</th>
   </tr>
   </thead>
   <tbody>
@@ -93,6 +97,13 @@
     <td class="grade @gradeColColor(getStatus(s.id))"
         title="@getStatusReason(s.id)"
       >@getStatus(s.id)</td>
+    <td class="text-center @insightColor(getInsight(s.id).dangerLevel)"
+      data-toggle="popover"
+      data-trigger="focus"
+      data-placement="bottom"
+      title="Reasons"
+      data-content="@getReason(getInsight(s.id))">
+      @getInsight(s.id).dangerLevel </td>
   </tr>
   }
   </tbody>

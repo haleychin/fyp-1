@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 import utils._
 
-case class Status(name: String = "", reason: String = "")
+case class Status(name: String = "-", reason: String = "")
 case class CwStatistic(
   averages: LinkedHashMap[String, Double],
   passCount: Int,

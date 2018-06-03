@@ -1,0 +1,11 @@
+@(dangerLevel: Int)
+
+@{
+  if (dangerLevel == 2) {
+   "table-danger"
+  } else if (dangerLevel == 1) {
+   "table-warning"
+  } else {
+    ""
+  }
+}

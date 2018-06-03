@@ -17,6 +17,9 @@
   getCourseworkData(id).map(_.status).getOrElse("-")
 }
 
+@getInsight(id: Long) = @{
+  getCourseworkData(id).map(_.insight).getOrElse(Insight())
+}
 
 @action = {
 <a class="btn btn-primary" href="@routes.CourseworkController.newImport(course.id)">Import
@@ -55,13 +58,13 @@
       class="text-center">@getTotal(s.id)</td>
     <td class="text-center
       @colColor(getStatus(s.id))">@getStatus(s.id)</td>
-    <td class="text-center"
+    <td class="text-center @insightColor(getInsight(s.id).dangerLevel)"
       data-toggle="popover"
       data-trigger="focus"
       data-placement="bottom"
       title="Reasons"
-      data-content="@getReason(getCourseworkData(s.id).map(_.insight).getOrElse(Insight()))"
-      >@getCourseworkData(s.id).map(_.insight.dangerLevel).getOrElse("-")</td>
+      data-content="@getReason(getInsight(s.id))"
+      >@getInsight(s.id).dangerLevel</td>
   </tr>
   }
   </tbody>

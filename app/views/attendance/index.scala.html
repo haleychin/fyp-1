@@ -1,16 +1,6 @@
 @(course: Course, data: AttendanceAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
 
-@rowColor(dangerLevel: Int) = @{
-  if (dangerLevel == 2) {
-   "table-danger"
-  } else if (dangerLevel == 1) {
-   "table-warning"
-  } else {
-    ""
-  }
-}
-
 @action = {
 <a class="btn btn-primary"
    href="@routes.AttendanceController.newAttendance(course.id)">Import
@@ -32,8 +22,7 @@
   </thead>
   <tbody>
     @for((_, d) <- data.studentDetails) {
-    <tr class="@rowColor(d.insight.dangerLevel)"
-      >
+    <tr>
       <td>
         <a href="@routes.StudentController.show(d.student.id)">
           @d.student.name
@@ -56,7 +45,7 @@
       <td class="text-center">
         @formatDouble(d.stat.attendanceRate)%
       </td>
-      <td class="text-center"
+      <td class="text-center @insightColor(d.insight.dangerLevel)"
         data-toggle="popover"
         data-trigger="focus"
         data-placement="bottom"

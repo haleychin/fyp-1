@@ -67,7 +67,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     } yield (course, students, attendances, courseworks, exam)
 
     results.map { r =>
-      val combined = Utils.combineExamAndCoursework(r._4, r._5)
+      var combined = Utils.combineExamAndCoursework(r._4, r._5)
+      combined = Utils.combineInsight(r._3, combined)
       CourseAPI(r._1, r._2, r._3, combined)
     }
   }
