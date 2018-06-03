@@ -11,14 +11,6 @@
   }
 }
 
-@getReason(d: StudentDetailsAPI) = @{
-  val string = d.insight.reasons.map { r =>
-    s"<li>$r</li>"
-  }.mkString("")
-
-  s"<ul>$string</ul>"
-}
-
 @action = {
 <a class="btn btn-primary"
    href="@routes.AttendanceController.newAttendance(course.id)">Import
@@ -66,8 +58,7 @@
       data-trigger="focus"
       data-placement="bottom"
       title="Reasons"
-      data-content="@getReason(d)"
-      >
+      data-content="@getReason(d.insight)">
       @d.insight.dangerLevel
     </td>
   </tr>

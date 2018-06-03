@@ -155,7 +155,7 @@ class CourseworkRepository @Inject() (
 
       studentMap.foreach { case (_, s) =>
         s.status = Utils.calculatePass(s.total, total)
-        println(Analyser.analyseCoursework(s))
+        s.insight = Analyser.analyseCoursework(s)
       }
 
       val statistic = computeStatistic(studentMap.values)

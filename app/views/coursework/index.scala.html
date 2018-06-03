@@ -17,6 +17,7 @@
       (@formatDouble(data.total)%)
     </th>
     <th class="text-center">Status</th>
+    <th>Danger Level</th>
   </tr>
   @for((id, d) <- data.courseworkDetails) {
   <tr>
@@ -32,6 +33,13 @@
     }
     <td class="text-center">@d.total</td>
     <td class="text-center @colColor(d.status)">@d.status</td>
+    <td class="text-center"
+      data-toggle="popover"
+      data-trigger="focus"
+      data-placement="bottom"
+      title="Reasons"
+      data-content="@getReason(d.insight)"
+      >@d.insight.dangerLevel</td>
   </tr>
   }
   <tr class="text-center">

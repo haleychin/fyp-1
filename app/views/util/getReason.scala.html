@@ -1,0 +1,9 @@
+@(insight: Insight)
+
+@{
+  val string = insight.reasons.map { r =>
+    s"<li>$r</li>"
+  }.mkString("")
+
+  s"<ul>$string</ul>"
+}
