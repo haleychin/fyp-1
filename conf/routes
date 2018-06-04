@@ -22,7 +22,7 @@ GET    /users/:id/delete     controllers.UserController.deleteUser(id: Long)
 # Course Routes
 GET    /courses              controllers.CourseController.index
 GET    /courses/new          controllers.CourseController.newCourse
-GET    /courses/:id          controllers.CourseController.showCourse(id: Long)
+GET    /courses/:id          controllers.CourseController.showCourse(id: Long, programme: String ?= "%", intake: String ?= "%")
 POST   /courses              controllers.CourseController.createCourse
 GET    /courses/:id/edit     controllers.CourseController.editCourse(id: Long)
 POST   /courses/:id          controllers.CourseController.updateCourse(id: Long)

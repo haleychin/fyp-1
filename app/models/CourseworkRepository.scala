@@ -120,11 +120,14 @@ class CourseworkRepository @Inject() (
     }
   }
 
-  def getCourseworks(courseId: Long): Future[CourseworkAPI] = {
+  def getCourseworks(
+    courseId: Long,
+    programme: String = "%",
+    intake: String = "%"): Future[CourseworkAPI] = {
     val query = for {
       cw <- courseworks
       courses <- cw.courses if courses.id === courseId
-      students <- cw.students
+      students <- cw.students if (students.programme like programme) &&   (students.intake like intake)
     } yield (students, cw)
 
     val result = db.run(query.result)

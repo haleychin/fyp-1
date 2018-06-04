@@ -51,12 +51,14 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     Ok(views.html.course.newCourse(courseForm))
   }
 
-  def getCourseDetail(id: Long): Future[CourseAPI] = {
+  def getCourseDetail(id: Long,
+    programme: String,
+    intake: String): Future[CourseAPI] = {
     val courseFuture      = repo.get(id)
-    val studentFuture     = csRepo.getStudents(id)
-    val attendancesFuture = aRepo.getAttendances(id)
-    val courseworksFuture = cwRepo.getCourseworks(id)
-    val examFuture        = eRepo.getExams(id)
+    val studentFuture     = csRepo.getStudents(id, programme, intake)
+    val attendancesFuture = aRepo.getAttendances(id, programme, intake)
+    val courseworksFuture = cwRepo.getCourseworks(id, programme, intake)
+    val examFuture        = eRepo.getExams(id, programme, intake)
 
     val results = for {
       course      <- courseFuture
@@ -73,8 +75,10 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
-  def showCourse(id: Long) = Action.async { implicit request =>
-    getCourseDetail(id).map { courseApi =>
+  def showCourse(id: Long,
+    programme: String = "%",
+    intake: String = "%") = Action.async { implicit request =>
+    getCourseDetail(id, programme, intake).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
           Ok(views.html.course.showCourse(c, courseApi))

@@ -78,6 +78,8 @@
   <tr class="text-center">
     <th>Student ID</th>
     <th>Name</th>
+    <th>Programme</th>
+    <th>Intake</th>
     <th>Attendance Rate</th>
     @for(d <- data.coursework.courseworks) {
     <th>@d._1 (@formatDouble(d._2)%)</th>
@@ -92,6 +94,8 @@
   <tr class="text-center">
     <td>@s.studentId</td>
     <td>@s.name</td>
+    <td>@s.programme</td>
+    <td>@s.intake</td>
     <td>@getAttendanceRate(s.id)</td>
     @for(c <- data.coursework.courseworks.toList) {
       <td>@getMark(s.id, c._1)</td>

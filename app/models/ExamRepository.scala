@@ -115,14 +115,17 @@ class ExamRepository @Inject() (
       }
   }
 
-  def getExams(courseId: Long): Future[ExamAPI] = {
+  def getExams(
+    courseId: Long,
+    programme: String = "%",
+    intake: String = "%"): Future[ExamAPI] = {
     val query = for {
       e <- exams
       courses <- e.courses if courses.id === courseId
-      students <- e.students
+      students <- e.students if (students.programme like programme) &&   (students.intake like intake)
     } yield (students, e)
 
-    val result     = db.run(query.result)
+    val result = db.run(query.result)
     val studentMap = LinkedHashMap[Long, ExamDetailsAPI]()
 
     result.map { r =>

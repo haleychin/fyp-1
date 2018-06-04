@@ -112,11 +112,14 @@ class AttendanceRepository @Inject() (
 
   }
 
-  def getAttendances(courseId: Long): Future[AttendanceAPI] = {
+  def getAttendances(
+    courseId: Long,
+    programme: String = "%",
+    intake: String = "%"): Future[AttendanceAPI] = {
     val query = (for {
       a <- attendances
       courses <- a.courses if courses.id === courseId
-      students <- a.students
+      students <- a.students if (students.programme like programme) &&   (students.intake like intake)
     } yield (students, a)).sortBy(_._2.date)
 
     val result = db.run(query.result)

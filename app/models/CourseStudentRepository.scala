@@ -62,11 +62,15 @@ class CourseStudentRepository @Inject() (
     create(courseId, student.id)
   }
 
-  def getStudents(courseId: Long): Future[Seq[Student]] = {
+  def getStudents(
+    courseId: Long,
+    programme: String = "%",
+    intake: String = "%"): Future[Seq[Student]] = {
+
     val query = for {
       cs <- coursesStudents
       courses <- cs.courses if courses.id === courseId
-      students <- cs.students
+        students <- cs.students if (students.programme like programme) &&   (students.intake like intake)
     } yield students
 
     val result = db.run(query.result)
