@@ -67,9 +67,12 @@
   data.coursework.courseworkDetails.get(id).map(_.insight).getOrElse(Insight())
 }
 
+@getGradeFreq(grade: String) = @{
+  data.coursework.statistic.gradeFrequency.get(grade).getOrElse("-")
+}
+
 @main(course.title) {
 @common.card(course.title)(action) {
-<h4>Overview:</h4>
 @common.sortableTable {
   <thead>
   <tr class="text-center">
@@ -109,10 +112,13 @@
   </tbody>
 }
 
-<h4>Overall Descriptive Statistic:</h4>
-<p class="blockquote"><em>Based on total score.</em></p>
+<hr/>
 
-@common.responsiveTable {
+<div class="row">
+  <div class="col">
+  <h4>Overall Descriptive Statistic:</h4>
+
+  @common.responsiveTable {
   <tr>
     <th>Max score: </th>
     <td>@formatDouble(data.coursework.descStat.max)</td>
@@ -137,6 +143,27 @@
     <th>Variance: </th>
     <td>@formatDouble(data.coursework.descStat.variance)</td>
   </tr>
-}
+  }
+  </div>
+
+  <div class="col">
+  <h4>Grade Distribution:</h4>
+  @common.responsiveTable {
+    <thead>
+      <th>Grade</th>
+      <th>Frequency</th>
+    </thead>
+    <tbody>
+      @for(g <- Seq("A", "B", "C", "D", "E", "F", "F*")) {
+        <tr>
+          <th>@g</th>
+          <td>@getGradeFreq(g)</td>
+        </tr>
+      }
+    </tbody>
+  }
+  </div>
+</div>
+
 }
 }

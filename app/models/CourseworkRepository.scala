@@ -18,7 +18,8 @@ case class Status(name: String = "-", reason: String = "")
 case class CwStatistic(
   averages: LinkedHashMap[String, Double],
   passCount: Int,
-  failCount: Int)
+  failCount: Int,
+  var gradeFrequency: LinkedHashMap[String,Int] = LinkedHashMap[String,Int]())
 
 // Return a map of Student Id -> Courseworks Details
 case class CourseworkAPI(

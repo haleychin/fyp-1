@@ -6,6 +6,8 @@ import java.sql.Date
 
 import models.{AttendanceAPI,CourseworkAPI,ExamAPI,Status,Insight}
 
+import scala.collection.mutable.LinkedHashMap
+
 object Utils {
   val DATE_FORMAT = "dd/MM/yyyy"
 
@@ -86,6 +88,8 @@ object Utils {
       cwTotal += v
     }
 
+    val gradeFrequency = LinkedHashMap[String,Int]()
+
     courseworks.courseworkDetails.foreach { case (id, c) =>
       val examDetail = examDetails.get(id)
       val cwMark = c.courseworks.map(_._2).sum
@@ -105,6 +109,12 @@ object Utils {
           cwPercent,
           examPercent,
           c.total)
+
+        if (gradeFrequency.contains(c.grade.name)) {
+          gradeFrequency.update(c.grade.name, gradeFrequency.get(c.grade.name).get + 1)
+        } else {
+          gradeFrequency += (c.grade.name -> 1)
+        }
       }
 
       courseworks.courseworks += (("Exam", exam.weightage))
@@ -112,6 +122,7 @@ object Utils {
 
     val marks = courseworks.courseworkDetails.values.map(_.total).toSeq
     courseworks.descStat = Stats.computeDescriptiveStatistic(marks)
+    courseworks.statistic.gradeFrequency = gradeFrequency
 
     courseworks
   }
