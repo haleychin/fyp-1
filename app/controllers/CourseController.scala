@@ -58,21 +58,23 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     intake: String): Future[CourseAPI] = {
     val courseFuture      = repo.get(id)
     val studentFuture     = csRepo.getStudents(id, programme, intake)
+    val allStudentFuture  = csRepo.getStudents(id)
     val attendancesFuture = aRepo.getAttendances(id, programme, intake)
     val courseworksFuture = cwRepo.getCourseworks(id, programme, intake)
     val examFuture        = eRepo.getExams(id, programme, intake)
 
     val results = for {
       course      <- courseFuture
+      allStudents <- allStudentFuture
       students    <- studentFuture
       attendances <- attendancesFuture
       courseworks <- courseworksFuture
       exam        <- examFuture
-    } yield (course, students, attendances, courseworks, exam)
+    } yield (course, allStudents, students, attendances, courseworks, exam)
 
     results.map { r =>
-      var combined = Utils.combineExamAndCoursework(r._4, r._5)
-      combined = Utils.combineInsight(r._3, combined)
+      var combined = Utils.combineExamAndCoursework(r._5, r._6)
+      combined = Utils.combineInsight(r._4, combined)
       var programmeToIntake = Map[String,String]()
       r._2.foreach { s =>
         if (programmeToIntake.contains(s.programme)) {
@@ -83,7 +85,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         }
       }
       println(programmeToIntake)
-      CourseAPI(r._1, r._2, r._3, combined, programmeToIntake)
+      CourseAPI(r._1, r._3, r._4, combined, programmeToIntake)
     }
   }
 
