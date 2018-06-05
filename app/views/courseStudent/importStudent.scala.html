@@ -1,0 +1,24 @@
+@(id: Long)(implicit request: RequestHeader)
+@import helper._
+
+@form(
+  routes.UploadController.upload(id),
+  'enctype -> "multipart/form-data",
+  'class -> "form-inline"
+  ) {
+  @CSRF.formField
+  <div class="md-form">
+    <div class="file-field">
+      <div class="btn btn-default btn-sm float-left">
+        <span>Choose file</span>
+        <input type="file" name="file">
+      </div>
+      <div class="file-path-wrapper">
+        <input class="file-path validate" type="text" placeholder="Upload your file">
+        <label>Import Students</label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-sm float-right" type="submit">Import</button>
+  </div>
+}

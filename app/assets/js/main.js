@@ -9,9 +9,9 @@ $(document).ready(function() {
   $('.dataTables_wrapper').find('label').each(function() {
     $(this).parent().append($(this).children());
   });
-  $('.dataTables_filter').find('input').each(function() {
-    $('input').attr("placeholder", "Search");
-    $('input').removeClass('form-control-sm');
+  $('.dataTables_filter').find('input').each(function(i, item) {
+    $(item).attr("placeholder", "Search");
+    $(item).removeClass('form-control-sm');
   });
   $('.dataTables_length').addClass('d-flex flex-row');
   $('.dataTables_filter').addClass('md-form');

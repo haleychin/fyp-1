@@ -1,5 +1,6 @@
 @(course: Course, data: CourseAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
+@import helper._
 
 @gradeColColor(value: String)  = @{
   if (value == "F" || value == "F*") {
@@ -113,14 +114,16 @@
   </div>
 
   <div class="col-md-2">
-    <a id="filterBtn" href="/courses/@course.id" class="btn btn-primary">Filter</a>
+    <a id="filterBtn" href="/courses/@course.id" class="btn btn-sm btn-primary">Filter</a>
   </div>
 </div>
 
 <div class="row">
-  <div class="col">
-    <a class="nav-link"
-      href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+  <div class="col-md-6">
+    @courseStudent.importStudent(course.id)
+  </div>
+  <div class="col-md-6">
+    @coursework.importCoursework(course.id)
   </div>
 </div>
 }
