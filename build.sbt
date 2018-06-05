@@ -49,3 +49,4 @@ libraryDependencies += "javax.annotation" % "javax.annotation-api" % "1.3.2"
 libraryDependencies += "javax.el" % "javax.el-api" % "3.0.0"
 libraryDependencies += "org.glassfish" % "javax.el" % "3.0.0"
 
+TwirlKeys.templateImports += "helpers.MaterialHelper._"

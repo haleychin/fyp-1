@@ -3,16 +3,21 @@
 @import helper._
 
 @main("Sign Up") {
-<h1>Sign Up</h1>
 
-@form(routes.UserController.createUser()) {
-  @inputText(user("name"))
-  @inputText(user("email"))
-  @inputPassword(user("password"))
-  @CSRF.formField
-
-  <div class="buttons">
-    <input type="submit" value="Sign Up"/>
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.UserController.createUser(),
+      routes.PageController.index(),
+      "Sign Up",
+      "Sign Up"
+    ) {
+      @inputText(user("name"), 'class -> "form-control")
+      @inputText(user("email"), 'class -> "form-control")
+      @inputPassword(user("password"), 'class -> "form-control")
+    }
+    }
   </div>
-}
+</div>
 }

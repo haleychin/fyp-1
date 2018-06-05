@@ -1,0 +1,24 @@
+@(
+  postRoute: Call,
+  cancelRoute: Call,
+  title: String,
+  action: String
+)(
+  formInputs: Html
+)(
+  implicit request: RequestHeader
+)
+
+@helper.form(postRoute, 'autocomplete -> "off") {
+
+  <div class="text-center">
+    <h3><strong>@title</strong></h3>
+  </div>
+
+  @helper.CSRF.formField
+  @formInputs
+  <div class="button-rows">
+    <a href="@cancelRoute" class="btn btn-danger btn-sm">Cancel</a>
+    <button class="btn btn-primary btn-sm" type="submit">@action</button>
+  </div>
+}

@@ -3,23 +3,27 @@ Flash, messagesProvider: MessagesProvider)
 @import helper._
 
 @main("Edit Student") {
-<h1>Edit student</h1>
-
-@form(routes.StudentController.update(id)) {
-  @inputText(student("name"))
-  @inputText(student("email"))
-  @inputText(student("studentId"))
-  @inputText(student("icOrPassport"))
-  @inputText(student("nationality"))
-  @inputText(student("contactNumber"))
-  @inputText(student("birthDate"))
-  @inputText(student("programme"))
-  @inputText(student("intake"))
-  @inputText(student("semester"))
-  @CSRF.formField
-
-  <div class="buttons">
-    <input type="submit" value="Update student"/>
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.StudentController.update(id),
+      routes.StudentController.index(),
+      "Edit Student",
+      "Update"
+      ) {
+        @inputText(student("name"), 'class -> "form-control")
+        @inputText(student("email"), 'class -> "form-control")
+        @inputText(student("studentId"), 'class -> "form-control")
+        @inputText(student("icOrPassport"), 'class -> "form-control")
+        @inputText(student("nationality"), 'class -> "form-control")
+        @inputText(student("contactNumber"), 'class -> "form-control")
+        @inputText(student("birthDate"), 'class -> "form-control")
+        @inputText(student("programme"), 'class -> "form-control")
+        @inputText(student("intake"), 'class -> "form-control")
+        @inputText(student("semester"), 'class -> "form-control")
+      }
+    }
   </div>
-}
+</div>
 }

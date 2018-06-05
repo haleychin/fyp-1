@@ -2,15 +2,20 @@
 @import helper._
 
 @main("New Course") {
-<h1>New course</h1>
 
-@form(routes.CourseController.createCourse()) {
-  @inputText(course("title"))
-  @inputText(course("startDate"))
-  @CSRF.formField
-
-  <div class="buttons">
-    <input type="submit" value="Update"/>
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+    routes.CourseController.createCourse(),
+    routes.CourseController.index(),
+    "New Course",
+    "Add"
+    ) {
+      @inputText(course("title"), 'class -> "form-control")
+      @inputText(course("startDate"), 'class -> "form-control")
+    }
+    }
   </div>
-}
+</div>
 }
