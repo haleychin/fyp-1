@@ -61,14 +61,6 @@
 }
 
 @main(course.title) {
-@common.jumbotron {
-<h3>@course.title</h3>
-<li class="nav-item">
-  <a class="nav-link"
-    href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-</li>
-}
-
 <ul class="nav nav-tabs nav-justified indigo">
   <li class="nav-item">
     <a class="nav-link active"
@@ -89,6 +81,12 @@
 </ul>
 
 @common.jumbotron {
+<div class="row mb-3">
+  <div class="col">
+    <h3>@course.title</h3>
+  </div>
+</div>
+
 <div class="row">
   <div class="col-md-5">
     <select class="mdb-select" id="programmeSelection">
@@ -116,6 +114,13 @@
 
   <div class="col-md-2">
     <a id="filterBtn" href="/courses/@course.id" class="btn btn-primary">Filter</a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col">
+    <a class="nav-link"
+      href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
   </div>
 </div>
 }
