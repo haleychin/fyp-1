@@ -1,17 +1,6 @@
 @(course: Course, data: CourseAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
 
-@action = {
-<a class="btn btn-primary"
-   href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-<a class="btn btn-primary"
-   href="@routes.CourseworkController.index(course.id)">View Coursework </a>
-<a class="btn btn-primary"
-   href="@routes.ExamController.index(course.id)">View Final Exam</a>
-<a class="btn btn-primary"
-   href="@routes.AttendanceController.index(course.id)">View Attendance</a>
-}
-
 @gradeColColor(value: String)  = @{
   if (value == "F" || value == "F*") {
     "table-danger"
@@ -72,33 +61,53 @@
 }
 
 @main(course.title) {
-@common.card(course.title)(action) {
+@common.jumbotron {
+<h3>@course.title</h3>
+<a class="btn btn-primary"
+   href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+<a class="btn btn-primary"
+   href="@routes.CourseworkController.index(course.id)">View Coursework </a>
+<a class="btn btn-primary"
+   href="@routes.ExamController.index(course.id)">View Final Exam</a>
+<a class="btn btn-primary"
+   href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+}
 
-<select class="mdb-select" id="programmeSelection">
-    <option value="" selected>All</option>
-    @for((k, _) <- data.programmeToIntake) {
+@common.jumbotron {
+<div class="row">
+  <div class="col-md-5">
+    <select class="mdb-select" id="programmeSelection">
+      <option value="" selected>All</option>
+      @for((k, _) <- data.programmeToIntake) {
       <option value="@k">@k</option>
-    }
-</select>
-<label>Programme</label>
-
-<select class="mdb-select" id="intakeSelection">
-    <option value="" selected>All</option>
-    @for((k, v) <- data.programmeToIntake) {
-    <optgroup label="@k">
-      @for(date: String <- v.split(",").sortWith(_ > _).toSet) {
-      <option value="@date">@date</option>
       }
-    </optgroup>
-    }
-</select>
-<label>Intake</label>
+    </select>
+    <label>Programme</label>
+  </div>
 
-<a id="filterBtn" href="/courses/@course.id" class="btn btn-primary">Filter</a>
+  <div class="col-md-5">
+    <select class="mdb-select" id="intakeSelection">
+      <option value="" selected>All</option>
+      @for((k, v) <- data.programmeToIntake) {
+      <optgroup label="@k">
+        @for(date: String <- v.split(",").sortWith(_ > _).toSet) {
+        <option value="@date">@date</option>
+        }
+      </optgroup>
+      }
+    </select>
+    <label>Intake</label>
+  </div>
 
+  <div class="col-md-2">
+    <a id="filterBtn" href="/courses/@course.id" class="btn btn-primary">Filter</a>
+  </div>
+</div>
+}
 
+@common.jumbotron {
 @common.sortableTable {
-  <thead>
+<thead>
   <tr class="text-center">
     <th>Student ID</th>
     <th>Name</th>
@@ -112,8 +121,8 @@
     <th>Grade</th>
     <th>Danger Level</th>
   </tr>
-  </thead>
-  <tbody>
+</thead>
+<tbody>
   @for(s <- data.students) {
   <tr class="text-center">
     <td>@s.studentId</td>
@@ -122,76 +131,74 @@
     <td>@s.intake</td>
     <td>@getAttendanceRate(s.id)</td>
     @for(c <- data.coursework.courseworks.toList) {
-      <td>@getMark(s.id, c._1)</td>
+    <td>@getMark(s.id, c._1)</td>
     }
     <td>@getTotalMark(s.id)</td>
     <td class="grade @gradeColColor(getStatus(s.id))"
         title="@getStatusReason(s.id)"
-      >@getStatus(s.id)</td>
+        >@getStatus(s.id)</td>
     <td class="text-center @insightColor(getInsight(s.id).dangerLevel)"
-      data-toggle="popover"
-      data-trigger="focus"
-      data-placement="bottom"
-      title="Reasons"
-      data-content="@getReason(getInsight(s.id))">
+        data-toggle="popover"
+        data-trigger="focus"
+        data-placement="bottom"
+        title="Reasons"
+        data-content="@getReason(getInsight(s.id))">
       @getInsight(s.id).dangerLevel </td>
   </tr>
   }
-  </tbody>
+</tbody>
+}
 }
 
-<hr/>
-
 <div class="row">
-  <div class="col">
-  <h4>Overall Descriptive Statistic:</h4>
-
-  @common.responsiveTable {
-  <tr>
-    <th>Max score: </th>
-    <td>@formatDouble(data.coursework.descStat.max)</td>
-  </tr>
-  <tr>
-    <th>Mean: </th>
-    <td>@formatDouble(data.coursework.descStat.mean)</td>
-  </tr>
-  <tr>
-    <th>Median: </th>
-    <td>@formatDouble(data.coursework.descStat.median)</td>
-  </tr>
-  <tr>
-    <th>Mode: </th>
-    <td>@formatDouble(data.coursework.descStat.mode)</td>
-  </tr>
-  <tr>
-    <th>Standard Deviation: </th>
-    <td>@formatDouble(data.coursework.descStat.standardDeviation)</td>
-  </tr>
-  <tr>
-    <th>Variance: </th>
-    <td>@formatDouble(data.coursework.descStat.variance)</td>
-  </tr>
-  }
+  <div class="col-md-6">
+    @common.cardBody {
+    <table class="table table-borderless table-sm">
+    <tr>
+      <th>Max score: </th>
+      <td>@formatDouble(data.coursework.descStat.max)</td>
+    </tr>
+    <tr>
+      <th>Mean: </th>
+      <td>@formatDouble(data.coursework.descStat.mean)</td>
+    </tr>
+    <tr>
+      <th>Median: </th>
+      <td>@formatDouble(data.coursework.descStat.median)</td>
+    </tr>
+    <tr>
+      <th>Mode: </th>
+      <td>@formatDouble(data.coursework.descStat.mode)</td>
+    </tr>
+    <tr>
+      <th>Standard Deviation: </th>
+      <td>@formatDouble(data.coursework.descStat.standardDeviation)</td>
+    </tr>
+    <tr>
+      <th>Variance: </th>
+      <td>@formatDouble(data.coursework.descStat.variance)</td>
+    </tr>
+    </table>
+    }
   </div>
 
-  <div class="col">
-  <h4>Grade Distribution:</h4>
-  @common.responsiveTable {
+  <div class="col-md-6">
+    @common.cardBody {
+    <table class="table table-borderless table-sm">
     <thead>
       <th>Grade</th>
       <th>Frequency</th>
     </thead>
     <tbody>
       @for(g <- Seq("A", "B", "C", "D", "E", "F", "F*")) {
-        <tr>
-          <th>@g</th>
-          <td>@getGradeFreq(g)</td>
-        </tr>
+      <tr>
+        <th>@g</th>
+        <td>@getGradeFreq(g)</td>
+      </tr>
       }
     </tbody>
-  }
+    </table>
+    }
   </div>
 </div>
-
-}
 }

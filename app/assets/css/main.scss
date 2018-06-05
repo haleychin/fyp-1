@@ -1,3 +1,20 @@
+body {
+  background-color: #eee;
+}
+
+table.table-borderless {
+  border: 0;
+
+  td, th {
+    border-top: 0;
+  }
+
+  thead th {
+    border-top: 0 !important;
+    border: 0
+  }
+}
+
 .table-bordered a {
   &:hover {
     color: #4285f4;
