@@ -31,7 +31,31 @@
 }
 
 @main(course.title) {
-@common.card(course.title)(action) {
+
+@common.jumbotron {
+<h3>@course.title</h3>
+}
+
+<ul class="nav nav-tabs nav-justified indigo">
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.CourseController.showCourse(course.id)">Overview</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.CourseworkController.index(course.id)">Coursework</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active"
+      href="@routes.ExamController.index(course.id)">Exam</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.AttendanceController.index(course.id)">Attendance</a>
+  </li>
+</ul>
+
+@common.jumbotron {
 @common.sortableTable {
   <thead>
     <tr>
@@ -82,35 +106,38 @@
   </tr>
   </tfoot>
 }
-
-<h4>Overall Descriptive Statistic:</h4>
-<p class="blockquote"><em>Based on total marks.</em></p>
-
-@common.responsiveTable {
-  <tr>
-    <th>Max score: </th>
-    <td>@formatDouble(data.descStat.max)</td>
-  </tr>
-  <tr>
-    <th>Mean: </th>
-    <td>@formatDouble(data.descStat.mean)</td>
-  </tr>
-  <tr>
-    <th>Median: </th>
-    <td>@formatDouble(data.descStat.median)</td>
-  </tr>
-  <tr>
-    <th>Mode: </th>
-    <td>@formatDouble(data.descStat.mode)</td>
-  </tr>
-  <tr>
-    <th>Standard Deviation: </th>
-    <td>@formatDouble(data.descStat.standardDeviation)</td>
-  </tr>
-  <tr>
-    <th>Variance: </th>
-    <td>@formatDouble(data.descStat.variance)</td>
-  </tr>
 }
-}
+
+<div class="row">
+  <div class="col">
+    @common.cardBody {
+    <table class="table table-borderless table-sm">
+      <tr>
+        <th>Max score: </th>
+        <td>@formatDouble(data.descStat.max)</td>
+      </tr>
+      <tr>
+        <th>Mean: </th>
+        <td>@formatDouble(data.descStat.mean)</td>
+      </tr>
+      <tr>
+        <th>Median: </th>
+        <td>@formatDouble(data.descStat.median)</td>
+      </tr>
+      <tr>
+        <th>Mode: </th>
+        <td>@formatDouble(data.descStat.mode)</td>
+      </tr>
+      <tr>
+        <th>Standard Deviation: </th>
+        <td>@formatDouble(data.descStat.standardDeviation)</td>
+      </tr>
+      <tr>
+        <th>Variance: </th>
+        <td>@formatDouble(data.descStat.variance)</td>
+      </tr>
+    </table>
+    }
+  </div>
+</div>
 }

@@ -63,15 +63,30 @@
 @main(course.title) {
 @common.jumbotron {
 <h3>@course.title</h3>
-<a class="btn btn-primary"
-   href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
-<a class="btn btn-primary"
-   href="@routes.CourseworkController.index(course.id)">View Coursework </a>
-<a class="btn btn-primary"
-   href="@routes.ExamController.index(course.id)">View Final Exam</a>
-<a class="btn btn-primary"
-   href="@routes.AttendanceController.index(course.id)">View Attendance</a>
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.CourseStudentController.newCourseStudent(course.id)">Import student</a>
+</li>
 }
+
+<ul class="nav nav-tabs nav-justified indigo">
+  <li class="nav-item">
+    <a class="nav-link active"
+      href="@routes.CourseController.showCourse(course.id)">Overview</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.CourseworkController.index(course.id)">Coursework</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.ExamController.index(course.id)">Exam</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.AttendanceController.index(course.id)">Attendance</a>
+  </li>
+</ul>
 
 @common.jumbotron {
 <div class="row">
