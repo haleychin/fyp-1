@@ -73,6 +73,30 @@
 
 @main(course.title) {
 @common.card(course.title)(action) {
+
+<select class="mdb-select" id="programmeSelection">
+    <option value="" selected>All</option>
+    @for((k, _) <- data.programmeToIntake) {
+      <option value="@k">@k</option>
+    }
+</select>
+<label>Programme</label>
+
+<select class="mdb-select" id="intakeSelection">
+    <option value="" selected>All</option>
+    @for((k, v) <- data.programmeToIntake) {
+    <optgroup label="@k">
+      @for(date: String <- v.split(",").sortWith(_ > _).toSet) {
+      <option value="@date">@date</option>
+      }
+    </optgroup>
+    }
+</select>
+<label>Intake</label>
+
+<a id="filterBtn" href="/courses/@course.id" class="btn btn-primary">Filter</a>
+
+
 @common.sortableTable {
   <thead>
   <tr class="text-center">

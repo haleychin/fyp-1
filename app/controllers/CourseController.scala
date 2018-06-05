@@ -11,6 +11,7 @@ import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 
 import java.sql.Date
+import scala.collection.mutable.{Map}
 
 // Model
 import models._
@@ -21,7 +22,8 @@ case class CourseAPI(
   course: Option[Course],
   students: Seq[Student],
   attendance: AttendanceAPI,
-  coursework: CourseworkAPI)
+  coursework: CourseworkAPI,
+  programmeToIntake: Map[String,String])
 
 class CourseController @Inject()(
   repo: CourseRepository,
@@ -71,7 +73,17 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     results.map { r =>
       var combined = Utils.combineExamAndCoursework(r._4, r._5)
       combined = Utils.combineInsight(r._3, combined)
-      CourseAPI(r._1, r._2, r._3, combined)
+      var programmeToIntake = Map[String,String]()
+      r._2.foreach { s =>
+        if (programmeToIntake.contains(s.programme)) {
+          val value = programmeToIntake.get(s.programme).get
+          programmeToIntake.update(s.programme, value.concat("," + s.intake))
+        } else {
+          programmeToIntake += (s.programme -> s.intake)
+        }
+      }
+      println(programmeToIntake)
+      CourseAPI(r._1, r._2, r._3, combined, programmeToIntake)
     }
   }
 

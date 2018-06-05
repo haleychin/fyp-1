@@ -19,5 +19,26 @@ $(document).ready(function() {
   $('.mdb-select').material_select();
   $('.mdb-select').removeClass('form-control form-control-sm');
   $('.dataTables_filter').find('label').remove();
+
+  var programmeSelection = $("#programmeSelection");
+  var intakeSelection = $("#intakeSelection");
+  var filterBtn = $("#filterBtn");
+
+  filterBtn.on("click", function(event) {
+    event.preventDefault();
+    var prog = programmeSelection.val();
+    var intake = intakeSelection.val();
+
+    var query = "?";
+    if (prog !== "") {
+      query += "programme=" + prog + "&";
+    }
+
+    if (intake !== "") {
+      query += "intake=" + intake;
+    }
+
+    window.location.href = this.href + query;
+  })
 })
 
