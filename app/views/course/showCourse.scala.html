@@ -61,7 +61,7 @@
 }
 
 @main(course.title) {
-<ul class="nav nav-tabs nav-justified indigo">
+@common.tabNav {
   <li class="nav-item">
     <a class="nav-link active"
       href="@routes.CourseController.showCourse(course.id)">Overview</a>
@@ -78,7 +78,7 @@
     <a class="nav-link"
       href="@routes.AttendanceController.index(course.id)">Attendance</a>
   </li>
-</ul>
+}
 
 @common.jumbotron {
 <div class="row mb-3">
@@ -172,7 +172,9 @@
 
 <div class="row">
   <div class="col-md-6">
-    @common.cardBody {
+    @common.card {
+      Statistic
+    } {
     <table class="table table-borderless table-sm">
     <tr>
       <th>Max score: </th>
@@ -203,7 +205,9 @@
   </div>
 
   <div class="col-md-6">
-    @common.cardBody {
+    @common.card {
+      Grade Distribution
+    } {
     <table class="table table-borderless table-sm">
     <thead>
       <th>Grade</th>

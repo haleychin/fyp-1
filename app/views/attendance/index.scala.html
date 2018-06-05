@@ -13,7 +13,7 @@ Unenrolled students
 }
 
 @main(course.title) {
-<ul class="nav nav-tabs nav-justified indigo">
+@common.tabNav {
   <li class="nav-item">
     <a class="nav-link"
       href="@routes.CourseController.showCourse(course.id)">Overview</a>
@@ -30,7 +30,7 @@ Unenrolled students
     <a class="nav-link active"
       href="@routes.AttendanceController.index(course.id)">Attendance</a>
   </li>
-</ul>
+}
 
 @common.jumbotron {
 <h3>@course.title</h3>
