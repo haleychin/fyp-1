@@ -11,13 +11,18 @@ import play.api.libs.json._
 import models._
 import utils._
 
-case class CourseAttendanceAPI(course: Option[Course], attendance: AttendanceAPI)
+case class CourseAttendanceAPI(
+  course: Option[Course],
+  students: Seq[Student],
+  attendance: AttendanceAPI,
+  unenrolled: Iterable[Student])
 
 class AttendanceController @Inject()(
   ws: WSClient,
   aImporter: AttendanceImporter,
   repo: AttendanceRepository,
   cRepo: CourseRepository,
+  csRepo: CourseStudentRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -31,16 +36,20 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def getCourseDetail(id: Long): Future[CourseAttendanceAPI] = {
     val courseFuture = cRepo.get(id)
+    val studentFuture = csRepo.getStudents(id)
     val attendancesFuture = repo.getAttendances(id)
 
     val results = for {
       course <- courseFuture
+      students <- studentFuture
       attendances <- attendancesFuture
-    } yield (course, attendances)
+    } yield (course, students, attendances)
 
 
     results.map { r =>
-      CourseAttendanceAPI(r._1, r._2)
+      val icheckInStudents = r._3.studentDetails.values.map(_.student)
+      val unenrolled = r._2.diff(icheckInStudents.toSeq)
+      CourseAttendanceAPI(r._1, r._2, r._3, unenrolled)
     }
   }
 
@@ -48,7 +57,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseDetail(id).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
-          Ok(views.html.attendance.index(c, courseApi.attendance))
+          Ok(views.html.attendance.index(c, courseApi.students, courseApi.attendance, courseApi.unenrolled))
         case None => Ok(views.html.index())
       }
     }

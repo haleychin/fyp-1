@@ -1,12 +1,10 @@
 @(courses: Seq[Course])(implicit flash: Flash,  request: RequestHeader, messagesProvider: MessagesProvider)
 
-@action = {
+@main("All Courses") {
+@common.jumbotron {
+<h3>All Courses</h3>
 <a class="btn btn-primary"
    href="@routes.CourseController.newCourse">Add Course</a>
-}
-
-@main("All Courses") {
-@common.card("All Courses")(action) {
 <table class="table table-bordered table-sm">
   <thead>
     <tr>

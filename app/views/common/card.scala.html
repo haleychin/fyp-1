@@ -1,18 +1,11 @@
-@(title: String)(action: Html)(content: Html)
+@(header: Html)(content: Html)
 
-<div class="row">
-  <div class="col">
-    <div class="jumbotron">
-      <h3>@title</h3>
-      @action
-    </div>
+<div class="card">
+  <div class="card-header">
+    @header
+  </div>
+  <div class="card-body">
+    @content
   </div>
 </div>
 
-<div class="row">
-  <div class="col">
-    <div class="jumbotron">
-      @content
-    </div>
-  </div>
-</div>

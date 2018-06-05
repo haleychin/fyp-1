@@ -1,9 +1,6 @@
 @(student: Student, data: StudentAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
 
-@action = {
-}
-
 @attendances(data: StudentAPI, id: Long) = @{
   data.attendances.studentDetails.get(id)
 }
@@ -22,9 +19,10 @@
 
 
 @main(student.name) {
-@common.card(student.name)(action) {
+@common.jumbotron {
 <div class="row">
   <div class="col">
+    <h3>@student.name</h3>
     <h4>Detail:</h4>
   </div>
 </div>
