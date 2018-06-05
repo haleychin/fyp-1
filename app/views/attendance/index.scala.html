@@ -6,12 +6,6 @@ Iterable[Student])(implicit request: RequestHeader, flash: Flash)
 Unenrolled students
 }
 
-@action = {
-<a class="btn btn-primary"
-   href="@routes.AttendanceController.newAttendance(course.id)">Import
-   Attendance</a>
-}
-
 @main(course.title) {
 @common.tabNav {
   <li class="nav-item">

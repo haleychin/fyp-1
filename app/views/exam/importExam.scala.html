@@ -2,12 +2,12 @@
 @import helper._
 
 @form(
-  routes.UploadController.upload(id),
+  routes.ExamController.save(id),
   'enctype -> "multipart/form-data",
   'class -> "form-inline"
   ) {
   @CSRF.formField
-  <p class="h6">Import Students</p>
+  <p class="h6">Import Exam</p>
   <div class="md-form form-group">
     <div class="file-field">
       <div class="btn btn-default btn-sm float-left">
