@@ -43,7 +43,8 @@ POST   /courses/:id/students              controllers.CourseStudentController.cr
 POST   /courses/:id/students/:studentId   controllers.CourseStudentController.delete(id: Long, studentId: Long)
 
 # Upload Routes
-POST  /uploads/:id                        controllers.UploadController.upload(id: Long)
+POST  /uploads/:id                     controllers.UploadController.upload(id: Long)
+GET   /courses/:id/fetch               controllers.UploadController.fetch(id: Long)
 
 # Attendance Routes
 GET   /attendances/:id                 controllers.AttendanceController.index(id: Long)

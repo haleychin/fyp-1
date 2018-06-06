@@ -15,18 +15,38 @@ import play.api.data.validation.Constraints._
 import java.nio.file.Paths
 import java.io.File
 import org.apache.poi.ss.usermodel.{WorkbookFactory, DataFormatter}
+import scala.concurrent.duration._
+import play.api.libs.ws._
+import play.api.libs.json._
 
 // Model
 import models._
 import utils._
 
 class UploadController @Inject()(
+  ws: WSClient,
+  importer: StudentImporter,
   repo: CourseStudentRepository,
   sRepo: StudentRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
 AbstractController(cc) with play.api.i18n.I18nSupport {
+
+  def wsRequest(url: String): WSRequest = {
+    ws.url(url)
+      .addHttpHeaders("Accept" -> "application/json")
+      .withRequestTimeout(10000.millis)
+  }
+
+  def fetch(id: Long) = authenticatedAction.async { implicit request =>
+    wsRequest(s"http://localhost:4567/courses/$id/students")
+      .get()
+      .map { r =>
+        importer.importStudent(r.json, sRepo, repo)
+        Redirect(routes.CourseController.showCourse(id)).flashing("success" -> "Successfully fetch attendance.")
+      }
+  }
 
   def upload(courseId: Long) = authenticatedAction(parse.multipartFormData) { implicit request =>
     request.body.file("file").map { file =>

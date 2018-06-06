@@ -84,7 +84,6 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           programmeToIntake += (s.programme -> s.intake)
         }
       }
-      println(programmeToIntake)
       CourseAPI(r._1, r._3, r._4, combined, programmeToIntake)
     }
   }

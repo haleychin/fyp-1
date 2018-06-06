@@ -70,14 +70,19 @@
 </div>
 
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="border rounded p-3">
       @courseStudent.importStudent(course.id)
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="border rounded p-3">
       @coursework.importCoursework(course.id)
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="border rounded p-3">
+      @exam.importExam(course.id)
     </div>
   </div>
 </div>
@@ -85,7 +90,11 @@
 <div class="row mt-3">
   <div class="col-md-6">
     <div class="border rounded p-3">
-      @exam.importExam(course.id)
+      <p class="h6">Import Students</p>
+      <div class="md-form form-group">
+        <a class="btn btn-primary btn-sm"
+          href="@routes.UploadController.fetch(course.id)">Import</a>
+      </div>
     </div>
   </div>
   <div class="col-md-6">
