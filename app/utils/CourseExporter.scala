@@ -253,9 +253,15 @@ class CourseExporter {
         hundredExamCell.setCellValue(examDetail.get.exam._1)
         hundredExamCell.setCellStyle(doubleStyle)
       }
-
-
     }
+
+    // =========
+    // Autowidth
+    // =========
+    for (i <- 0 to (totalCWCellNumber + 6)) {
+      sheet.autoSizeColumn(i)
+    }
+
 
     // Write the output to a file
     val fileOut = new FileOutputStream(filename)
