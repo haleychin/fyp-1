@@ -24,6 +24,7 @@ case class CourseAPI(
   students: Seq[Student],
   attendance: AttendanceAPI,
   coursework: CourseworkAPI,
+  exam: ExamAPI,
   programmeToIntake: Map[String,String])
 
 class CourseController @Inject()(
@@ -86,7 +87,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           programmeToIntake += (s.programme -> s.intake)
         }
       }
-      CourseAPI(r._1, r._3, r._4, combined, programmeToIntake)
+      CourseAPI(r._1, r._3, r._4, combined, r._6, programmeToIntake)
     }
   }
 
