@@ -16,24 +16,23 @@ class CourseExporter {
     val wb = new XSSFWorkbook()
     val createHelper = wb.getCreationHelper()
     val sheet = wb.createSheet("Sheet1")
-
+    val format = wb.createDataFormat()
     // =====
     // Style
     // =====
 
     // Bold Style
-    val boldStyle = wb.createCellStyle();
+    val centerboldStyle = wb.createCellStyle();
     val font = wb.createFont();
     font.setBold(true);
-    boldStyle.setFont(font);
-
-    // Center Style
-    val centerStyle = wb.createCellStyle();
     val halign = HorizontalAlignment.CENTER
     val valign = VerticalAlignment.CENTER
-    centerStyle.setAlignment(halign);
-    centerStyle.setVerticalAlignment(valign);
+    centerboldStyle.setAlignment(halign);
+    centerboldStyle.setVerticalAlignment(valign);
+    centerboldStyle.setFont(font);
 
+    val doubleStyle = wb.createCellStyle();
+    doubleStyle.setDataFormat(format.getFormat("0.0"));
 
     // ==============
     // Creating Row 3
@@ -48,8 +47,7 @@ class CourseExporter {
     cwBdCell.setCellValue(
       createHelper.createRichTextString("CW Breakdown")
     )
-    cwBdCell.setCellStyle(boldStyle)
-    cwBdCell.setCellStyle(centerStyle);
+    cwBdCell.setCellStyle(centerboldStyle)
     sheet.addMergedRegion(new CellRangeAddress(
       2, //first row (0-based)
       2, //last row  (0-based)
@@ -68,43 +66,36 @@ class CourseExporter {
     cwCell.setCellValue(
       createHelper.createRichTextString("Total CW")
     )
-    cwCell.setCellStyle(boldStyle)
-    cwCell.setCellStyle(centerStyle);
+    cwCell.setCellStyle(centerboldStyle)
 
     cw2Cell.setCellValue(
       createHelper.createRichTextString("Total CW")
     )
-    cw2Cell.setCellStyle(boldStyle)
-    cw2Cell.setCellStyle(centerStyle);
+    cw2Cell.setCellStyle(centerboldStyle)
 
     exam2Cell.setCellValue(
       createHelper.createRichTextString("Exam")
     )
-    exam2Cell.setCellStyle(boldStyle)
-    exam2Cell.setCellStyle(centerStyle);
+    exam2Cell.setCellStyle(centerboldStyle)
     examCell.setCellValue(
       createHelper.createRichTextString("Exam")
     )
-    examCell.setCellStyle(boldStyle)
-    examCell.setCellStyle(centerStyle);
+    examCell.setCellStyle(centerboldStyle)
 
     totalCell.setCellValue(
       createHelper.createRichTextString("Total")
     )
-    totalCell.setCellStyle(boldStyle)
-    totalCell.setCellStyle(centerStyle);
+    totalCell.setCellStyle(centerboldStyle)
 
     gradeCell.setCellValue(
       createHelper.createRichTextString("Grade")
     )
-    gradeCell.setCellStyle(boldStyle)
-    gradeCell.setCellStyle(centerStyle);
+    gradeCell.setCellStyle(centerboldStyle)
 
     remarkCell.setCellValue(
       createHelper.createRichTextString("Remark")
     )
-    remarkCell.setCellStyle(boldStyle)
-    remarkCell.setCellStyle(centerStyle);
+    remarkCell.setCellStyle(centerboldStyle)
 
     courseApi.students.zipWithIndex.foreach { case (student, i) =>
       // Create a row and put some cells in it. Rows are 0 based.
@@ -132,6 +123,26 @@ class CourseExporter {
       statusCell.setCellValue(
         createHelper.createRichTextString("Active")
       )
+
+      // Courseworks
+      val courseworkDetail = courseApi.coursework.courseworkDetails.get(student.id)
+      if (courseworkDetail.isDefined) {
+        courseApi.coursework.courseworks.zipWithIndex.foreach { case (c, i) =>
+
+          val totalMark = c._2
+          val name      = c._1
+          val mark      = courseworkDetail.get.courseworks.get(name).getOrElse(0.0)
+          var startIndex = 5
+
+          if (name == "Exam") {
+            startIndex += 3
+          }
+
+          val cell = row.createCell(i + startIndex)
+          cell.setCellValue(mark)
+          cell.setCellStyle(doubleStyle)
+        }
+      }
     }
 
     // Write the output to a file
