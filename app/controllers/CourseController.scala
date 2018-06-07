@@ -11,6 +11,7 @@ import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 
 import java.sql.Date
+import java.io.File
 import scala.collection.mutable.{Map}
 
 // Model
@@ -31,6 +32,7 @@ class CourseController @Inject()(
   aRepo: AttendanceRepository,
   cwRepo: CourseworkRepository,
   eRepo: ExamRepository,
+  exporter: CourseExporter,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -98,6 +100,23 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         case None => Ok(views.html.index())
       }
     }
+  }
+
+  def export(id: Long,
+    programme: String = "%",
+    intake: String = "%") = authenticatedAction.async { implicit request =>
+      getCourseDetail(id, programme, intake).map { courseApi =>
+        courseApi.course match {
+          case Some(c) =>
+            val filename = s"${c.title}.xlsx"
+            exporter.export(filename, courseApi)
+            Ok.sendFile(
+              content = new java.io.File(filename),
+              fileName = _ => filename
+            )
+          case None => Redirect(routes.CourseController.index()).flashing("error" -> "Course not found.")
+        }
+      }
   }
 
   def createCourse = authenticatedAction.async { implicit request =>

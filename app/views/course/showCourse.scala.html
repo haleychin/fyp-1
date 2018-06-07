@@ -88,7 +88,7 @@
 </div>
 
 <div class="row mt-3">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="border rounded p-3">
       <p class="h6">Import Students</p>
       <div class="md-form form-group">
@@ -97,12 +97,21 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="border rounded p-3">
       <p class="h6">Import Attendances</p>
       <div class="md-form form-group">
         <a class="btn btn-primary btn-sm"
           href="@routes.AttendanceController.newAttendance(course.id)">Import</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="border rounded p-3">
+      <p class="h6">Export Course Detail</p>
+      <div class="md-form form-group">
+        <a class="btn btn-info btn-sm"
+          href="@routes.CourseController.export(course.id)">Export</a>
       </div>
     </div>
   </div>

@@ -5,19 +5,38 @@
 
 
 @main("Import Attendance") {
+
+@common.jumbotron {
 <h1>Import Attendance</h1>
+<div class="row">
+  <div class="col-md-6">
+    <div class="list-group" id="myList" role="tablist">
+      @for(d <- details) {
+      <a class="list-group-item list-group-item-action waves-effect"
+        data-toggle="list" href="#group@d.groupId" role="tab">
+        Group @d.groupId</a>
+      }
+    </div>
+  </div>
 
-@for(d <- details) {
-<strong>Group: @d.groupId</strong>
-<ul>
-  @for(date <- d.dates) {
-  <li>
-    <a href="@routes.AttendanceController.fetch(id, d.groupId, date)">
-      @date
-    </a>
-  </li>
-  }
-</ul>
+  <div class="col-md-6">
+    <div class="tab-content pt-0">
+      @for(d <- details) {
+      <div class="tab-pane" id="group@d.groupId" role="tabpanel">
+        <div class="list-group">
+        @for(date <- d.dates) {
+        <a
+         class="list-group-item list-group-item-action waves-effect"
+         href="@routes.AttendanceController.fetch(id, d.groupId, date)">
+          @date
+        </a>
+         }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
 }
-
 }

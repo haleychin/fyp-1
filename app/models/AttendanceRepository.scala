@@ -99,10 +99,8 @@ class AttendanceRepository @Inject() (
           result.map { r =>
             r match {
               case Success(a) =>
-                println(a)
                 Some(a)
               case Failure(e) =>
-                println(e)
                 None
             }
           }

@@ -67,11 +67,11 @@ class CourseStudentRepository @Inject() (
     programme: String = "%",
     intake: String = "%"): Future[Seq[Student]] = {
 
-    val query = for {
+    val query = (for {
       cs <- coursesStudents
       courses <- cs.courses if courses.id === courseId
         students <- cs.students if (students.programme like programme) &&   (students.intake like intake)
-    } yield students
+    } yield students).sortBy(_.studentId)
 
     val result = db.run(query.result)
     result
