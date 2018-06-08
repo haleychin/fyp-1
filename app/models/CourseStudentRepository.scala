@@ -57,9 +57,9 @@ class CourseStudentRepository @Inject() (
   }
 
   def createWithStudentId(courseId: Long, studentId: String): Future[CourseStudent] = {
-    studentRepository.getByStudentId(studentId).flatMap(r =>
+    studentRepository.getByStudentId(studentId).flatMap { r =>
       create(courseId, r.get.id)
-    )
+    }
   }
 
   def getStudents(

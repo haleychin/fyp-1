@@ -38,7 +38,6 @@ class MetricRepository @Inject() (
     def * = (id, name, description, createdAt, updatedAt) <> (Metric.tupled, Metric.unapply)
   }
   val metricsTable = TableQuery[MetricTable]
-  metricsTable.schema.create.statements.foreach(println)
 
 
   // ==============
@@ -58,7 +57,6 @@ class MetricRepository @Inject() (
     def * = (questionId, metricId, createdAt, updatedAt) <> (QuestionMetric.tupled, QuestionMetric.unapply)
   }
   val questionMetrics = TableQuery[QuestionMetricTable]
-  questionMetrics.schema.create.statements.foreach(println)
 
   def create(questionId: Long, metricId: Long): Future[QuestionMetric] = {
     val seq = (

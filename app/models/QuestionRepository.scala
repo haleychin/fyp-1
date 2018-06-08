@@ -36,7 +36,6 @@ class QuestionRepository @Inject() (
   }
 
   val questions = TableQuery[QuestionTable]
-  questions.schema.create.statements.foreach(println)
 
   def create(examId: Long, name: String, totalMark: Double, mark: Double): Future[Question] = {
     val seq = (

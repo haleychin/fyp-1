@@ -26,10 +26,11 @@ class StudentImporter {
 
     students.map { values =>
       val date = values(6).as[String]
+      val studentId = values(2).as[Long].toString
       repo.create(
         values(0).as[String],
         values(1).as[String],
-        values(2).as[Long].toString,
+        studentId,
         values(3).as[String],
         values(4).as[String],
         values(5).as[String],
@@ -38,12 +39,13 @@ class StudentImporter {
         values(8).as[String],
         values(9).as[Int]).map { r =>
           r match {
-            case Success(u) =>
+            case Success(u) => {
               successCount += 1
               csRepo.create(courseId, u.id)
-            case Failure(e: PSQLException) =>
-              csRepo.createWithStudentId(courseId, values(2).as[String])
-              errorMessages += e.getServerErrorMessage().getDetail()
+            }
+            case Failure(e) => {
+              csRepo.createWithStudentId(courseId, studentId)
+            }
           }
         }
     }
