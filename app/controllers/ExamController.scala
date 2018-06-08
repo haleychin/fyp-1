@@ -22,6 +22,8 @@ class ExamController @Inject()(
   repo: ExamRepository,
   csRepo: CourseStudentRepository,
   cRepo: CourseRepository,
+  qRepo: QuestionRepository,
+  mRepo: MetricRepository,
   eParser: FinalExamParser,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
@@ -64,7 +66,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       val filename = Paths.get(file.filename).getFileName
       file.ref.moveTo(Paths.get(s"$filename"), replace = true)
 
-      eParser.save(filename.toString(), courseId, repo)
+      eParser.saveWithMetric(filename.toString(), courseId, repo,
+        qRepo, mRepo)
       Redirect(routes.CourseController.showCourse(courseId)).flashing(
         "success" -> s"Import final exam results successfully")
     }.getOrElse {

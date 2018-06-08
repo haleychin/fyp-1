@@ -38,4 +38,12 @@ class FinalExamParser {
     }
 
   }
+
+  def saveWithMetric(
+    file: String,
+    courseId: Long,
+    eRepo: ExamRepository,
+    qRepo: QuestionRepository,
+    mRepo: MetricRepository) {
+  }
 }

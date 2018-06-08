@@ -21,17 +21,17 @@ ActionBuilder[AuthenticatedRequest, AnyContent] {
       request: Request[A],
       block: AuthenticatedRequest[A] => Future[Result]): Future[Result] = {
     val optionalEmail = request.session.get("email")
+    val initialResult = Future.successful(Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first."))
 
     optionalEmail match {
       case Some(email) =>
-        repo.getByEmail(email).map { result =>
+        repo.getByEmail(email).flatMap { result =>
           result match {
-            case Some(u) =>
-              Await.result(block(new AuthenticatedRequest(u, request)), 1 second)
-            case None => Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first.")
+            case Some(u) => block(new AuthenticatedRequest(u, request))
+            case None => initialResult
           }
         }
-      case None => Future.successful(Results.Redirect(routes.SessionController.newSession).flashing("error" -> "Please login first."))
+      case None => initialResult
     }
 
   }
