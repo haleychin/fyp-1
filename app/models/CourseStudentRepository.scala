@@ -57,9 +57,9 @@ class CourseStudentRepository @Inject() (
   }
 
   def createWithStudentId(courseId: Long, studentId: String): Future[CourseStudent] = {
-    // Blocking and Force Unwrap here
-    val student = Await.result(studentRepository.getByStudentId(studentId).map(_.get), 1 second)
-    create(courseId, student.id)
+    studentRepository.getByStudentId(studentId).flatMap(r =>
+      create(courseId, r.get.id)
+    )
   }
 
   def getStudents(

@@ -33,6 +33,7 @@ class CourseController @Inject()(
   aRepo: AttendanceRepository,
   cwRepo: CourseworkRepository,
   eRepo: ExamRepository,
+  qRepo: MetricRepository,
   exporter: CourseExporter,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
