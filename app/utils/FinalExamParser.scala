@@ -45,5 +45,23 @@ class FinalExamParser {
     eRepo: ExamRepository,
     qRepo: QuestionRepository,
     mRepo: MetricRepository) {
+
+    val workbook  = WorkbookFactory.create(new File(file))
+    val formatter = new DataFormatter()
+    val sheet     = workbook.getSheetAt(0)
+
+    val examInfoRow    = sheet.getRow(1)
+    // val total          = examInfoRow.getCell(2).getNumericCellValue()
+    // val totalWeightage = examInfoRow.getCell(3).getNumericCellValue()
+
+    // Save Metric to DB
+    val metricSheet = workbook.getSheetAt(1)
+    for (row <- metricSheet) {
+      val name         = formatter.formatCellValue(row.getCell(0))
+      val description  = formatter.formatCellValue(row.getCell(1))
+
+      mRepo.create(courseId, name, description)
+    }
+
   }
 }
