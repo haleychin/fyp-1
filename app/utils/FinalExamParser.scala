@@ -6,7 +6,7 @@ import scala.concurrent.{ExecutionContext, Future}
 // For Files
 import java.nio.file.Paths
 import java.io.File
-import org.apache.poi.ss.usermodel.{WorkbookFactory, DataFormatter}
+import org.apache.poi.ss.usermodel.{WorkbookFactory, DataFormatter, Row, CellType}
 
 // Collections
 import scala.collection.JavaConversions._
@@ -94,32 +94,43 @@ class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
         val weightage = row.getCell(questionEnd + 2).getNumericCellValue()
 
         // Create exam record
-        eRepo.create(courseId, studentId, mark, total, weightage, totalWeightage).map(_ => studentId)
+        eRepo.create(courseId, studentId, mark, total, weightage, totalWeightage).map{_ =>
+            (row.getRowNum, studentId)}
       } else {
         Future.successful(None)
       }
     }
 
     val future = Future.sequence(examResults).map { list =>
-      list.foreach { studentId =>
-        // ====================
-        // Get question details
-        // ====================
-        var i: Int = 0;
-        for (i <- questionStart to questionEnd) {
-          val metricRow   = sheet.getRow(2)
-          val fullMarkRow = sheet.getRow(3)
+      for (i <- questionStart to questionEnd) {
+        val metricRow   = sheet.getRow(2)
+        val fullMarkRow = sheet.getRow(3)
+
+        list.foreach { case (rowNum: Int, studentId) =>
+          // ====================
+          // Get question details
+          // ====================
+          val studentRow  = sheet.getRow(rowNum)
 
           // Question Info
           val name        = rowOne.getCell(i).getStringCellValue()
           val metric      = metricRow.getCell(i).getStringCellValue()
           val fullMark    = fullMarkRow.getCell(i).getNumericCellValue()
 
-          // Unwrap Option[Exam]
-          qRepo.create(courseId, studentId.toString, name, fullMark, 4)
+          // Student mark for question
+          val markCell    = studentRow.getCell(i, Row.MissingCellPolicy.RETURN_NULL_AND_BLANK)
+          val celltype = CellType.forInt(markCell.getCellType())
+          if (celltype == CellType.NUMERIC) {
+            val mark = markCell.getNumericCellValue()
+            println(s"$i. Row: $rowNum, Student ID: $studentId")
+            println(s"Name: $name, Mark: $mark")
+
+            // Unwrap Option[Exam]
+            qRepo.create(courseId, studentId.toString, name, fullMark, mark)
+          } else {
+          }
         }
       }
-
     }
   }
 }
