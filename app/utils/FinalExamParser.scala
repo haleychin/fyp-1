@@ -1,6 +1,7 @@
 package utils
 
 import javax.inject._
+import scala.concurrent.{ExecutionContext, Future}
 
 // For Files
 import java.nio.file.Paths
@@ -15,7 +16,7 @@ import scala.collection.mutable.ArrayBuffer
 import models._
 
 @Singleton
-class FinalExamParser {
+class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
 
   def save(file: String, courseId: Long, repo: ExamRepository) {
     val workbook = WorkbookFactory.create(new File(file))
@@ -82,30 +83,43 @@ class FinalExamParser {
     val total          = rowOne.getCell(questionEnd + 1).getNumericCellValue()
     val totalWeightage = rowOne.getCell(questionEnd + 2).getNumericCellValue()
 
-    // ====================
-    // Get question details
-    // ====================
-    var i: Int = 0;
-    for (i <- questionStart to questionEnd) {
-      val metricRow   = sheet.getRow(2)
-      val fullMarkRow = sheet.getRow(3)
+    // ===============
+    // Save Exam to DB
+    // ===============
 
-      // Question Info
-      val name        = rowOne.getCell(i).getStringCellValue()
-      val metric      = metricRow.getCell(i).getStringCellValue()
-      val fullMark    = fullMarkRow.getCell(i).getNumericCellValue()
+    val examResults = sheet.drop(4).map { row =>
+      if (row.getRowNum > 3) {
+        val studentId = formatter.formatCellValue(row.getCell(0))
+        val mark      = row.getCell(questionEnd + 1).getNumericCellValue()
+        val weightage = row.getCell(questionEnd + 2).getNumericCellValue()
 
-      for (row <- sheet) {
-        if (row.getRowNum > 3) {
-          val studentId = row.getCell(0).getStringCellValue()
-          val mark      = row.getCell(questionEnd + 1).getNumericCellValue()
-          val weightage = row.getCell(questionEnd + 2).getNumericCellValue()
-
-          // Create exam record
-          eRepo.create(courseId, studentId, mark, total, weightage, totalWeightage)
-        }
+        // Create exam record
+        eRepo.create(courseId, studentId, mark, total, weightage, totalWeightage).map(_ => studentId)
+      } else {
+        Future.successful(None)
       }
     }
 
+    val future = Future.sequence(examResults).map { list =>
+      list.foreach { studentId =>
+        // ====================
+        // Get question details
+        // ====================
+        var i: Int = 0;
+        for (i <- questionStart to questionEnd) {
+          val metricRow   = sheet.getRow(2)
+          val fullMarkRow = sheet.getRow(3)
+
+          // Question Info
+          val name        = rowOne.getCell(i).getStringCellValue()
+          val metric      = metricRow.getCell(i).getStringCellValue()
+          val fullMark    = fullMarkRow.getCell(i).getNumericCellValue()
+
+          // Unwrap Option[Exam]
+          qRepo.create(courseId, studentId.toString, name, fullMark, 4)
+        }
+      }
+
+    }
   }
 }

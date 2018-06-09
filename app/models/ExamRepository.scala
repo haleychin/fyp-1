@@ -104,6 +104,7 @@ class ExamRepository @Inject() (
                 case Success(a) =>
                   Some(a)
                 case Failure(e) =>
+                  println(e)
                   None
               }
             }
