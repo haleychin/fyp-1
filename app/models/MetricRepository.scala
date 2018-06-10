@@ -59,14 +59,25 @@ class MetricRepository @Inject() (
   }
   val questionMetrics = TableQuery[QuestionMetricTable]
 
-  def create(questionId: Long, metricId: Long): Future[QuestionMetric] = {
-    val seq = (
-    (questionMetrics.map(qm => (qm.questionId, qm.metricId))
-      returning questionMetrics.map(qm => (qm.createdAt, qm.updatedAt))
-      into ((form, qm) => QuestionMetric(form._1, form._2, qm._1, qm._2))
-      ) += (questionId, metricId)
-    )
-    db.run(seq)
+  def relateQuestionWithMetric(questionId: Long, metric: String): Future[Option[QuestionMetric]] = {
+    getByMetricName(metric).flatMap { result =>
+      result match {
+        case Some(m) =>
+          val seq = (
+          (questionMetrics.map(qm => (qm.questionId, qm.metricId))
+            returning questionMetrics.map(qm => (qm.createdAt, qm.updatedAt))
+            into ((form, qm) => QuestionMetric(form._1, form._2, qm._1, qm._2))
+            ) += (questionId, m.id)
+          )
+          db.run(seq).map { r => Some(r) }
+        case None =>
+          Future(None)
+      }
+    }
+  }
+
+  def getByMetricName(name: String): Future[Option[Metric]] = db.run {
+    metricsTable.filter(_.name === name).result.headOption
   }
 
   def create(courseId: Long, name: String, description: String): Future[Metric] = {

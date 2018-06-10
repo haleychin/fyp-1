@@ -86,7 +86,6 @@ class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
     // ===============
     // Save Exam to DB
     // ===============
-
     val examResults = sheet.drop(4).map { row =>
       if (row.getRowNum > 3) {
         val studentId = formatter.formatCellValue(row.getCell(0))
@@ -101,6 +100,9 @@ class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
       }
     }
 
+    // ===================
+    // Save Question to DB
+    // ===================
     val future = Future.sequence(examResults).map { list =>
       for (i <- questionStart to questionEnd) {
         val metricRow   = sheet.getRow(2)
@@ -122,12 +124,20 @@ class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
           val celltype = CellType.forInt(markCell.getCellType())
           if (celltype == CellType.NUMERIC) {
             val mark = markCell.getNumericCellValue()
-            println(s"$i. Row: $rowNum, Student ID: $studentId")
-            println(s"Name: $name, Mark: $mark")
+            // println(s"$i. Row: $rowNum, Student ID: $studentId")
+            // println(s"Name: $name, Mark: $mark")
 
-            // Unwrap Option[Exam]
-            qRepo.create(courseId, studentId.toString, name, fullMark, mark)
-          } else {
+            // ===============
+            // Create question
+            // ===============
+            qRepo.create(courseId, studentId.toString, name, fullMark, mark).map { q =>
+              if (q.isDefined) {
+                // =========================
+                // Link Question with Metric
+                // =========================
+                mRepo.relateQuestionWithMetric(q.get.id, metric)
+              }
+            }
           }
         }
       }
