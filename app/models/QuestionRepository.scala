@@ -34,7 +34,7 @@ class QuestionRepository @Inject() (
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
 
-    def * = (id, courseId, studentId, name, mark, totalMark, createdAt, updatedAt) <> (Question.tupled, Question.unapply)
+    def * = (id, courseId, studentId, name, totalMark, mark, createdAt, updatedAt) <> (Question.tupled, Question.unapply)
   }
 
   val questions = TableQuery[QuestionTable]

@@ -84,16 +84,7 @@ class MetricRepository @Inject() (
 
   def getMetrics(
     courseId: Long
-  ) {
-
-    // Get all metrics of contain in a course
-    // val metricQuery = for {
-    //   m <- metricsTable
-    //   courses <- m.courses if courses.id === courseId
-    // } yield m
-
-    // db.run(metricQuery.result).map(println(_.id))
-
+  ): Future[Seq[(Question, Metric)]] =  {
     // Get questions for specific metric
     val query = for {
       qm <- questionMetrics
@@ -102,7 +93,7 @@ class MetricRepository @Inject() (
     } yield (questions, metrics)
 
     val result = db.run(query.result)
-    result.map(r => println(r.length))
+    result
   }
 
   def create(courseId: Long, name: String, description: String): Future[Metric] = {

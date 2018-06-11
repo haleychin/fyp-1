@@ -1,0 +1,175 @@
+@import utils.MetricStat
+@import scala.collection.mutable.LinkedHashMap
+@(
+  course: Course,
+  students: Seq[Student],
+  data: ExamAPI,
+  metrics: LinkedHashMap[String,MetricStat]
+)(
+  implicit request: RequestHeader,
+  flash: Flash
+)
+@import util._
+
+
+@getExamDetail(id: Long) = @{
+  data.examDetails.get(id)
+}
+
+@getTotal(id: Long) = @{
+  getExamDetail(id).map(_.exam._1).getOrElse("-")
+}
+
+@getStatus(id: Long) = @{
+  getExamDetail(id).map(_.exam._3).getOrElse("-")
+}
+
+@getWeightage(id: Long) = @{
+  val examDetails = getExamDetail(id)
+
+  if (examDetails.isDefined) {
+    formatDouble(examDetails.get.exam._2) + "%"
+  } else {
+    "-"
+  }
+}
+
+@action = {
+<a class="btn btn-primary"
+   href="@routes.ExamController.newImport(course.id)">Import
+   Exam</a>
+}
+
+@main(course.title) {
+@common.tabNav {
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.CourseController.showCourse(course.id)">Overview</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.CourseworkController.index(course.id)">Coursework</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link active"
+      href="@routes.ExamController.index(course.id)">Exam</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link"
+      href="@routes.AttendanceController.index(course.id)">Attendance</a>
+  </li>
+}
+
+@common.jumbotron {
+<h3>@course.title</h3>
+@common.sortableTable {
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th class="text-center">Marks (@data.total marks)</th>
+      <th class="text-center">Weightage (@data.weightage%)</th>
+      <th class="text-center">Status</th>
+    </tr>
+  </thead>
+  <tbody>
+  @for(s <- students) {
+  <tr>
+    <td>
+      <a href="@routes.StudentController.show(s.id)">
+        @s.name
+      </a>
+    </td>
+    <td class="text-center">
+      @getTotal(s.id)
+    </td>
+    <td class="text-center">
+      @getWeightage(s.id)
+    </td>
+
+    <td class="text-center
+      @colColor(getStatus(s.id))">
+      @getStatus(s.id)
+    </td>
+  </tr>
+  }
+  </tbody>
+  <tfoot>
+  <tr class="text-center">
+    <td>
+    </td>
+    <td>
+      <strong>Average: </strong>
+      @formatDouble(data.statistic.averageMark)
+    </td>
+    <td>
+      <strong>Average: </strong>
+      @formatDouble(data.statistic.averageWeightage)
+    </td>
+    <td>
+      <strong>Pass / Fail: </strong>
+      @data.statistic.passCount / @data.statistic.failCount
+    </td>
+  </tr>
+  </tfoot>
+}
+}
+
+<div class="row">
+  <div class="col">
+    @common.card {
+      Statistic
+    } {
+    <table class="table table-borderless table-sm">
+      <tr>
+        <th>Max score: </th>
+        <td>@formatDouble(data.descStat.max)</td>
+      </tr>
+      <tr>
+        <th>Mean: </th>
+        <td>@formatDouble(data.descStat.mean)</td>
+      </tr>
+      <tr>
+        <th>Median: </th>
+        <td>@formatDouble(data.descStat.median)</td>
+      </tr>
+      <tr>
+        <th>Mode: </th>
+        <td>@formatDouble(data.descStat.mode)</td>
+      </tr>
+      <tr>
+        <th>Standard Deviation: </th>
+        <td>@formatDouble(data.descStat.standardDeviation)</td>
+      </tr>
+      <tr>
+        <th>Variance: </th>
+        <td>@formatDouble(data.descStat.variance)</td>
+      </tr>
+    </table>
+    }
+  </div>
+  <div class="col">
+    @common.card {
+      Metric Statistic
+    } {
+    <table class="table table-borderless table-sm">
+      <tr>
+        <th>Metric Name</th>
+        <th>Total Mark</th>
+        <th>Percentage</th>
+        <th>Average</th>
+        <th>Frequency</th>
+      </tr>
+      @for((key, stat) <- metrics) {
+      <tr>
+        <th>@key</th>
+        <td>@stat.total / @stat.maxMark</td>
+        <td>@formatDouble(stat.percentage)%</td>
+        <td>@formatDouble(stat.average)</td>
+        <td>@stat.frequency</td>
+      </tr>
+      }
+    </table>
+    }
+  </div>
+</div>
+}

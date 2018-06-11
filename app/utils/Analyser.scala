@@ -1,7 +1,14 @@
 package utils
 
-import scala.collection.mutable.ArrayBuffer
-import models.{Insight,AStat,CourseworkDetailsAPI}
+import scala.collection.mutable.{ArrayBuffer,LinkedHashMap}
+import models.{Insight,AStat,CourseworkDetailsAPI,Metric,Question}
+
+case class MetricStat(
+  var total: Double,
+  var maxMark: Double,
+  var average: Double,
+  var percentage: Double,
+  var frequency: Int)
 
 object Analyser {
 
@@ -36,5 +43,39 @@ object Analyser {
     }
 
     Insight(dangerLevel, reasons)
+  }
+
+  def analyseExam(data: Seq[(Question, Metric)]): LinkedHashMap[String, MetricStat] = {
+    val map = LinkedHashMap[String, MetricStat]()
+    data.foreach { case (question, metric) =>
+      if (map.contains(metric.name)) {
+        val stat = map.get(metric.name).get
+        stat.total += question.mark
+        stat.maxMark += question.totalMark
+        stat.frequency += 1
+        println("============")
+        println("Mark: " + question.mark)
+        println("Total: " + question.totalMark)
+        println("Stat Total: " + stat.total)
+        println("Stat Max: " + stat.maxMark)
+      } else {
+        val stat = MetricStat(
+          question.mark,
+          question.totalMark,
+          0,
+          0,
+          1,
+        )
+        map += (metric.name -> stat)
+      }
+
+    }
+
+    map.foreach { case (_, value) =>
+      value.average = value.total / value.frequency
+      value.percentage = value.total / value.maxMark * 100
+    }
+
+    map
   }
 }
