@@ -16,6 +16,7 @@ case class MetricStat(
   var total: Double,
   var maxMark: Double,
   var questions: LinkedHashMap[String,QuestionStat] = LinkedHashMap[String,QuestionStat](),
+  var description: String,
   var average: Double = 0,
   var percentage: Double = 0,
   var frequency: Int = 1
@@ -86,7 +87,8 @@ object Analyser {
         val stat = MetricStat(
           question.mark,
           question.totalMark,
-          questionMap
+          questionMap,
+          metric.description
         )
         map += (metric.name -> stat)
       }

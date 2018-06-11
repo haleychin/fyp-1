@@ -114,43 +114,7 @@
 }
 }
 
-<div class="row mb-3">
-  <div class="col">
-    @common.card {
-      Metrics Breakdown
-    } {
-      @for((key, stat) <- metrics) {
-      <h3>@key</h3>
-      <table class="table table-bordered table-sm">
-        <tr>
-          <th>Question</th>
-          <th>Total Mark</th>
-          <th>Percentage</th>
-          <th>Average</th>
-          <th>Frequency</th>
-        </tr>
-        @for((key, qstat) <- stat.questions) {
-        <tr>
-          <th>@key</th>
-          <td>@qstat.total / @qstat.maxMark</td>
-          <td>@formatDouble(qstat.percentage)%</td>
-          <td>@formatDouble(qstat.average)</td>
-          <td>@qstat.frequency</td>
-        </tr>
-        }
-        <tr class="blue-grey lighten-3">
-          <th>Total</th>
-          <td>@stat.total / @stat.maxMark</td>
-          <td>@formatDouble(stat.percentage)%</td>
-          <td>@formatDouble(stat.average)</td>
-          <td>@stat.frequency</td>
-        </tr>
-      </table>
-      }
-    }
-  </div>
-</div>
-<div class="row">
+<div class="row mb-4">
   <div class="col">
     @common.card {
       Statistic
@@ -183,29 +147,68 @@
     </table>
     }
   </div>
+</div>
+
+<div class="row mb-3">
   <div class="col">
     @common.card {
-      Metric Statistic
+      Metrics Breakdown
     } {
-    <table class="table table-borderless table-sm">
-      <tr>
-        <th>Metric Name</th>
-        <th>Total Mark</th>
-        <th>Percentage</th>
-        <th>Average</th>
-        <th>Frequency</th>
-      </tr>
+      <p class="h3-responsive">Summary</p>
+      <table class="table table-sm text-center">
+        <tr class="special-color white-text">
+          <th>Metric Name</th>
+          <th>Total Mark</th>
+          <th>Percentage</th>
+          <th>Average</th>
+          <th>Frequency</th>
+        </tr>
+        @for((key, stat) <- metrics) {
+        <tr>
+          <th>@key</th>
+          <td>@stat.total / @stat.maxMark</td>
+          <td>@formatDouble(stat.percentage)%</td>
+          <td>@formatDouble(stat.average)</td>
+          <td>@stat.frequency</td>
+        </tr>
+        }
+      </table>
+
+      <hr>
+      <p class="h3-responsive">Details</p>
       @for((key, stat) <- metrics) {
-      <tr>
-        <th>@key</th>
-        <td>@stat.total / @stat.maxMark</td>
-        <td>@formatDouble(stat.percentage)%</td>
-        <td>@formatDouble(stat.average)</td>
-        <td>@stat.frequency</td>
-      </tr>
+      <p class="mt-2">
+        <strong>@key</strong><br>
+        <small class="text-muted">@stat.description</small>
+      </p>
+      <table class="table table-sm rounded text-center">
+        <tr class="special-color white-text">
+          <th>Question</th>
+          <th>Mark / Total</th>
+          <th>Percentage</th>
+          <th>Average</th>
+          <th>Frequency</th>
+        </tr>
+        @for((key, qstat) <- stat.questions) {
+        <tr>
+          <th>@key</th>
+          <td>@qstat.total / @qstat.maxMark</td>
+          <td>@formatDouble(qstat.percentage)%</td>
+          <td>@formatDouble(qstat.average)</td>
+          <td>@qstat.frequency</td>
+        </tr>
+        }
+        <tr class="blue-grey lighten-3">
+          <th>Total</th>
+          <td>@stat.total / @stat.maxMark</td>
+          <td>@formatDouble(stat.percentage)%</td>
+          <td>@formatDouble(stat.average)</td>
+          <td>@stat.frequency</td>
+        </tr>
+      </table>
       }
-    </table>
     }
   </div>
 </div>
+
 }
