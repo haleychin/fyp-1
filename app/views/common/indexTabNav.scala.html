@@ -1,0 +1,28 @@
+@(courseId: Long, activeTab: String)
+@isActive(tab: String) = @{
+  var className = ""
+  if (activeTab == tab) {
+    className = "active"
+  }
+
+  className
+}
+
+@common.tabNav {
+  <li class="nav-item">
+    <a class="nav-link @isActive("Overview")"
+      href="@routes.CourseController.showCourse(courseId)">Overview</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link @isActive("Coursework")"
+      href="@routes.CourseworkController.index(courseId)">Coursework</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link @isActive("Exam")"
+      href="@routes.ExaminationController.index(courseId)">Exam</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link @isActive("Attendance")"
+      href="@routes.AttendanceController.index(courseId)">Attendance</a>
+  </li>
+}

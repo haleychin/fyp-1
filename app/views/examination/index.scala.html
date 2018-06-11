@@ -41,25 +41,8 @@
 }
 
 @main(course.title) {
-@common.tabNav {
-  <li class="nav-item">
-    <a class="nav-link"
-      href="@routes.CourseController.showCourse(course.id)">Overview</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link"
-      href="@routes.CourseworkController.index(course.id)">Coursework</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link active"
-      href="@routes.ExamController.index(course.id)">Exam</a>
-  </li>
-  <li class="nav-item">
-    <a class="nav-link"
-      href="@routes.AttendanceController.index(course.id)">Attendance</a>
-  </li>
-}
 
+@common.indexTabNav(course.id, "Exam")
 @common.jumbotron {
 <h3>@course.title</h3>
 @common.sortableTable {
