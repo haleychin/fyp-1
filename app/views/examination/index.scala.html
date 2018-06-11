@@ -11,7 +11,6 @@
 )
 @import util._
 
-
 @getExamDetail(id: Long) = @{
   data.examDetails.get(id)
 }
@@ -34,14 +33,8 @@
   }
 }
 
-@action = {
-<a class="btn btn-primary"
-   href="@routes.ExamController.newImport(course.id)">Import
-   Exam</a>
-}
-
 @main(course.title) {
-
+@common.indexHeader(course)
 @common.indexTabNav(course.id, "Exam")
 @common.jumbotron {
 <h3>@course.title</h3>
@@ -138,7 +131,7 @@
       Metrics Breakdown
     } {
       <p class="h3-responsive">Summary</p>
-      <table class="table table-sm text-center">
+      <table class="table table-sm text-center mb-5">
         <tr class="special-color white-text">
           <th>Metric Name</th>
           <th>Total Mark</th>
@@ -157,14 +150,13 @@
         }
       </table>
 
-      <hr>
-      <p class="h3-responsive">Details</p>
+      <p class="mt-5 h3-responsive">Details</p>
       @for((key, stat) <- metrics) {
-      <p class="mt-2">
+      <p>
         <strong>@key</strong><br>
         <small class="text-muted">@stat.description</small>
       </p>
-      <table class="table table-sm rounded text-center">
+      <table class="table table-sm rounded text-center mb-5">
         <tr class="special-color white-text">
           <th>Question</th>
           <th>Mark / Total</th>
