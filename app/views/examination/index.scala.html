@@ -114,6 +114,42 @@
 }
 }
 
+<div class="row mb-3">
+  <div class="col">
+    @common.card {
+      Metrics Breakdown
+    } {
+      @for((key, stat) <- metrics) {
+      <h3>@key</h3>
+      <table class="table table-bordered table-sm">
+        <tr>
+          <th>Question</th>
+          <th>Total Mark</th>
+          <th>Percentage</th>
+          <th>Average</th>
+          <th>Frequency</th>
+        </tr>
+        @for((key, qstat) <- stat.questions) {
+        <tr>
+          <th>@key</th>
+          <td>@qstat.total / @qstat.maxMark</td>
+          <td>@formatDouble(qstat.percentage)%</td>
+          <td>@formatDouble(qstat.average)</td>
+          <td>@qstat.frequency</td>
+        </tr>
+        }
+        <tr class="blue-grey lighten-3">
+          <th>Total</th>
+          <td>@stat.total / @stat.maxMark</td>
+          <td>@formatDouble(stat.percentage)%</td>
+          <td>@formatDouble(stat.average)</td>
+          <td>@stat.frequency</td>
+        </tr>
+      </table>
+      }
+    }
+  </div>
+</div>
 <div class="row">
   <div class="col">
     @common.card {

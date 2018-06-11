@@ -3,17 +3,27 @@ package utils
 import scala.collection.mutable.{ArrayBuffer,LinkedHashMap}
 import models.{Insight,AStat,CourseworkDetailsAPI,Metric,Question}
 
+
+case class QuestionStat(
+  var total: Double,
+  var maxMark: Double,
+  var average: Double = 0,
+  var frequency: Int = 1,
+  var percentage: Double = 0
+)
+
 case class MetricStat(
   var total: Double,
   var maxMark: Double,
-  var average: Double,
-  var percentage: Double,
-  var frequency: Int)
+  var questions: LinkedHashMap[String,QuestionStat] = LinkedHashMap[String,QuestionStat](),
+  var average: Double = 0,
+  var percentage: Double = 0,
+  var frequency: Int = 1
+)
 
 object Analyser {
 
-  def analyseAttendance(stat: AStat): Insight = {
-    var dangerLevel = 0
+  def analyseAttendance(stat: AStat): Insight = { var dangerLevel = 0
     var reasons = ArrayBuffer[String]()
 
     if (stat.attendanceRate < 80) {
@@ -53,18 +63,30 @@ object Analyser {
         stat.total += question.mark
         stat.maxMark += question.totalMark
         stat.frequency += 1
-        println("============")
-        println("Mark: " + question.mark)
-        println("Total: " + question.totalMark)
-        println("Stat Total: " + stat.total)
-        println("Stat Max: " + stat.maxMark)
+
+        if (stat.questions.contains(question.name)) {
+          val qStat = stat.questions.get(question.name).get
+          println(question.name)
+          qStat.total += question.mark
+          qStat.maxMark += question.totalMark
+          qStat.frequency += 1
+        } else {
+          val qStat = QuestionStat(
+            question.mark,
+            question.totalMark
+          )
+          stat.questions += (question.name -> qStat)
+        }
       } else {
+        val qStat = QuestionStat(
+          question.mark,
+          question.totalMark
+        )
+        val questionMap = LinkedHashMap(question.name -> qStat)
         val stat = MetricStat(
           question.mark,
           question.totalMark,
-          0,
-          0,
-          1,
+          questionMap
         )
         map += (metric.name -> stat)
       }
@@ -74,6 +96,11 @@ object Analyser {
     map.foreach { case (_, value) =>
       value.average = value.total / value.frequency
       value.percentage = value.total / value.maxMark * 100
+
+      value.questions.foreach { case (_, value) =>
+        value.average = value.total / value.frequency
+        value.percentage = value.total / value.maxMark * 100
+      }
     }
 
     map
