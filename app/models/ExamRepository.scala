@@ -143,6 +143,17 @@ class ExamRepository @Inject() (
     }
   }
 
+  def getExamsMetrics(
+    courseId: Long,
+    programme: String = "%",
+    intake: String ="%") {
+    val query = for {
+      e <- exams
+      courses <- e.courses if courses.id === courseId
+      students <- e.students if (students.programme like programme) &&   (students.intake like intake)
+    } yield (students, e)
+  }
+
   def getCoursesExam(studentId: Long): Future[CExamAPI] = {
     val query = for {
       e <- exams

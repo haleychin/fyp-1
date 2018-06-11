@@ -29,6 +29,11 @@ POST   /courses/:id          controllers.CourseController.updateCourse(id: Long)
 GET    /courses/:id/delete   controllers.CourseController.deleteCourse(id: Long)
 GET    /courses/:id/export   controllers.CourseController.export(id: Long, programme: String ?= "%", intake: String ?= "%")
 
+# CourseStudent Routes
+GET    /courses/:id/add                   controllers.CourseStudentController.newCourseStudent(id: Long)
+POST   /courses/:id/students              controllers.CourseStudentController.create(id: Long)
+POST   /courses/:id/students/:studentId   controllers.CourseStudentController.delete(id: Long, studentId: Long)
+
 # Student Routes
 GET    /students             controllers.StudentController.index
 GET    /students/new         controllers.StudentController.newStudent
@@ -37,11 +42,6 @@ POST   /students             controllers.StudentController.create
 GET    /students/:id/edit    controllers.StudentController.edit(id: Long)
 POST   /students/:id         controllers.StudentController.update(id: Long)
 GET    /students/:id/delete  controllers.StudentController.delete(id: Long)
-
-# CourseStudent Routes
-GET    /courses/:id/add                   controllers.CourseStudentController.newCourseStudent(id: Long)
-POST   /courses/:id/students              controllers.CourseStudentController.create(id: Long)
-POST   /courses/:id/students/:studentId   controllers.CourseStudentController.delete(id: Long, studentId: Long)
 
 # Upload Routes
 POST  /uploads/:id                     controllers.UploadController.upload(id: Long)
@@ -54,15 +54,14 @@ GET   /attendances/:id/group/          controllers.AttendanceController.fetch(id
 
 # Coursework Routes
 GET   /courseworks/:id                 controllers.CourseworkController.index(id: Long)
-
-# Marks Routes
-GET   /blackboard/:id/new              controllers.CourseworkController.newImport(id: Long)
-POST  /blackboard/:id/save             controllers.CourseworkController.save(id: Long)
-GET   /blackboard/:id/selection        controllers.CourseworkController.selection(id: Long)
-POST  /blackboard/:id/save_selection   controllers.CourseworkController.saveSelection(id: Long)
+GET   /courseworks/:id/new              controllers.CourseworkController.newImport(id: Long)
+POST  /courseworks/:id/save             controllers.CourseworkController.save(id: Long)
+GET   /courseworks/:id/selection        controllers.CourseworkController.selection(id: Long)
+POST  /courseworks/:id/save_selection   controllers.CourseworkController.saveSelection(id: Long)
 
 # Exam Routes
 GET   /exam/:id                        controllers.ExamController.index(id: Long)
+GET   /examination/:id                 controllers.ExaminationController.index(id: Long)
 GET   /exam/:id/new                    controllers.ExamController.newImport(id: Long)
 POST  /exam/:id/save                   controllers.ExamController.save(id: Long)
 

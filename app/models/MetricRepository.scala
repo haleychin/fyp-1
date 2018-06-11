@@ -18,7 +18,8 @@ case class QuestionMetric(questionId: Long, metricId: Long,
 @Singleton
 class MetricRepository @Inject() (
   dbConfigProvider: DatabaseConfigProvider,
-  val questionRepo: QuestionRepository
+  val questionRepo: QuestionRepository,
+  val courseRepo: CourseRepository
 )(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -36,6 +37,7 @@ class MetricRepository @Inject() (
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
 
+    def courses = foreignKey("fk_courses", courseId, courseRepo.courses)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
     def * = (id, courseId, name, description, createdAt, updatedAt) <> (Metric.tupled, Metric.unapply)
   }
   val metricsTable = TableQuery[MetricTable]
@@ -80,6 +82,29 @@ class MetricRepository @Inject() (
     metricsTable.filter(_.name === name).result.headOption
   }
 
+  def getMetrics(
+    courseId: Long
+  ) {
+
+    // Get all metrics of contain in a course
+    // val metricQuery = for {
+    //   m <- metricsTable
+    //   courses <- m.courses if courses.id === courseId
+    // } yield m
+
+    // db.run(metricQuery.result).map(println(_.id))
+
+    // Get questions for specific metric
+    val query = for {
+      qm <- questionMetrics
+      questions <- qm.questions if questions.courseId === courseId
+      metrics <- qm.metrics if metrics.id === qm.metricId
+    } yield (questions, metrics)
+
+    val result = db.run(query.result)
+    result.map(r => println(r.length))
+  }
+
   def create(courseId: Long, name: String, description: String): Future[Metric] = {
     val seq = (
     (metricsTable.map(u => (u.courseId, u.name, u.description))
@@ -91,7 +116,5 @@ class MetricRepository @Inject() (
     db.run(seq)
   }
 
-  // def getMetric(courseId: Long, name: String): Future[Metric] = {
-  // }
 }
 
