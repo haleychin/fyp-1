@@ -14,31 +14,6 @@ import scala.concurrent.duration._
 import scala.collection.mutable.{LinkedHashMap, LinkedHashSet}
 import utils._
 
-case class Status(name: String = "-", reason: String = "")
-case class CwStatistic(
-  averages: LinkedHashMap[String, Double],
-  passCount: Int,
-  failCount: Int,
-  var gradeFrequency: LinkedHashMap[String,Int] = LinkedHashMap[String,Int]())
-
-// Return a map of Student Id -> Courseworks Details
-case class CourseworkAPI(
-  courseworkDetails: LinkedHashMap[Long,CourseworkDetailsAPI],
-  courseworks: LinkedHashSet[(String, Double)],
-  var total: Double, // Maximum mark for the total of courseworks
-  statistic: CwStatistic,
-  var descStat: DescriptiveStatistic)
-
-case class CourseworkDetailsAPI(
-  student: Student,
-  var courseworks: LinkedHashMap[String, Double],
-  var courseworksTotal: LinkedHashMap[String,Double],
-  var total: Double,
-  var status: String = "",
-  var grade: Status = Status(),
-  var insight: Insight = Insight())
-
-
 case class Coursework(courseId: Long, studentId: Long, name: String,
   mark: Double, totalMark: Double, createdAt: Timestamp,
   updateAt: Timestamp)
