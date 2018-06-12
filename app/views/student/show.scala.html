@@ -1,20 +1,20 @@
 @(student: Student, data: StudentAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
 
-@attendances(data: StudentAPI, id: Long) = @{
+@attendances(id: Long) = @{
   data.attendances.studentDetails.get(id)
 }
 
-@courseworks(data: StudentAPI, id: Long) = @{
+@courseworks(id: Long) = @{
   data.courseworks.courseworkDetails.get(id)
 }
 
-@exams(data: StudentAPI, id: Long) = @{
+@exams(id: Long) = @{
   data.exams.examDetails.get(id)
 }
 
-@getStatus(data: StudentAPI, id: Long) = @{
-  courseworks(data, id).get.status
+@getStatus(id: Long) = @{
+  courseworks(id).get.status
 }
 
 
@@ -74,6 +74,7 @@
     </table>
   </div>
 </div>
+}
 
 <div class="row mb-3">
 <div class="col">
@@ -85,13 +86,39 @@
   <tr class="text-center">
     <th>Course</th>
     <th>Semester</th>
+    <th>Attendance Rate</th>
+    <th>Couseworks</th>
+    <th>Exam</th>
   </tr>
 </thead>
-<tbody>
+<tbody class="text-center">
   @for(course <- data.courses) {
   <tr>
     <td>@course.title</td>
     <td>@course.startDate</td>
+    <td>
+    @if(attendances(course.id).isDefined) {
+      @formatDouble(attendances(course.id).get.attendanceRate)%
+    } else {
+      -
+    }
+    </td>
+    <td>
+    @if(courseworks(course.id).isDefined) {
+      @formatDouble(courseworks(course.id).get.totalMark)%
+      / @formatDouble(courseworks(course.id).get.fullMark)%
+    } else {
+      -
+    }
+    </td>
+    <td>
+    @if(exams(course.id).isDefined) {
+      @formatDouble(exams(course.id).get.exam._2)%
+      / @formatDouble(exams(course.id).get.fullWeightage)%
+    } else {
+      -
+    }
+    </td>
   </tr>
   }
 </tbody>
@@ -99,5 +126,4 @@
 }
 </div>
 </div>
-}
 }
