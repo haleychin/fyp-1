@@ -75,87 +75,29 @@
   </div>
 </div>
 
-
-<div class="row">
-  <div class="col">
-    @for(course <- data.courses) {
-    <div class="mt-2">
-        <h5>@course.title</h5>
-
-        <h6>Attendances:</h6>
-        @if(attendances(data, course.id).isDefined) {
-        <table class="table table-bordered table-sm text-center">
-          <thead>
-            @for((d, v) <- attendances(data, course.id).get.attendances) {
-            <th>@d</th>
-            }
-            <th>Attendance Rate</th>
-          </thead>
-          <tbody>
-            @for((d, v) <- attendances(data, course.id).get.attendances) {
-            <td>
-              @{
-              if (v == "attend") {
-              <i class="fa fa-check green-text" aria-hidden="true"></i>
-              } else if (v == "absent") {
-              <i class="fa fa-close red-text" aria-hidden="true"></i>
-              } else {
-              "-"
-              }
-              }
-            </td>
-            }
-            <td>@formatDouble(attendances(data, course.id).get.attendanceRate)%</td>
-          </tbody>
-        </table>
-        } else {
-          <p>No data available yet</p>
-        }
-
-        <h6>Courseworks:</h6>
-        @if(courseworks(data, course.id).isDefined) {
-        <table class="table table-bordered table-sm text-center">
-          <thead>
-            @for((title, _) <- courseworks(data, course.id).get.courseworks) {
-            <th>@title</th>
-            }
-            <th>Total (@courseworks(data, course.id).get.fullMark%)</th>
-            <th>Status</th>
-          </thead>
-          <tbody>
-            @for((title, mark) <- courseworks(data, course.id).get.courseworks) {
-              <td>@mark</td>
-            }
-            <td>@courseworks(data, course.id).get.totalMark%</td>
-            <td class="@colColor(getStatus(data, course.id))">@getStatus(data, course.id)</td>
-          </tbody>
-        </table>
-        } else {
-          <p>No data available yet</p>
-        }
-
-        <h6>Finals:</h6>
-        @if(exams(data, course.id).isDefined) {
-        <table class="table table-bordered table-sm text-center">
-          <thead>
-            <th>Mark (@exams(data, course.id).get.fullMark%)</th>
-            <th>Weightage (@exams(data, course.id).get.fullWeightage%)</th>
-            <th>Status</th>
-          </thead>
-          <tbody>
-            <td>@exams(data, course.id).get.exam._1</td>
-            <td>@exams(data, course.id).get.exam._2%</td>
-            <td class="@colColor(exams(data, course.id).get.exam._3)">
-              @exams(data, course.id).get.exam._3
-            </td>
-          </tbody>
-        </table>
-        } else {
-        <p>No data available yet</p>
-        }
-    </div>
-    }
-  </div>
+<div class="row mb-3">
+<div class="col">
+@common.card {
+  Dashboard
+} {
+@common.sortableTable {
+<thead>
+  <tr class="text-center">
+    <th>Course</th>
+    <th>Semester</th>
+  </tr>
+</thead>
+<tbody>
+  @for(course <- data.courses) {
+  <tr>
+    <td>@course.title</td>
+    <td>@course.startDate</td>
+  </tr>
+  }
+</tbody>
+}
+}
+</div>
 </div>
 }
 }

@@ -38,15 +38,6 @@ case class CourseworkDetailsAPI(
   var grade: Status = Status(),
   var insight: Insight = Insight())
 
-// Return a map of Course Id -> Courseworks Details
-case class CCourseworkAPI(
-  courseworkDetails: LinkedHashMap[Long,CCourseworkDetailsAPI])
-case class CCourseworkDetailsAPI(
-  course: Course,
-  var courseworks: LinkedHashMap[String, Double],
-  var totalMark: Double,
-  var fullMark: Double,
-  var status: String)
 
 case class Coursework(courseId: Long, studentId: Long, name: String,
   mark: Double, totalMark: Double, createdAt: Timestamp,

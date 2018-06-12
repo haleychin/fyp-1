@@ -19,14 +19,6 @@ import models._
 import utils._
 
 case class CourseData(title: String, startDate: Date)
-case class CourseAPI(
-  course: Option[Course],
-  students: Seq[Student],
-  attendance: AttendanceAPI,
-  coursework: CourseworkAPI,
-  exam: ExamAPI,
-  programmeToIntake: Map[String,String])
-
 class CourseController @Inject()(
   repo: CourseRepository,
   csRepo: CourseStudentRepository,

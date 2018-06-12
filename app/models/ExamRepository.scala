@@ -12,36 +12,7 @@ import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
 import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
-import utils.{Utils, Stats, DescriptiveStatistic}
-
-
-case class Statistic(
-  averageMark: Double,
-  averageWeightage: Double,
-  passCount: Int,
-  failCount: Int)
-
-case class ExamAPI(
-  examDetails: LinkedHashMap[Long,ExamDetailsAPI],
-  total: Int,
-  weightage: Int,
-  statistic: Statistic,
-  descStat: DescriptiveStatistic)
-
-case class ExamDetailsAPI(
-  student: Student,
-  // (Total, Weightage, Pass/Fail)
-  var exam: (Double, Double, String))
-
-case class CExamAPI(
-  examDetails: LinkedHashMap[Long,CExamDetailsAPI])
-
-case class CExamDetailsAPI(
-  course: Course,
-  // (Total, Weightage, Pass/Fail)
-  var exam: (Double, Double, String),
-  fullMark: Int,
-  fullWeightage: Int)
+import utils.{Utils, Stats}
 
 case class Exam(courseId: Long, studentId: Long,
   mark: Double, totalMark: Double,

@@ -14,13 +14,6 @@ import java.io.File
 import models._
 import utils._
 
-case class ExamMetricAPI(
-  course: Option[Course],
-  students: Seq[Student],
-  exams: ExamAPI,
-  metrics: LinkedHashMap[String,MetricStat]
-)
-
 class ExaminationController @Inject()(
   repo: ExamRepository,
   csRepo: CourseStudentRepository,

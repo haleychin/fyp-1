@@ -12,15 +12,7 @@ import play.api.data.validation.Constraints._
 
 // Model
 import models._
-
 import java.sql.Date
-
-case class StudentAPI(
-  student: Option[Student],
-  courses: Seq[Course],
-  attendances: CAttendanceAPI,
-  courseworks: CCourseworkAPI,
-  exams: CExamAPI)
 
 case class StudentData(name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
@@ -33,6 +25,7 @@ class StudentController @Inject()(
   aRepo: AttendanceRepository,
   cwRepo: CourseworkRepository,
   eRepo: ExamRepository,
+  mRepo: MetricRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends

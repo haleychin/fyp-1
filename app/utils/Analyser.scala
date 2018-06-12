@@ -1,26 +1,7 @@
 package utils
 
 import scala.collection.mutable.{ArrayBuffer,LinkedHashMap}
-import models.{Insight,AStat,CourseworkDetailsAPI,Metric,Question}
-
-
-case class QuestionStat(
-  var total: Double,
-  var maxMark: Double,
-  var average: Double = 0,
-  var frequency: Int = 1,
-  var percentage: Double = 0
-)
-
-case class MetricStat(
-  var total: Double,
-  var maxMark: Double,
-  var questions: LinkedHashMap[String,QuestionStat] = LinkedHashMap[String,QuestionStat](),
-  var description: String,
-  var average: Double = 0,
-  var percentage: Double = 0,
-  var frequency: Int = 1
-)
+import models.{Insight,MetricStat,QuestionStat,AStat,CourseworkDetailsAPI,Metric,Question}
 
 object Analyser {
 

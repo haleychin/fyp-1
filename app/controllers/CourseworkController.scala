@@ -19,10 +19,6 @@ import models._
 import utils._
 
 case class CourseworkFormData(courseworks: List[String])
-case class CourseCwAPI(
-  course: Option[Course],
-  students: Seq[Student],
-  courseworks: CourseworkAPI)
 
 class CourseworkController @Inject()(
   repo: CourseworkRepository,

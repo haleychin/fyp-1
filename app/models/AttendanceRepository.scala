@@ -12,38 +12,7 @@ import scala.concurrent.{ExecutionContext, Future, Await}
 import scala.concurrent.duration._
 
 import scala.collection.mutable.{ArrayBuffer, LinkedHashMap, LinkedHashSet}
-
 import utils.Analyser
-
-case class Insight(
-  dangerLevel: Int = 0,
-  reasons: Iterable[String] = Array[String]()
-)
-
-case class AStat(
-  absent: Int = 0,
-  attend: Int = 0,
-  attendanceRate: Double = 0.0,
-  consecutiveMissed: ArrayBuffer[ArrayBuffer[Date]] = ArrayBuffer[ArrayBuffer[Date]]()
-)
-
-case class AttendanceAPI(
-  studentDetails: LinkedHashMap[Long,StudentDetailsAPI],
-  dates: LinkedHashSet[(Int, Date)])
-
-case class StudentDetailsAPI(
-  student: Student,
-  var attendances: LinkedHashMap[Date,String],
-  var stat: AStat = AStat(),
-  var insight: Insight = Insight())
-
-case class CAttendanceAPI(
-  studentDetails: LinkedHashMap[Long,CourseDetailsAPI])
-
-case class CourseDetailsAPI(
-  coures: Course,
-  var attendances: LinkedHashMap[Date,String],
-  var attendanceRate: Double)
 
 case class Attendance(courseId: Long, studentId: Long, groupId: Int,
   date: Date, attendanceType: String, createdAt: Timestamp,

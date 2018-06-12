@@ -1,7 +1,7 @@
 package utils
 
 import javax.inject._
-import controllers.CourseAPI
+import models.CourseAPI
 
 // Excel
 import org.apache.poi.xssf.usermodel._
