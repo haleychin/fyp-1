@@ -13,6 +13,7 @@ import play.api.data.validation.Constraints._
 // Model
 import models._
 import java.sql.Date
+import utils._
 
 case class StudentData(name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
@@ -72,7 +73,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     } yield (student, courses, attendance, coursework, exam)
 
     result.map { result =>
-      StudentAPI(result._1, result._2, result._3, result._4, result._5)
+      val courseworks = Utils.combineCourseworkAndExamTotal(result._4, result._5)
+      StudentAPI(result._1, result._2, result._3, courseworks)
     }
   }
 
@@ -175,5 +177,4 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       repo.delete(id).map { _ =>
         Redirect(routes.StudentController.index())
       }
-  }
-}
+  } }

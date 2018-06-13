@@ -164,8 +164,47 @@ class CourseworkRepository @Inject() (
         s.status = Utils.calculatePass(s.totalMark, s.fullMark)
       }
 
-      CCourseworkAPI(courseMap)
+      val statistic = computeCourseStatistic(courseMap.values)
+      val marks = courseMap.values.map(_.totalMark).toSeq
+      val descStat  = Stats.computeDescriptiveStatistic(marks)
+
+      CCourseworkAPI(courseMap, statistic, descStat)
     }
+  }
+
+  def computeCourseStatistic(data: Iterable[CCourseworkDetailsAPI]): CwStatistic = {
+    var averages = LinkedHashMap[String, Double]()
+    val size = data.size
+    var passCount = 0;
+
+    data.foreach { d =>
+      val courseworksMap = d.courseworks
+
+      d.courseworks.foreach { case (key, value) =>
+        if (averages.contains(key)) {
+          averages.update(key, averages.get(key).get + value)
+        } else {
+          averages += (key -> value)
+        }
+      }
+
+      if (d.status == "Pass") { passCount += 1 }
+    }
+
+
+    val total = data.map(_.totalMark).reduceOption(_ + _).getOrElse(0.0)
+    averages += ("Total" -> total)
+    val failCount = size - passCount
+
+    averages.foreach { case (k, v) =>
+      if (data.size > 0) {
+        averages.update(k, v / data.size)
+      } else {
+        averages.update(k, 0.0)
+      }
+    }
+
+    CwStatistic(averages, passCount, failCount)
   }
 
   def computeStatistic(data: Iterable[CourseworkDetailsAPI]): CwStatistic = {

@@ -9,10 +9,6 @@
   data.courseworks.courseworkDetails.get(id)
 }
 
-@exams(id: Long) = @{
-  data.exams.examDetails.get(id)
-}
-
 @getStatus(id: Long) = @{
   courseworks(id).get.status
 }
@@ -87,8 +83,8 @@
     <th>Course</th>
     <th>Semester</th>
     <th>Attendance Rate</th>
-    <th>Couseworks</th>
-    <th>Exam</th>
+    <th>Total</th>
+    <th>Grade</th>
   </tr>
 </thead>
 <tbody class="text-center">
@@ -103,22 +99,18 @@
       -
     }
     </td>
-    <td>
     @if(courseworks(course.id).isDefined) {
-      @formatDouble(courseworks(course.id).get.totalMark)%
-      / @formatDouble(courseworks(course.id).get.fullMark)%
+      <td>
+        @formatDouble(courseworks(course.id).get.totalMark)%
+        / @formatDouble(courseworks(course.id).get.fullMark)%
+      </td>
+      <td>
+        @courseworks(course.id).get.grade.name
+      </td>
     } else {
-      -
+      <td>-</td>
+      <td>-</td>
     }
-    </td>
-    <td>
-    @if(exams(course.id).isDefined) {
-      @formatDouble(exams(course.id).get.exam._2)%
-      / @formatDouble(exams(course.id).get.fullWeightage)%
-    } else {
-      -
-    }
-    </td>
   </tr>
   }
 </tbody>

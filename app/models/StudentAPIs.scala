@@ -10,8 +10,7 @@ case class StudentAPI(
   student: Option[Student],
   courses: Seq[Course],
   attendances: CAttendanceAPI,
-  courseworks: CCourseworkAPI,
-  exams: CExamAPI)
+  courseworks: CCourseworkAPI)
 
 // ----------
 // Attendance
@@ -27,13 +26,16 @@ case class CourseDetailsAPI(
 // Coursework
 // ----------
 case class CCourseworkAPI(
-  courseworkDetails: LinkedHashMap[Long,CCourseworkDetailsAPI])
+  courseworkDetails: LinkedHashMap[Long,CCourseworkDetailsAPI],
+  statistic: CwStatistic,
+  var descStat: DescriptiveStatistic)
 case class CCourseworkDetailsAPI(
   course: Course,
   var courseworks: LinkedHashMap[String, Double],
   var totalMark: Double,
   var fullMark: Double,
-  var status: String)
+  var status: String,
+  var grade: Status = Status())
 
 // ----
 // Exam

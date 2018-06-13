@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.sql.Date
 
-import models.{AttendanceAPI,CourseworkAPI,ExamAPI,Status,Insight}
+import models.{AttendanceAPI,CourseworkAPI,CCourseworkAPI,CExamAPI,ExamAPI,Status,Insight}
 
 import scala.collection.mutable.LinkedHashMap
 
@@ -78,6 +78,47 @@ object Utils {
     }
 
     coursework
+  }
+
+  def combineCourseworkAndExamTotal(courseworks: CCourseworkAPI, exam: CExamAPI): CCourseworkAPI = {
+    val examDetails = exam.examDetails
+    val gradeFrequency = LinkedHashMap[String,Int]()
+
+    courseworks.courseworkDetails.foreach { case (id, c) =>
+      val optionExamDetail = examDetails.get(id)
+
+      if (optionExamDetail.isDefined) {
+        val examDetail = optionExamDetail.get
+        val weightage = examDetail.exam._2
+        c.courseworks += ("Exam" -> weightage)
+        c.totalMark += weightage
+        c.fullMark += examDetail.fullWeightage
+
+        val cwPercent = calculatePercent(c.totalMark, c.fullMark)
+        val examPercent = calculatePercent(weightage, examDetail.fullWeightage)
+
+        c.status = calculateGrade(
+          cwPercent,
+          examPercent,
+          c.totalMark)
+        c.grade  = calculateStatus(
+          cwPercent,
+          examPercent,
+          c.totalMark)
+
+        if (gradeFrequency.contains(c.grade.name)) {
+          gradeFrequency.update(c.grade.name, gradeFrequency.get(c.grade.name).get + 1)
+        } else {
+          gradeFrequency += (c.grade.name -> 1)
+        }
+      }
+    }
+
+    val marks = courseworks.courseworkDetails.values.map(_.totalMark).toSeq
+    courseworks.descStat = Stats.computeDescriptiveStatistic(marks)
+    courseworks.statistic.gradeFrequency = gradeFrequency
+
+    courseworks
   }
 
   def combineExamAndCoursework(courseworks: CourseworkAPI, exam: ExamAPI): CourseworkAPI = {
