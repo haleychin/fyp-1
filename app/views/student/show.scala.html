@@ -1,6 +1,17 @@
 @(student: Student, data: StudentAPI)(implicit request: RequestHeader, flash: Flash)
 @import util._
 
+@gradeColColor(value: String)  = @{
+  if (value == "F" || value == "F*") {
+    "table-danger"
+  } else if (value == "-") {
+    ""
+  } else {
+    "table-success"
+  }
+}
+
+
 @attendances(id: Long) = @{
   data.attendances.studentDetails.get(id)
 }
@@ -10,9 +21,12 @@
 }
 
 @getStatus(id: Long) = @{
-  courseworks(id).get.status
+  courseworks(id).get.grade.name
 }
 
+@getGradeFreq(grade: String) = @{
+  data.courseworks.statistic.gradeFrequency.get(grade).getOrElse("-")
+}
 
 @main(student.name) {
 @common.jumbotron {
@@ -83,11 +97,12 @@
     <th>Course</th>
     <th>Semester</th>
     <th>Attendance Rate</th>
+    <th>Marks</th>
     <th>Total</th>
     <th>Grade</th>
   </tr>
 </thead>
-<tbody class="text-center">
+<tbody>
   @for(course <- data.courses) {
   <tr>
     <td>@course.title</td>
@@ -101,13 +116,23 @@
     </td>
     @if(courseworks(course.id).isDefined) {
       <td>
-        @formatDouble(courseworks(course.id).get.totalMark)%
-        / @formatDouble(courseworks(course.id).get.fullMark)%
+        @for((c, mark) <- courseworks(course.id).get.courseworks) {
+        <p class="mb-0">
+          <strong>@c:</strong>
+          @mark /
+          @courseworks(course.id).get.courseworksTotal.get(c).getOrElse("")
+        </p>
+        }
       </td>
       <td>
-        @courseworks(course.id).get.grade.name
+        @formatDouble(courseworks(course.id).get.totalMark)
+         / @formatDouble(courseworks(course.id).get.fullMark)
+      </td>
+      <td class="grade @gradeColColor(getStatus(course.id))">
+        @getStatus(course.id)
       </td>
     } else {
+      <td>-</td>
       <td>-</td>
       <td>-</td>
     }
@@ -117,5 +142,61 @@
 }
 }
 </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    @common.card {
+      Statistic
+    } {
+    <table class="table table-borderless table-sm">
+    <tr>
+      <th>Max score: </th>
+      <td>@formatDouble(data.courseworks.descStat.max)</td>
+    </tr>
+    <tr>
+      <th>Mean: </th>
+      <td>@formatDouble(data.courseworks.descStat.mean)</td>
+    </tr>
+    <tr>
+      <th>Median: </th>
+      <td>@formatDouble(data.courseworks.descStat.median)</td>
+    </tr>
+    <tr>
+      <th>Mode: </th>
+      <td>@formatDouble(data.courseworks.descStat.mode)</td>
+    </tr>
+    <tr>
+      <th>Standard Deviation: </th>
+      <td>@formatDouble(data.courseworks.descStat.standardDeviation)</td>
+    </tr>
+    <tr>
+      <th>Variance: </th>
+      <td>@formatDouble(data.courseworks.descStat.variance)</td>
+    </tr>
+    </table>
+    }
+  </div>
+
+  <div class="col-md-6">
+    @common.card {
+      Grade Distribution
+    } {
+    <table class="table table-borderless table-sm">
+    <thead>
+      <th>Grade</th>
+      <th>Frequency</th>
+    </thead>
+    <tbody>
+      @for(g <- Seq("A", "B", "C", "D", "E", "F", "F*")) {
+      <tr>
+        <th>@g</th>
+        <td>@getGradeFreq(g)</td>
+      </tr>
+      }
+    </tbody>
+    </table>
+    }
+  </div>
 </div>
 }

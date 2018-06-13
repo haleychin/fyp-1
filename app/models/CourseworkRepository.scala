@@ -149,14 +149,17 @@ class CourseworkRepository @Inject() (
     result.map { r =>
       r.foreach { case (course, cw) =>
         val value = cw.name -> cw.mark
+        val totalValue = cw.name -> cw.totalMark
         if (courseMap.contains(course.id)) {
           val s = courseMap.get(course.id).get
           s.courseworks += value
+          s.courseworksTotal += totalValue
           s.totalMark += cw.mark
           s.fullMark += cw.totalMark
         } else {
           val data = LinkedHashMap[String, Double](value)
-          courseMap += (course.id -> CCourseworkDetailsAPI(course, data, cw.mark, cw.totalMark, ""))
+          val totalData = LinkedHashMap[String,Double](totalValue)
+          courseMap += (course.id -> CCourseworkDetailsAPI(course, data, totalData, cw.mark, cw.totalMark, ""))
         }
       }
 

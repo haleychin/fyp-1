@@ -32,6 +32,7 @@ case class CCourseworkAPI(
 case class CCourseworkDetailsAPI(
   course: Course,
   var courseworks: LinkedHashMap[String, Double],
+  var courseworksTotal: LinkedHashMap[String,Double],
   var totalMark: Double,
   var fullMark: Double,
   var status: String,

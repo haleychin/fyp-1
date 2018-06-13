@@ -91,6 +91,7 @@ object Utils {
         val examDetail = optionExamDetail.get
         val weightage = examDetail.exam._2
         c.courseworks += ("Exam" -> weightage)
+        c.courseworksTotal += ("Exam" -> examDetail.fullWeightage)
         c.totalMark += weightage
         c.fullMark += examDetail.fullWeightage
 
