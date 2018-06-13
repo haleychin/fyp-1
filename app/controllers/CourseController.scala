@@ -18,7 +18,7 @@ import scala.collection.mutable.{Map}
 import models._
 import utils._
 
-case class CourseData(title: String, startDate: Date)
+case class CourseData(title: String, code: String, startDate: Date)
 class CourseController @Inject()(
   repo: CourseRepository,
   csRepo: CourseStudentRepository,
@@ -34,8 +34,9 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   val courseForm = Form {
     mapping(
-      "title" -> nonEmptyText,
-      "startDate" -> sqlDate
+      "Title" -> nonEmptyText,
+      "Code" -> nonEmptyText,
+      "Start Date" -> sqlDate
     )(CourseData.apply)(CourseData.unapply)
   }
 
@@ -119,7 +120,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         Future.successful(Ok(views.html.course.newCourse(errorForm)))
       },
       course => {
-        repo.create(course.title, course.startDate, request.user.id).map { result =>
+        repo.create(course.title, course.code, course.startDate, request.user.id).map { result =>
           Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully created.")
         }
       }
@@ -152,7 +153,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def editCourse(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction) { implicit request =>
     val filledForm = courseForm.fill(
-      CourseData(request.course.title, request.course.startDate))
+      CourseData(request.course.title, request.course.code, request.course.startDate))
     Ok(views.html.course.editCourse(id, filledForm))
   }
 
@@ -162,7 +163,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         Future.successful(Ok(views.html.course.editCourse(id, errorForm)))
       },
       course => {
-        repo.update(id, course.title, course.startDate).map { result =>
+        repo.update(id, course.code, course.title, course.startDate).map { result =>
           Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully updated.")
         }
       }
