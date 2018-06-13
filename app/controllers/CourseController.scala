@@ -186,7 +186,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     fsRepo.get(id).map { option =>
       option match {
         case Some(s) =>
-          Ok(views.html.course.filterSetting(s))
+          Ok(views.html.course.filterSetting(id, s))
         case None => Redirect(routes.CourseController.index()).flashing("error" -> "Setting not found.")
       }
     }

@@ -1,8 +1,47 @@
-@(setting: FilterSetting)(implicit request: RequestHeader, flash:
-Flash, messagesProvider: MessagesProvider)
+@(courseId: Long, setting: FilterSetting)(implicit request: RequestHeader,
+flash: Flash)
 
 @main("Edit Course") {
-@common.jumbotron {
-<h3>Filter Setting</h3>
+@common.card {
+  Filter Rules
+} {
+
+<table class="table table-borderless table-sm">
+  <thead>
+    <th>Attribute</th>
+    <th>Threshold</th>
+    <th>Weightage</th>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Passing Percentage</th>
+      <td>@setting.passingMark%</td>
+      <td>@setting.passingMarkPoint</td>
+    </tr>
+    <tr>
+      <th>Coursework Alert Percentage</th>
+      <td>@setting.courseworkMark%</td>
+      <td>@setting.courseworkMarkPoint</td>
+    </tr>
+    <tr>
+      <th>Attendance Rate</th>
+      <td>@setting.attendanceRate%</td>
+      <td>@setting.attendanceRatePoint</td>
+    </tr>
+    <tr>
+      <th>Consecutive Missed Class Count</th>
+      <td>@setting.consecutiveMissed</td>
+      <td>@setting.consecutiveMissedPoint</td>
+    </tr>
+    <tr>
+      <th>Absent Count</th>
+      <td>@setting.absentCount</td>
+      <td>@setting.absentCountPoint</td>
+    </tr>
+  </tbody>
+</table>
+
+<a class="btn btn-primary btn-sm"
+  href="@routes.CourseController.editSetting(courseId)">Edit Rules</a>
 }
 }
