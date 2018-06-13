@@ -28,6 +28,9 @@ GET    /courses/:id/edit     controllers.CourseController.editCourse(id: Long)
 POST   /courses/:id          controllers.CourseController.updateCourse(id: Long)
 GET    /courses/:id/delete   controllers.CourseController.deleteCourse(id: Long)
 GET    /courses/:id/export   controllers.CourseController.export(id: Long, programme: String ?= "%", intake: String ?= "%")
+GET    /courses/:id/filter   controllers.CourseController.filterSetting(id: Long)
+GET    /courses/:id/filter/edit controllers.CourseController.editSetting(id: Long)
+POST   /courses/:id/filter    controllers.CourseController.updateSetting(id: Long)
 
 # CourseStudent Routes
 GET    /courses/:id/add                   controllers.CourseStudentController.newCourseStudent(id: Long)

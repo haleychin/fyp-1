@@ -145,6 +145,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       },
       course => {
         repo.create(course.title, course.code, course.startDate, request.user.id).map { result =>
+          fsRepo.create(result.id, 80, 1, 4, 1, 10, 1, 40, 1, 40, 1)
           Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully created.")
         }
       }
@@ -181,6 +182,15 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     Ok(views.html.course.editCourse(id, filledForm))
   }
 
+  def filterSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    fsRepo.get(id).map { option =>
+      option match {
+        case Some(s) =>
+          Ok(views.html.course.filterSetting(s))
+        case None => Redirect(routes.CourseController.index()).flashing("error" -> "Setting not found.")
+      }
+    }
+  }
   def editSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
 
     fsRepo.get(id).map { option =>
