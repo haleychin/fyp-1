@@ -57,6 +57,7 @@ class FilterSettingRepository @Inject() (
       courseworkMark, courseworkMarkPoint) <> (FilterSetting.tupled, FilterSetting.unapply)
   }
   val settings = TableQuery[FilterSettingTable]
+  settings.schema.create.statements.foreach(println)
 
   def create(courseId: Long,
     attendanceRate: Int, attendanceRatePoint: Double,
@@ -84,6 +85,10 @@ class FilterSettingRepository @Inject() (
         courseworkMark, courseworkMarkPoint)
     )
     db.run(seq)
+  }
+
+  def get(courseId: Long): Future[Option[FilterSetting]] = db.run {
+    settings.filter(_.courseId === courseId).result.headOption
   }
 
 }

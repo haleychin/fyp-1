@@ -1,0 +1,22 @@
+@(id: Long, course: Form[CourseData])(implicit request: RequestHeader, flash:
+Flash, messagesProvider: MessagesProvider)
+@import helper._
+
+@main("Edit Course") {
+
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.CourseController.updateCourse(id),
+      routes.CourseController.index(),
+      "Edit Course",
+      "Update"
+      ) {
+        @inputText(course("title"), 'class -> "form-control")
+        @inputText(course("startDate"), 'class -> "form-control")
+      }
+    }
+  </div>
+</div>
+}

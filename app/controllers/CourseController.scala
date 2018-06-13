@@ -7,6 +7,7 @@ import scala.util.{Success, Failure}
 
 // For Form
 import play.api.data._
+import play.api.data.format.Formats.doubleFormat
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
 
@@ -19,6 +20,13 @@ import models._
 import utils._
 
 case class CourseData(title: String, code: String, startDate: Date)
+case class FilterData(
+  attendanceRate: Int, attendanceRatePoint: Double,
+  consecutiveMissed: Int, consecutiveMissedPoint: Double,
+  absentCount: Int, absentCountPoint: Double,
+  passingMark: Int, passingMarkPoint: Double,
+  courseworkMark: Int, courseworkMarkPoint: Double)
+
 class CourseController @Inject()(
   repo: CourseRepository,
   csRepo: CourseStudentRepository,
@@ -26,6 +34,7 @@ class CourseController @Inject()(
   cwRepo: CourseworkRepository,
   eRepo: ExamRepository,
   qRepo: MetricRepository,
+  fsRepo: FilterSettingRepository,
   exporter: CourseExporter,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
@@ -38,6 +47,21 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       "Code" -> nonEmptyText,
       "Start Date" -> sqlDate
     )(CourseData.apply)(CourseData.unapply)
+  }
+
+  val filterForm = Form {
+    mapping(
+      "attendanceRate" -> number,
+      "attendanceRatePoint" -> of(doubleFormat),
+      "consecutiveMissed" -> number,
+      "consecutiveMissedPoint" -> of(doubleFormat),
+      "absentCount" -> number,
+      "absentCountPoint" -> of(doubleFormat),
+      "passingMark" -> number,
+      "passingMarkPoint" -> of(doubleFormat),
+      "courseworkMark" -> number,
+      "courseworkMarkPoint" -> of(doubleFormat)
+    )(FilterData.apply)(FilterData.unapply)
   }
 
   def index = Action.async { implicit request =>
@@ -155,6 +179,31 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     val filledForm = courseForm.fill(
       CourseData(request.course.title, request.course.code, request.course.startDate))
     Ok(views.html.course.editCourse(id, filledForm))
+  }
+
+  def editSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+
+    fsRepo.get(id).map { option =>
+      option match {
+        case Some(s) =>
+          val filledForm = courseForm.fill(CourseData(request.course.title, request.course.code, request.course.startDate))
+          Ok(views.html.course.editSetting(id, filledForm))
+        case None => Redirect(routes.CourseController.index()).flashing("error" -> "Setting not found.")
+      }
+    }
+  }
+
+  def updateSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    courseForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.course.editCourse(id, errorForm)))
+      },
+      course => {
+        repo.update(id, course.code, course.title, course.startDate).map { result =>
+          Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully updated.")
+        }
+      }
+    )
   }
 
   def updateCourse(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
