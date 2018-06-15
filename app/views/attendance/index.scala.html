@@ -1,5 +1,13 @@
-@(course: Course, students: Seq[Student], data: AttendanceAPI, unenrolled:
-Iterable[Student])(implicit request: RequestHeader, flash: Flash)
+@(
+  course: Course,
+  students: Seq[Student],
+  data: AttendanceAPI,
+  unenrolled: Iterable[Student],
+  threshold: Double
+)(
+  implicit request: RequestHeader,
+  flash: Flash
+)
 @import util._
 
 @header = {
@@ -47,7 +55,7 @@ Unenrolled students
       <td class="text-center">
         @formatDouble(d.stat.attendanceRate)%
       </td>
-      <td class="text-center @insightColor(d.insight.dangerLevel)"
+      <td class="text-center @insightColor(d.insight.dangerLevel, threshold)"
         data-toggle="popover"
         data-trigger="focus"
         data-placement="bottom"

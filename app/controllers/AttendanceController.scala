@@ -15,7 +15,8 @@ case class CourseAttendanceAPI(
   course: Option[Course],
   students: Seq[Student],
   attendance: AttendanceAPI,
-  unenrolled: Iterable[Student])
+  unenrolled: Iterable[Student],
+  threshold: Double)
 
 class AttendanceController @Inject()(
   ws: WSClient,
@@ -23,6 +24,7 @@ class AttendanceController @Inject()(
   repo: AttendanceRepository,
   cRepo: CourseRepository,
   csRepo: CourseStudentRepository,
+  fsRepo: FilterSettingRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends
@@ -38,18 +40,20 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     val courseFuture = cRepo.get(id)
     val studentFuture = csRepo.getStudents(id)
     val attendancesFuture = repo.getAttendances(id)
+    val filterFuture = fsRepo.get(id)
 
     val results = for {
       course <- courseFuture
       students <- studentFuture
       attendances <- attendancesFuture
-    } yield (course, students, attendances)
+      filter <- filterFuture
+    } yield (course, students, attendances, filter)
 
 
     results.map { r =>
       val icheckInStudents = r._3.studentDetails.values.map(_.student)
       val unenrolled = r._2.diff(icheckInStudents.toSeq)
-      CourseAttendanceAPI(r._1, r._2, r._3, unenrolled)
+      CourseAttendanceAPI(r._1, r._2, r._3, unenrolled, r._4.get.attendanceThreshold)
     }
   }
 
@@ -57,7 +61,11 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseDetail(id).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
-          Ok(views.html.attendance.index(c, courseApi.students, courseApi.attendance, courseApi.unenrolled))
+          Ok(views.html.attendance.index(c,
+            courseApi.students,
+            courseApi.attendance,
+            courseApi.unenrolled,
+            courseApi.threshold))
         case None => Ok(views.html.index())
       }
     }

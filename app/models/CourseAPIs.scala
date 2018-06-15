@@ -12,7 +12,8 @@ case class CourseAPI(
   attendance: AttendanceAPI,
   coursework: CourseworkAPI,
   exam: ExamAPI,
-  programmeToIntake: Map[String,String])
+  programmeToIntake: Map[String,String],
+  threshold: Double = 4.0)
 
 // ----------
 // Attendance

@@ -57,7 +57,11 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     getCourseworkDetail(id).map { courseworkApi =>
       courseworkApi.course match {
         case Some(c) =>
-          Ok(views.html.coursework.index(c, courseworkApi.students, courseworkApi.courseworks))
+          Ok(views.html.coursework.index(c,
+            courseworkApi.students,
+            courseworkApi.courseworks,
+            2.0
+            ))
         case None => Ok(views.html.index())
       }
     }

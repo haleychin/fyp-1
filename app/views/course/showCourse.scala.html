@@ -1,4 +1,10 @@
-@(course: Course, data: CourseAPI)(implicit request: RequestHeader, flash: Flash)
+@(
+  course: Course,
+  data: CourseAPI
+)(
+  implicit request: RequestHeader,
+  flash: Flash
+)
 @import util._
 @import helper._
 
@@ -132,7 +138,8 @@
     <td class="grade @gradeColColor(getStatus(s.id))"
         title="@getStatusReason(s.id)"
         >@getStatus(s.id)</td>
-    <td class="text-center @insightColor(getInsight(s.id).dangerLevel)"
+    <td class="text-center @insightColor(getInsight(s.id).dangerLevel,
+        data.threshold)"
         data-toggle="popover"
         data-trigger="focus"
         data-placement="bottom"

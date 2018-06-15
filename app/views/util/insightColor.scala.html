@@ -1,9 +1,9 @@
-@(dangerLevel: Double)
+@(dangerLevel: Double, threshold: Double)
 
 @{
-if (dangerLevel > 2) {
+if (dangerLevel > threshold) {
    "table-danger"
-   } else if (dangerLevel > 1) {
+   } else if (dangerLevel > (threshold / 2)) {
    "table-warning"
   } else {
     ""

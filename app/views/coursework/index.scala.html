@@ -1,4 +1,12 @@
-@(course: Course, students: Seq[Student], data: CourseworkAPI)(implicit request: RequestHeader, flash: Flash)
+@(
+  course: Course,
+  students: Seq[Student],
+  data: CourseworkAPI,
+  threshold: Double
+)(
+  implicit request: RequestHeader,
+  flash: Flash
+)
 @import util._
 
 @getCourseworkData(id: Long) = @{
@@ -61,7 +69,7 @@
       class="text-center">@getTotal(s.id)</td>
     <td class="text-center
       @colColor(getStatus(s.id))">@getStatus(s.id)</td>
-    <td class="text-center @insightColor(getInsight(s.id).dangerLevel)"
+    <td class="text-center @insightColor(getInsight(s.id).dangerLevel, threshold)"
       data-toggle="popover"
       data-trigger="focus"
       data-placement="bottom"
