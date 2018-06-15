@@ -24,6 +24,7 @@ class CourseworkController @Inject()(
   repo: CourseworkRepository,
   csRepo: CourseStudentRepository,
   cRepo: CourseRepository,
+  fsRepo: FilterSettingRepository,
   bbParser: BlackboardParser,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
@@ -37,19 +38,21 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def getCourseworkDetail(id: Long): Future[CourseCwAPI] = {
-    val courseFuture = cRepo.get(id)
-    val studentFuture = csRepo.getStudents(id)
+    val courseFuture      = cRepo.get(id)
+    val studentFuture     = csRepo.getStudents(id)
     val courseworksFuture = repo.getCourseworks(id)
+    val filterFuture      = fsRepo.get(id)
 
     val results = for {
-      course <- courseFuture
-      students <- studentFuture
+      course      <- courseFuture
+      students    <- studentFuture
       courseworks <- courseworksFuture
-    } yield (course, students, courseworks)
+      filter      <- filterFuture
+    } yield (course, students, courseworks, filter)
 
 
     results.map { r =>
-      CourseCwAPI(r._1, r._2, r._3)
+      CourseCwAPI(r._1, r._2, r._3, r._4.get.courseworkThreshold)
     }
   }
 
@@ -60,7 +63,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           Ok(views.html.coursework.index(c,
             courseworkApi.students,
             courseworkApi.courseworks,
-            2.0
+            courseworkApi.threshold
             ))
         case None => Ok(views.html.index())
       }

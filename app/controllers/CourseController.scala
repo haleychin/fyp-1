@@ -86,6 +86,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     val attendancesFuture = aRepo.getAttendances(id, programme, intake)
     val courseworksFuture = cwRepo.getCourseworks(id, programme, intake)
     val examFuture        = eRepo.getExams(id, programme, intake)
+    val filterFuture      = fsRepo.get(id)
 
     val results = for {
       course      <- courseFuture
@@ -94,7 +95,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       attendances <- attendancesFuture
       courseworks <- courseworksFuture
       exam        <- examFuture
-    } yield (course, allStudents, students, attendances, courseworks, exam)
+      filter      <- filterFuture
+    } yield (course, allStudents, students, attendances, courseworks, exam, filter)
 
     results.map { r =>
       var combined = Utils.combineExamAndCoursework(r._5, r._6)
@@ -108,7 +110,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           programmeToIntake += (s.programme -> s.intake)
         }
       }
-      CourseAPI(r._1, r._3, attendance, combined, r._6, programmeToIntake, 2.0)
+      CourseAPI(r._1, r._3, attendance, combined, r._6, programmeToIntake, r._7.get.overviewThreshold)
     }
   }
 

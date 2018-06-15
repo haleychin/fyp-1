@@ -33,7 +33,8 @@ case class StudentDetailsAPI(
 case class CourseCwAPI(
   course: Option[Course],
   students: Seq[Student],
-  courseworks: CourseworkAPI)
+  courseworks: CourseworkAPI,
+  threshold: Double)
 case class CourseworkAPI(
   courseworkDetails: LinkedHashMap[Long,CourseworkDetailsAPI],
   courseworks: LinkedHashSet[(String, Double)],
