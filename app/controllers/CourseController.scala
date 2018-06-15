@@ -51,16 +51,16 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   val filterForm = Form {
     mapping(
-      "attendanceRate" -> number,
-      "attendanceRatePoint" -> of(doubleFormat),
-      "consecutiveMissed" -> number,
-      "consecutiveMissedPoint" -> of(doubleFormat),
-      "absentCount" -> number,
-      "absentCountPoint" -> of(doubleFormat),
-      "passingMark" -> number,
-      "passingMarkPoint" -> of(doubleFormat),
-      "courseworkMark" -> number,
-      "courseworkMarkPoint" -> of(doubleFormat)
+      "Attendance Rate" -> number,
+      "Attendance Rate Weightage" -> of(doubleFormat),
+      "Consecutive Missed Class Count" -> number,
+      "Consecutive Missed Class Count Weightage" -> of(doubleFormat),
+      "Absent Count" -> number,
+      "Absent Count Weightage" -> of(doubleFormat),
+      "Passing Percentage" -> number,
+      "Passing Percentage Weightage" -> of(doubleFormat),
+      "Coursework Alert Percentage" -> number,
+      "Coursework Alert Percentage Weightage" -> of(doubleFormat)
     )(FilterData.apply)(FilterData.unapply)
   }
 
@@ -177,8 +177,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def editCourse(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction) { implicit request =>
-    val filledForm = courseForm.fill(
-      CourseData(request.course.title, request.course.code, request.course.startDate))
+    val filledForm = courseForm.fill(CourseData(request.course.title, request.course.code, request.course.startDate))
     Ok(views.html.course.editCourse(id, filledForm))
   }
 
@@ -196,7 +195,13 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     fsRepo.get(id).map { option =>
       option match {
         case Some(s) =>
-          val filledForm = courseForm.fill(CourseData(request.course.title, request.course.code, request.course.startDate))
+        val filledForm = filterForm.fill(FilterData(
+          s.attendanceRate, s.attendanceRatePoint,
+          s.consecutiveMissed, s.consecutiveMissedPoint,
+          s.absentCount, s.absentCountPoint,
+          s.passingMark, s.passingMarkPoint,
+          s.courseworkMark, s.courseworkMarkPoint
+        ))
           Ok(views.html.course.editSetting(id, filledForm))
         case None => Redirect(routes.CourseController.index()).flashing("error" -> "Setting not found.")
       }
@@ -204,13 +209,18 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def updateSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
-    courseForm.bindFromRequest.fold(
+    filterForm.bindFromRequest.fold(
       errorForm => {
-        Future.successful(Ok(views.html.course.editCourse(id, errorForm)))
+        Future.successful(Ok(views.html.course.editSetting(id, errorForm)))
       },
-      course => {
-        repo.update(id, course.code, course.title, course.startDate).map { result =>
-          Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully updated.")
+      s => {
+        fsRepo.update(id,
+          s.attendanceRate, s.attendanceRatePoint,
+          s.consecutiveMissed, s.consecutiveMissedPoint,
+          s.absentCount, s.absentCountPoint,
+          s.passingMark, s.passingMarkPoint,
+          s.courseworkMark, s.courseworkMarkPoint).map { result =>
+          Redirect(routes.CourseController.index).flashing("success" -> "Setting  has been successfully updated.")
         }
       }
     )

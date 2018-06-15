@@ -87,6 +87,27 @@ class FilterSettingRepository @Inject() (
     db.run(seq)
   }
 
+  def update(courseId: Long,
+    attendanceRate: Int, attendanceRatePoint: Double,
+    consecutiveMissed: Int, consecutiveMissedPoint: Double,
+    absentCount: Int, absentCountPoint: Double,
+    passingMark: Int, passingMarkPoint: Double,
+    courseworkMark: Int, courseworkMarkPoint: Double): Future[Int] = {
+      val setting = settings.filter(_.courseId === courseId)
+      val action = setting.map(u => (
+      u.attendanceRate, u.attendanceRatePoint,
+      u.consecutiveMissed, u.consecutiveMissedPoint,
+      u.absentCount, u.absentCountPoint,
+      u.passingMark, u.passingMarkPoint,
+      u.courseworkMark, u.courseworkMarkPoint)).update(
+        attendanceRate, attendanceRatePoint,
+        consecutiveMissed, consecutiveMissedPoint,
+        absentCount, absentCountPoint,
+        passingMark, passingMarkPoint,
+        courseworkMark, courseworkMarkPoint)
+      db.run(action)
+  }
+
   def get(courseId: Long): Future[Option[FilterSetting]] = db.run {
     settings.filter(_.courseId === courseId).result.headOption
   }
