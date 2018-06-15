@@ -14,12 +14,17 @@ Flash, messagesProvider: MessagesProvider)
       "Update"
       ) {
         <div class="form-row">
-          <div class="col-md-6">
           @inputText(filter("Passing Percentage"), 'class -> "form-control")
-          </div>
-          <div class="col-md-6">
-          @inputText(filter("Passing Percentage Weightage"), 'class -> "form-control")
-          </div>
+        </div>
+
+        <div class="form-row">
+          @inputText(filter("Overview Threshold"), 'class -> "form-control")
+        </div>
+        <div class="form-row">
+          @inputText(filter("Attendance Threshold"), 'class -> "form-control")
+        </div>
+        <div class="form-row">
+          @inputText(filter("Coursework Threshold"), 'class -> "form-control")
         </div>
 
         <div class="form-row">

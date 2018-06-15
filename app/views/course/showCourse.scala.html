@@ -54,7 +54,7 @@
 }
 
 @getInsight(id: Long) = @{
-  data.coursework.courseworkDetails.get(id).map(_.insight).getOrElse(Insight())
+  data.attendance.studentDetails.get(id).map(_.insight).getOrElse(Insight())
 }
 
 @getGradeFreq(grade: String) = @{

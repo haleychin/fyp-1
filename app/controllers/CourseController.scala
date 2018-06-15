@@ -24,7 +24,8 @@ case class FilterData(
   attendanceRate: Int, attendanceRatePoint: Double,
   consecutiveMissed: Int, consecutiveMissedPoint: Double,
   absentCount: Int, absentCountPoint: Double,
-  passingMark: Int, passingMarkPoint: Double,
+  passingMark: Int, overviewThreshold: Double,
+  attendanceThreshold: Double, courseworkThreshold: Double,
   courseworkMark: Int, courseworkMarkPoint: Double)
 
 class CourseController @Inject()(
@@ -58,7 +59,9 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       "Absent Count" -> number,
       "Absent Count Weightage" -> of(doubleFormat),
       "Passing Percentage" -> number,
-      "Passing Percentage Weightage" -> of(doubleFormat),
+      "Overview Threshold" -> of(doubleFormat),
+      "Attendance Threshold" -> of(doubleFormat),
+      "Coursework Threshold" -> of(doubleFormat),
       "Coursework Alert Percentage" -> number,
       "Coursework Alert Percentage Weightage" -> of(doubleFormat)
     )(FilterData.apply)(FilterData.unapply)
@@ -95,7 +98,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
     results.map { r =>
       var combined = Utils.combineExamAndCoursework(r._5, r._6)
-      combined = Utils.combineInsight(r._4, combined)
+      var attendance = Utils.combineInsight(r._4, combined)
       var programmeToIntake = Map[String,String]()
       r._2.foreach { s =>
         if (programmeToIntake.contains(s.programme)) {
@@ -105,7 +108,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           programmeToIntake += (s.programme -> s.intake)
         }
       }
-      CourseAPI(r._1, r._3, r._4, combined, r._6, programmeToIntake)
+      CourseAPI(r._1, r._3, attendance, combined, r._6, programmeToIntake)
     }
   }
 
@@ -145,7 +148,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       },
       course => {
         repo.create(course.title, course.code, course.startDate, request.user.id).map { result =>
-          fsRepo.create(result.id, 80, 1, 4, 1, 10, 1, 40, 1, 40, 1)
+          fsRepo.create(result.id, 80, 1, 4, 1, 10, 1, 40, 2, 2, 2, 40, 1)
           Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully created.")
         }
       }
@@ -199,7 +202,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           s.attendanceRate, s.attendanceRatePoint,
           s.consecutiveMissed, s.consecutiveMissedPoint,
           s.absentCount, s.absentCountPoint,
-          s.passingMark, s.passingMarkPoint,
+          s.passingMark, s.overviewThreshold,
+          s.attendanceThreshold, s.courseworkThreshold,
           s.courseworkMark, s.courseworkMarkPoint
         ))
           Ok(views.html.course.editSetting(id, filledForm))
@@ -218,7 +222,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           s.attendanceRate, s.attendanceRatePoint,
           s.consecutiveMissed, s.consecutiveMissedPoint,
           s.absentCount, s.absentCountPoint,
-          s.passingMark, s.passingMarkPoint,
+          s.passingMark, s.overviewThreshold,
+          s.attendanceThreshold, s.courseworkThreshold,
           s.courseworkMark, s.courseworkMarkPoint).map { result =>
           Redirect(routes.CourseController.index).flashing("success" -> "Setting  has been successfully updated.")
         }

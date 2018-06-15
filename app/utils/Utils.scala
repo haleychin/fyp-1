@@ -65,19 +65,18 @@ object Utils {
     else { "F" }
   }
 
-  def combineInsight(attendance: AttendanceAPI, coursework: CourseworkAPI): CourseworkAPI = {
-    attendance.studentDetails.foreach { case (k, v) =>
-      coursework.courseworkDetails.get(k).map { courseworkDetail =>
-        val dangerLevel =
-          (v.insight.dangerLevel + courseworkDetail.insight.dangerLevel) / 2
-        courseworkDetail.insight = Insight(
+  def combineInsight(attendance: AttendanceAPI, coursework: CourseworkAPI): AttendanceAPI = {
+    coursework.courseworkDetails.foreach { case (k, v) =>
+      attendance.studentDetails.get(k).map { attendanceDetail =>
+        val dangerLevel = v.insight.dangerLevel + attendanceDetail.insight.dangerLevel
+        attendanceDetail.insight = Insight(
           dangerLevel,
-          v.insight.reasons ++ courseworkDetail.insight.reasons
+          v.insight.reasons ++ attendanceDetail.insight.reasons
         )
       }
     }
 
-    coursework
+    attendance
   }
 
   def combineCourseworkAndExamTotal(courseworks: CCourseworkAPI, exam: CExamAPI): CCourseworkAPI = {

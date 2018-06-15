@@ -13,7 +13,8 @@ case class FilterSetting(id: Long, courseId: Long,
   attendanceRate: Int, attendanceRatePoint: Double,
   consecutiveMissed: Int, consecutiveMissedPoint: Double,
   absentCount: Int, absentCountPoint: Double,
-  passingMark: Int, passingMarkPoint: Double,
+  passingMark: Int, overviewThreshold: Double,
+  attendanceThreshold: Double, courseworkThreshold: Double,
   courseworkMark: Int, courseworkMarkPoint: Double)
 
 @Singleton
@@ -43,7 +44,9 @@ class FilterSettingRepository @Inject() (
     def absentCountPoint = column[Double]("absent_count_point")
 
     def passingMark = column[Int]("passing_mark")
-    def passingMarkPoint = column[Double]("passing_mark_point")
+    def overviewThreshold = column[Double]("overview_threshold")
+    def attendanceThreshold = column[Double]("attendance_threshold")
+    def courseworkThreshold = column[Double]("coursework_threshold")
 
     def courseworkMark = column[Int]("coursework_mark")
     def courseworkMarkPoint = column[Double]("coursework_mark_point")
@@ -53,35 +56,40 @@ class FilterSettingRepository @Inject() (
       attendanceRate, attendanceRatePoint,
       consecutiveMissed, consecutiveMissedPoint,
       absentCount, absentCountPoint,
-      passingMark, passingMarkPoint,
+      passingMark, overviewThreshold,
+      attendanceThreshold, courseworkThreshold,
       courseworkMark, courseworkMarkPoint) <> (FilterSetting.tupled, FilterSetting.unapply)
   }
   val settings = TableQuery[FilterSettingTable]
-  settings.schema.create.statements.foreach(println)
+  // settings.schema.create.statements.foreach(println)
 
   def create(courseId: Long,
     attendanceRate: Int, attendanceRatePoint: Double,
     consecutiveMissed: Int, consecutiveMissedPoint: Double,
     absentCount: Int, absentCountPoint: Double,
-    passingMark: Int, passingMarkPoint: Double,
+    passingMark: Int, overviewThreshold: Double,
+    attendanceThreshold: Double, courseworkThreshold: Double,
     courseworkMark: Int, courseworkMarkPoint: Double): Future[FilterSetting] = {
     val seq = (
     (settings.map(u => (u.courseId,
       u.attendanceRate, u.attendanceRatePoint,
       u.consecutiveMissed, u.consecutiveMissedPoint,
       u.absentCount, u.absentCountPoint,
-      u.passingMark, u.passingMarkPoint,
+      u.passingMark, u.overviewThreshold,
+      u.attendanceThreshold, u.courseworkThreshold,
       u.courseworkMark, u.courseworkMarkPoint))
       returning settings.map(d => d.id)
       into ((metric, d) => FilterSetting(
         d, metric._1, metric._2, metric._3, metric._4, metric._5,
-        metric._6, metric._7, metric._8, metric._9, metric._10, metric._11)
+        metric._6, metric._7, metric._8, metric._9, metric._10, metric._11,
+        metric._12, metric._13)
       )
       ) += (courseId,
         attendanceRate, attendanceRatePoint,
         consecutiveMissed, consecutiveMissedPoint,
         absentCount, absentCountPoint,
-        passingMark, passingMarkPoint,
+        passingMark, overviewThreshold,
+        attendanceThreshold, courseworkThreshold,
         courseworkMark, courseworkMarkPoint)
     )
     db.run(seq)
@@ -91,19 +99,22 @@ class FilterSettingRepository @Inject() (
     attendanceRate: Int, attendanceRatePoint: Double,
     consecutiveMissed: Int, consecutiveMissedPoint: Double,
     absentCount: Int, absentCountPoint: Double,
-    passingMark: Int, passingMarkPoint: Double,
+    passingMark: Int, overviewThreshold: Double,
+    attendanceThreshold: Double, courseworkThreshold: Double,
     courseworkMark: Int, courseworkMarkPoint: Double): Future[Int] = {
       val setting = settings.filter(_.courseId === courseId)
       val action = setting.map(u => (
       u.attendanceRate, u.attendanceRatePoint,
       u.consecutiveMissed, u.consecutiveMissedPoint,
       u.absentCount, u.absentCountPoint,
-      u.passingMark, u.passingMarkPoint,
+      u.passingMark, u.overviewThreshold,
+      u.attendanceThreshold, u.courseworkThreshold,
       u.courseworkMark, u.courseworkMarkPoint)).update(
         attendanceRate, attendanceRatePoint,
         consecutiveMissed, consecutiveMissedPoint,
         absentCount, absentCountPoint,
-        passingMark, passingMarkPoint,
+        passingMark, overviewThreshold,
+        attendanceThreshold, courseworkThreshold,
         courseworkMark, courseworkMarkPoint)
       db.run(action)
   }
