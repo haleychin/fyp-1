@@ -44,7 +44,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       .get()
       .map { r =>
         importer.importStudent(r.json, sRepo, repo)
-        Redirect(routes.CourseController.showCourse(id)).flashing("success" -> "Successfully fetch attendance.")
+        Redirect(routes.CourseController.showCourse(id)).flashing("success" -> "Successfully fetch all students from iCheckIn.")
       }
   }
 

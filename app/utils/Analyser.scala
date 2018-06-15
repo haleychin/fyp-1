@@ -11,7 +11,7 @@ object Analyser {
 
     if (stat.attendanceRate < filter.attendanceRate) {
       dangerLevel += filter.attendanceRatePoint
-      reasons += "Attendance Rate is lower than 80%."
+      reasons += s"Attendance Rate is lower than ${filter.attendanceRate}%."
     }
 
     if (stat.absent > filter.absentCount) {
@@ -20,7 +20,7 @@ object Analyser {
 
     }
 
-    stat.consecutiveMissed.filter(_.length > filter.consecutiveMissed).foreach { array =>
+    stat.consecutiveMissed.filter(_.length >= filter.consecutiveMissed).foreach { array =>
       dangerLevel += filter.consecutiveMissedPoint
       reasons += s"Missed class ${array.length} times consecutively."
     }
