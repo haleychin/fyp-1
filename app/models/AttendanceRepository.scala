@@ -22,7 +22,8 @@ case class Attendance(courseId: Long, studentId: Long, groupId: Int,
 class AttendanceRepository @Inject() (
   dbConfigProvider: DatabaseConfigProvider,
   val cRepo: CourseRepository,
-  val sRepo: StudentRepository
+  val sRepo: StudentRepository,
+  val fsRepo: FilterSettingRepository,
  )(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
@@ -90,28 +91,32 @@ class AttendanceRepository @Inject() (
     } yield (students, a)).sortBy(_._2.date)
 
     val result = db.run(query.result)
+    val setting = fsRepo.get(courseId)
 
     var studentMap = LinkedHashMap[Long, StudentDetailsAPI]()
     val groupIdDates = LinkedHashSet[(Int, Date)]()
 
-    result.map { r =>
-      r.foreach { case (student, a) =>
-        groupIdDates += ((a.groupId, a.date))
-        if (studentMap.contains(student.id)) {
-          // println(s"Inserting ${student.name} attendance on ${a.date}")
-          studentMap.get(student.id).get.attendances += (a.date -> a.attendanceType)
-        } else {
-          val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
-          studentMap += (student.id -> StudentDetailsAPI(student, data))
+    setting.flatMap { filter =>
+      result.map { r =>
+        r.foreach { case (student, a) =>
+          groupIdDates += ((a.groupId, a.date))
+          if (studentMap.contains(student.id)) {
+            // println(s"Inserting ${student.name} attendance on ${a.date}")
+            studentMap.get(student.id).get.attendances += (a.date -> a.attendanceType)
+          } else {
+            val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
+            studentMap += (student.id -> StudentDetailsAPI(student, data))
+          }
         }
-      }
 
-      studentMap.foreach { case (_, s) =>
-        s.stat = calculateRate(s.attendances)
-        s.insight = Analyser.analyseAttendance(s.stat)
-      }
+        studentMap.foreach { case (_, s) =>
+          s.stat = calculateRate(s.attendances)
+          // WARNING: Force unwrap FilterSetting here
+          s.insight = Analyser.analyseAttendance(s.stat, filter.get)
+        }
 
-      AttendanceAPI(studentMap, groupIdDates)
+        AttendanceAPI(studentMap, groupIdDates)
+      }
     }
   }
 

@@ -22,12 +22,12 @@ case class Coursework(courseId: Long, studentId: Long, name: String,
 class CourseworkRepository @Inject() (
   dbConfigProvider: DatabaseConfigProvider,
   val cRepo: CourseRepository,
-  val sRepo: StudentRepository
+  val sRepo: StudentRepository,
+  val fsRepo: FilterSettingRepository,
  )(implicit ec: ExecutionContext) {
   val dbConfig = dbConfigProvider.get[JdbcProfile]
 
-  import dbConfig._    // Bring db in scope
-  import profile.api._ // Slick DSL
+  import dbConfig._    // Bring db in scope import profile.api._ // Slick DSL
 
   // Define table
   class CourseworkTable(tag: Tag) extends Table[Coursework](tag, "courseworks") {
@@ -97,42 +97,46 @@ class CourseworkRepository @Inject() (
     } yield (students, cw)
 
     val result = db.run(query.result)
+    val setting = fsRepo.get(courseId)
 
     var studentMap = LinkedHashMap[Long, CourseworkDetailsAPI]()
     // (Name, Total Mark)
     val courseworkLists = LinkedHashSet[(String, Double)]()
 
-    result.map { r =>
-      r.foreach { case (student, cw) =>
-        courseworkLists += ((cw.name, cw.totalMark))
-        val value = cw.name -> cw.mark
-        val totalValue = cw.name -> cw.totalMark
-        if (studentMap.contains(student.id)) {
-          val s = studentMap.get(student.id).get
-          s.courseworks += value
-          s.courseworksTotal += totalValue
-          s.total += cw.mark
-        } else {
-          val data = LinkedHashMap[String,Double](value)
-          val totalData = LinkedHashMap[String,Double](totalValue)
-          studentMap += (student.id -> CourseworkDetailsAPI(student, data, totalData, cw.mark))
+    setting.flatMap { filter =>
+      result.map { r =>
+        r.foreach { case (student, cw) =>
+          courseworkLists += ((cw.name, cw.totalMark))
+          val value = cw.name -> cw.mark
+          val totalValue = cw.name -> cw.totalMark
+          if (studentMap.contains(student.id)) {
+            val s = studentMap.get(student.id).get
+            s.courseworks += value
+            s.courseworksTotal += totalValue
+            s.total += cw.mark
+          } else {
+            val data = LinkedHashMap[String,Double](value)
+            val totalData = LinkedHashMap[String,Double](totalValue)
+            studentMap += (student.id -> CourseworkDetailsAPI(student, data, totalData, cw.mark))
+          }
         }
+
+        val total = courseworkLists.reduceOption( (x, y) =>
+            ("", x._2 + y._2)
+          ).map(_._2).getOrElse(0.0)
+
+        studentMap.foreach { case (_, s) =>
+          s.status = Utils.calculatePass(s.total, total)
+          // WARNING: Force unwrap FilterSetting here
+          s.insight = Analyser.analyseCoursework(s, filter.get)
+        }
+
+        val statistic = computeStatistic(studentMap.values)
+        val marks = studentMap.values.map(_.total).toSeq
+        val descStat  = Stats.computeDescriptiveStatistic(marks)
+
+        CourseworkAPI(studentMap, courseworkLists, total, statistic, descStat)
       }
-
-      val total = courseworkLists.reduceOption( (x, y) =>
-          ("", x._2 + y._2)
-        ).map(_._2).getOrElse(0.0)
-
-      studentMap.foreach { case (_, s) =>
-        s.status = Utils.calculatePass(s.total, total)
-        s.insight = Analyser.analyseCoursework(s)
-      }
-
-      val statistic = computeStatistic(studentMap.values)
-      val marks = studentMap.values.map(_.total).toSeq
-      val descStat  = Stats.computeDescriptiveStatistic(marks)
-
-      CourseworkAPI(studentMap, courseworkLists, total, statistic, descStat)
     }
   }
 

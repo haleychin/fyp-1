@@ -20,6 +20,7 @@ class ExaminationController @Inject()(
   cRepo: CourseRepository,
   qRepo: QuestionRepository,
   mRepo: MetricRepository,
+  fsRepo: FilterSettingRepository,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
 (implicit ec: ExecutionContext) extends

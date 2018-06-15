@@ -1,36 +1,43 @@
 package utils
 
 import scala.collection.mutable.{ArrayBuffer,LinkedHashMap}
-import models.{Insight,MetricStat,QuestionStat,AStat,CourseworkDetailsAPI,Metric,Question}
+import models.{FilterSetting,Insight,MetricStat,QuestionStat,AStat,CourseworkDetailsAPI,Metric,Question}
 
 object Analyser {
 
-  def analyseAttendance(stat: AStat): Insight = { var dangerLevel = 0
+  def analyseAttendance(stat: AStat, filter: FilterSetting): Insight = {
+    var dangerLevel = 0.0
     var reasons = ArrayBuffer[String]()
 
-    if (stat.attendanceRate < 80) {
-      dangerLevel += 1
+    if (stat.attendanceRate < filter.attendanceRate) {
+      dangerLevel += filter.attendanceRatePoint
       reasons += "Attendance Rate is lower than 80%."
     }
 
-    stat.consecutiveMissed.filter(_.length > 3).foreach { array =>
-      dangerLevel += 1
+    if (stat.absent > filter.absentCount) {
+      dangerLevel += filter.absentCountPoint
+      reasons += s"Absent for ${stat.absent} (more than ${filter.absentCount})"
+
+    }
+
+    stat.consecutiveMissed.filter(_.length > filter.consecutiveMissed).foreach { array =>
+      dangerLevel += filter.consecutiveMissedPoint
       reasons += s"Missed class ${array.length} times consecutively."
     }
 
     Insight(dangerLevel, reasons)
   }
 
-  def analyseCoursework(data: CourseworkDetailsAPI): Insight = {
-    var dangerLevel = 0
+  def analyseCoursework(data: CourseworkDetailsAPI, filter: FilterSetting): Insight = {
+    var dangerLevel = 0.0
     var reasons = ArrayBuffer[String]()
 
     data.courseworks.foreach { case (k, v) =>
       val rate = Utils.calculatePercent(v, data.courseworksTotal.get(k).get)
 
-      if (rate < 40) {
-        dangerLevel += 1
-        reasons += s"$k score under 40%."
+      if (rate < filter.courseworkMark) {
+        dangerLevel += filter.courseworkMarkPoint
+        reasons += s"$k score under ${filter.courseworkMark}%."
       }
     }
 
