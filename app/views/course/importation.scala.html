@@ -1,0 +1,23 @@
+@(course: Course)(implicit request: RequestHeader, flash: Flash)
+
+@main("Importation") {
+@common.jumbotron {
+@common.indexHeader(course)
+<div class="row">
+  <div class="col-md-4">
+    <div class="border rounded p-3">
+      @courseStudent.importStudent(course.id) </div>
+  </div>
+  <div class="col-md-4">
+    <div class="border rounded p-3">
+      @coursework.importCoursework(course.id)
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="border rounded p-3">
+      @exam.importExam(course.id)
+    </div>
+  </div>
+</div>
+}
+}

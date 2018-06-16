@@ -253,4 +253,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
+  def importation(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction) { implicit request =>
+    Ok(views.html.course.importation(request.course))
+  }
+
 }

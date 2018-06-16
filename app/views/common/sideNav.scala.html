@@ -1,4 +1,4 @@
-@()(implicit request: RequestHeader)
+@(content: Html)(implicit request: RequestHeader)
 
 <!-- Sidebar navigation -->
 @if(request.session.get("email").isDefined) {
@@ -11,6 +11,7 @@
     <!-- Side navigation links -->
     <li>
       <ul class="collapsible collapsible-accordion">
+        @content
         <li>
           <a class="collapsible-header waves-effect arrow-r">
             Course
@@ -37,38 +38,6 @@
               <li><a href="@routes.StudentController.index" class="waves-effect">View all students</a>
               </li>
               <li><a href="@routes.StudentController.newStudent" class="waves-effect">Add student</a>
-              </li>
-            </ul>
-          </div>
-        </li>
-        <li><a class="collapsible-header waves-effect arrow-r"><i class="fa fa-eye"></i> About<i class="fa fa-angle-down rotate-icon"></i></a>
-          <div class="collapsible-body">
-            <ul>
-              <li><a href="#" class="waves-effect">Introduction</a>
-              </li>
-              <li><a href="#" class="waves-effect">Monthly meetings</a>
-              </li>
-            </ul>
-          </div>
-        </li>
-        <li><a class="collapsible-header waves-effect arrow-r"><i class="fa fa-envelope-o"></i> Contact me<i class="fa fa-angle-down rotate-icon"></i></a>
-          <div class="collapsible-body">
-            <ul>
-              <li><a href="#" class="waves-effect">FAQ</a>
-              </li>
-              <li><a href="#" class="waves-effect">Write a message</a>
-              </li>
-              <li><a href="#" class="waves-effect">FAQ</a>
-              </li>
-              <li><a href="#" class="waves-effect">Write a message</a>
-              </li>
-              <li><a href="#" class="waves-effect">FAQ</a>
-              </li>
-              <li><a href="#" class="waves-effect">Write a message</a>
-              </li>
-              <li><a href="#" class="waves-effect">FAQ</a>
-              </li>
-              <li><a href="#" class="waves-effect">Write a message</a>
               </li>
             </ul>
           </div>

@@ -1,6 +1,5 @@
 @(course: Course)(implicit request: RequestHeader)
 
-@common.jumbotron {
 <div class="row mb-3">
   <div class="col">
     <h3>
@@ -9,64 +8,4 @@
     </h3>
   </div>
 </div>
-
-<div class="row">
-  <div class="col-md-4">
-    <div class="border rounded p-3">
-      @courseStudent.importStudent(course.id) </div>
-  </div>
-  <div class="col-md-4">
-    <div class="border rounded p-3">
-      @coursework.importCoursework(course.id)
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="border rounded p-3">
-      @exam.importExam(course.id)
-    </div>
-  </div>
-</div>
-
-<div class="row mt-3">
-  <div class="col-md-4">
-    <div class="border rounded p-3">
-      <p class="h6">Import Students</p>
-      <div class="md-form form-group">
-        <a class="btn btn-primary btn-sm"
-          href="@routes.UploadController.fetch(course.id)">Import</a>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="border rounded p-3">
-      <p class="h6">Import Attendances</p>
-      <div class="md-form form-group">
-        <a class="btn btn-primary btn-sm"
-          href="@routes.AttendanceController.newAttendance(course.id)">Import</a>
-      </div>
-    </div>
-  </div>
-  <div class="col-md-4">
-    <div class="border rounded p-3">
-      <p class="h6">Export Course Detail</p>
-      <div class="md-form form-group">
-        <a class="btn btn-info btn-sm"
-          href="@routes.CourseController.export(course.id)">Export</a>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="row mt-3">
-  <div class="col-md-4">
-    <div class="border rounded p-3">
-      <p class="h6">Filter Setting</p>
-      <div class="md-form form-group">
-        <a class="btn btn-primary btn-sm"
-          href="@routes.CourseController.filterSetting(course.id)">Filter Setting</a>
-      </div>
-    </div>
-  </div>
-</div>
-}
 

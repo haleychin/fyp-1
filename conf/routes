@@ -12,26 +12,27 @@ GET    /logout    controllers.SessionController.destroySession
 
 
 # User Routes
-GET    /users                controllers.UserController.index
-GET    /sign_up              controllers.UserController.newUser
-GET    /users/:id            controllers.UserController.showUser(id: Long)
-POST   /users                controllers.UserController.createUser
-GET    /users/:id/edit       controllers.UserController.editUser(id: Long)
-POST   /users/:id            controllers.UserController.updateUser(id: Long)
-GET    /users/:id/delete     controllers.UserController.deleteUser(id: Long)
+GET    /users                    controllers.UserController.index
+GET    /sign_up                  controllers.UserController.newUser
+GET    /users/:id                controllers.UserController.showUser(id: Long)
+POST   /users                    controllers.UserController.createUser
+GET    /users/:id/edit           controllers.UserController.editUser(id: Long)
+POST   /users/:id                controllers.UserController.updateUser(id: Long)
+GET    /users/:id/delete         controllers.UserController.deleteUser(id: Long)
 
 # Course Routes
-GET    /courses              controllers.CourseController.index
-GET    /courses/new          controllers.CourseController.newCourse
-GET    /courses/:id          controllers.CourseController.showCourse(id: Long, programme: String ?= "%", intake: String ?= "%")
-POST   /courses              controllers.CourseController.createCourse
-GET    /courses/:id/edit     controllers.CourseController.editCourse(id: Long)
-POST   /courses/:id          controllers.CourseController.updateCourse(id: Long)
-GET    /courses/:id/delete   controllers.CourseController.deleteCourse(id: Long)
-GET    /courses/:id/export   controllers.CourseController.export(id: Long, programme: String ?= "%", intake: String ?= "%")
-GET    /courses/:id/filter   controllers.CourseController.filterSetting(id: Long)
-GET    /courses/:id/filter/edit controllers.CourseController.editSetting(id: Long)
-POST   /courses/:id/filter    controllers.CourseController.updateSetting(id: Long)
+GET    /courses                  controllers.CourseController.index
+GET    /courses/new              controllers.CourseController.newCourse
+GET    /courses/:id              controllers.CourseController.showCourse(id: Long, programme: String ?= "%", intake: String ?= "%")
+POST   /courses                  controllers.CourseController.createCourse
+GET    /courses/:id/edit         controllers.CourseController.editCourse(id: Long)
+POST   /courses/:id              controllers.CourseController.updateCourse(id: Long)
+GET    /courses/:id/delete       controllers.CourseController.deleteCourse(id: Long)
+GET    /courses/:id/export       controllers.CourseController.export(id: Long, programme: String ?= "%", intake: String ?= "%")
+GET    /courses/:id/filter       controllers.CourseController.filterSetting(id: Long)
+GET    /courses/:id/filter/edit  controllers.CourseController.editSetting(id: Long)
+POST   /courses/:id/filter       controllers.CourseController.updateSetting(id: Long)
+GET    /courses/:id/import       controllers.CourseController.importation(id: Long)
 
 # CourseStudent Routes
 GET    /courses/:id/add                   controllers.CourseStudentController.newCourseStudent(id: Long)
