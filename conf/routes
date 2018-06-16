@@ -10,6 +10,7 @@ GET    /login     controllers.SessionController.newSession
 POST   /login     controllers.SessionController.createSession
 GET    /logout    controllers.SessionController.destroySession
 
+
 # User Routes
 GET    /users                controllers.UserController.index
 GET    /users/new            controllers.UserController.newUser

@@ -15,7 +15,10 @@ class PageController @Inject()(
    * The index action.
    */
   def index = Action { implicit request =>
-    Ok(views.html.index())
+    request.session.get("email") match {
+      case Some(_) => Redirect(routes.CourseController.index())
+      case None => Redirect(routes.SessionController.newSession())
+    }
   }
 
  }
