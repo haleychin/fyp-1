@@ -29,11 +29,7 @@
   getCourseworkData(id).map(_.insight).getOrElse(Insight())
 }
 
-@action = {
-<a class="btn btn-primary" href="@routes.CourseworkController.newImport(course.id)">Import
-   Coursework</a>
-}
-@main(course.title) {
+@main(course.title, Html("")) {
 @common.indexHeader(course)
 @common.indexTabNav(course.id, "Coursework")
 @common.jumbotron {

@@ -2,7 +2,7 @@
 Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Edit User") {
+@main("Edit User", Html("")) {
 <h1>Edit User</h1>
 
 @form(routes.UserController.updateUser(id)) {

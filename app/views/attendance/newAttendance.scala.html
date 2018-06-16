@@ -1,11 +1,8 @@
 @import utils._
 @import helper._
-
 @(id: Long, details: IndexedSeq[ClassDetail])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
 
-
-@main("Import Attendance") {
-
+@main("Import Attendance", Html("")) {
 @common.jumbotron {
 <h1>Import Attendance</h1>
 <div class="row">

@@ -67,8 +67,7 @@
   data.coursework.statistic.gradeFrequency.get(grade).getOrElse("-")
 }
 
-@main(course.title) {
-@common.sideNav {
+@sideNav = {
   <li><a class="collapsible-header waves-effect arrow-r">
       @course.title
       <i class="fa fa-angle-down rotate-icon"></i>
@@ -94,6 +93,8 @@
     </div>
   </li>
 }
+
+@main(course.title, sideNav: Html) {
 @common.indexHeader(course)
 @common.indexTabNav(course.id, "Overview")
 

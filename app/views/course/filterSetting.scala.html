@@ -1,7 +1,14 @@
-@(courseId: Long, setting: FilterSetting)(implicit request: RequestHeader,
-flash: Flash)
+@(
+  courseId: Long,
+  course: Course,
+  setting: FilterSetting
+)(
+  implicit request: RequestHeader,
+  flash: Flash
+)
 
-@main("Edit Course") {
+@main("Course Filter", Html("")) {
+@common.indexHeader(course)
 @common.card {
   Filter Rules
 } {

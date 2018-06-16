@@ -83,7 +83,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       studentApi.student match {
         case Some(s) =>
           Ok(views.html.student.show(s, studentApi))
-        case None => Ok(views.html.index())
+        case None => Redirect(routes.StudentController.index).flashing("error" -> "Student not found.")
       }
     }
   }
@@ -139,7 +139,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
             )
           )
           Ok(views.html.student.edit(id, filledForm))
-        case None => Ok(views.html.index())
+        case None => Redirect(routes.StudentController.index).flashing("error" -> "Student not found.")
       }
     }
   }

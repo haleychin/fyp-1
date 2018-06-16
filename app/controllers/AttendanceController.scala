@@ -66,7 +66,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
             courseApi.attendance,
             courseApi.unenrolled,
             courseApi.threshold))
-        case None => Ok(views.html.index())
+        case None =>
+          Redirect(routes.CourseController.index).flashing("error" -> "Course not found.")
       }
     }
   }

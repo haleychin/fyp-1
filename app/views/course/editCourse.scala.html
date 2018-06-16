@@ -2,8 +2,7 @@
 Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Edit Course") {
-
+@main("Edit Course", Html("")) {
 <div class="row justify-content-md-center">
   <div class="col-md-6">
     @common.cardBody {
@@ -13,8 +12,9 @@ Flash, messagesProvider: MessagesProvider)
       "Edit Course",
       "Update"
       ) {
-        @inputText(course("title"), 'class -> "form-control")
-        @inputText(course("startDate"), 'class -> "form-control")
+        @inputText(course("Title"), 'class -> "form-control")
+        @inputText(course("Code"), 'class -> "form-control")
+        @inputText(course("Start Date"), 'class -> "form-control")
       }
     }
   </div>

@@ -79,7 +79,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       result match {
         case Some(u) =>
           Ok(views.html.user.showUser(u))
-        case None => Ok(views.html.index())
+        case None => Redirect(routes.UserController.index).flashing("error" -> "User not found.")
       }
     }
   }
@@ -100,7 +100,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           case Some(u) =>
             val filledForm = profileForm.fill(ProfileData(u.name, u.email))
             Ok(views.html.user.editUser(id, filledForm))
-          case None => Ok(views.html.index())
+          case None => Redirect(routes.UserController.index).flashing("error" -> "User not found.")
         }
       }
     }

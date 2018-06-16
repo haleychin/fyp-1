@@ -1,7 +1,7 @@
 @(id: Long, courseStudent: Form[CourseStudentData])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Add Student to  Course") {
+@main("Add Student to  Course", Html("")) {
 <h1>Import from excel files: </h1>
 @form(routes.UploadController.upload(id), 'enctype -> "multipart/form-data") {
   @CSRF.formField

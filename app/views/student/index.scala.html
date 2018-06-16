@@ -1,6 +1,6 @@
 @(students: Seq[Student])(implicit flash: Flash,  request: RequestHeader, messagesProvider: MessagesProvider)
 
-@main("All Students") {
+@main("All Students", Html("")) {
 @common.jumbotron {
 <h3>All Students</h3>
 <table class="table table-bordered table-sm">

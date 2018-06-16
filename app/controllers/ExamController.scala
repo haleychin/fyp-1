@@ -52,7 +52,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       examApi.course match {
         case Some(c) =>
           Ok(views.html.exam.index(c, examApi.students, examApi.exams))
-        case None => Ok(views.html.index())
+        case None => Redirect(routes.CourseController.index).flashing("error" -> "Course not found.")
       }
     }
   }

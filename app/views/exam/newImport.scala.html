@@ -1,7 +1,7 @@
 @(id: Long)(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Import Exam") {
+@main("Import Exam", Html("")) {
 <h1>Import Exam Results</h1>
 
 @form(routes.ExamController.save(id), 'enctype -> "multipart/form-data") {

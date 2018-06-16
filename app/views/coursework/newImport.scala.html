@@ -1,7 +1,7 @@
 @(id: Long)(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Import Coursework") {
+@main("Import Coursework", Html("")) {
 <h1>Import students courseworks from Blackboard</h1>
 
 @form(routes.CourseworkController.save(id), 'enctype -> "multipart/form-data") {

@@ -24,13 +24,7 @@
   }
 }
 
-@action = {
-<a class="btn btn-primary"
-   href="@routes.ExamController.newImport(course.id)">Import
-   Exam</a>
-}
-
-@main(course.title) {
+@main(course.title, Html("")) {
 @common.tabNav {
   <li class="nav-item">
     <a class="nav-link"

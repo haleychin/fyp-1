@@ -1,4 +1,4 @@
-@(title: String)(content: Html)(implicit flash: Flash, request: RequestHeader)
+@(title: String, sideNav: Html)(content: Html)(implicit flash: Flash, request: RequestHeader)
 
 <!DOCTYPE html>
 <html>
@@ -23,6 +23,7 @@
 
   <body class="fixed-sn">
     <header>
+      @common.sideNav(sideNav)
       <nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav top-nav-collapse blue">
         @if(!request.session.get("email").isEmpty) {
         <div class='float-left'>

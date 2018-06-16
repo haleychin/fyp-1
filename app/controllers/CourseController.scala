@@ -121,7 +121,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       courseApi.course match {
         case Some(c) =>
           Ok(views.html.course.showCourse(c, courseApi))
-        case None => Ok(views.html.index())
+        case None => Redirect(routes.CourseController.index).flashing("error" -> "Course not found.")
       }
     }
   }
@@ -138,7 +138,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
               content = new java.io.File(filename),
               fileName = _ => filename
             )
-          case None => Redirect(routes.CourseController.index()).flashing("error" -> "Course not found.")
+          case None => Redirect(routes.CourseController.index).flashing("error" -> "Course not found.")
         }
       }
   }
@@ -167,7 +167,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       repo.get(courseId).map(result =>
         result
           .map(c => new CourseRequest(c, input))
-          .toRight(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
+          .toRight(Redirect(routes.PageController.index).flashing("error" -> "You're not allowed to do that"))
       )
     }
   }
@@ -176,7 +176,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     def executionContext = ec
     def filter[A](input: CourseRequest[A]) = Future.successful {
         if (input.user.id != input.course.userId) {
-          Some(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
+          Some(Redirect(routes.PageController.index).flashing("error" -> "You're not allowed to do that"))
         } else { None }
     }
   }
@@ -190,7 +190,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     fsRepo.get(id).map { option =>
       option match {
         case Some(s) =>
-          Ok(views.html.course.filterSetting(id, s))
+          Ok(views.html.course.filterSetting(id, request.course, s))
         case None => Redirect(routes.CourseController.index()).flashing("error" -> "Setting not found.")
       }
     }

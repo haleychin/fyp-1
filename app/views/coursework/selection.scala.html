@@ -1,7 +1,7 @@
 @(id: Long, courseworkForm: Form[CourseworkFormData], courseworks: Seq[(String, String)])(implicit request: RequestHeader, flash: Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Select Coursework") {
+@main("Select Coursework", Html("")) {
 <h1>Select Courseworks to import from Blackboard</h1>
 
 @form(routes.CourseworkController.saveSelection(id)) {
