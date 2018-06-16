@@ -77,13 +77,18 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   def save(courseId: Long) = authenticatedAction(parse.multipartFormData) { implicit request =>
     request.body.file("file").map { file =>
       val filename = Paths.get(file.filename).getFileName
-      file.ref.moveTo(Paths.get(s"$filename"), replace = true)
-      bbParser.parse(filename.toString())
-      Redirect(routes.CourseworkController.selection(courseId)).flashing(
+      if (s"$filename" != "") {
+        file.ref.moveTo(Paths.get(s"$filename"), replace = true)
+        bbParser.parse(filename.toString())
+        Redirect(routes.CourseworkController.selection(courseId)).flashing(
         "success" -> s"Import courseworks successfully")
+      } else {
+        Redirect(routes.CourseController.showCourse(courseId)).flashing(
+          "error" -> "Missing courseworks file")
+      }
     }.getOrElse {
       Redirect(routes.PageController.index).flashing(
-        "error" -> "Missing file")
+        "error" -> "Missing courseworks file")
     }
   }
 

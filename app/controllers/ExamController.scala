@@ -64,15 +64,20 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   def save(courseId: Long) = authenticatedAction(parse.multipartFormData) { implicit request =>
     request.body.file("file").map { file =>
       val filename = Paths.get(file.filename).getFileName
-      file.ref.moveTo(Paths.get(s"$filename"), replace = true)
+      if (s"$filename" != "") {
+        file.ref.moveTo(Paths.get(s"$filename"), replace = true)
 
-      eParser.saveWithMetric(filename.toString(), courseId, repo,
-        qRepo, mRepo)
-      Redirect(routes.CourseController.showCourse(courseId)).flashing(
-        "success" -> s"Import final exam results successfully")
+        eParser.saveWithMetric(filename.toString(), courseId, repo,
+          qRepo, mRepo)
+        Redirect(routes.CourseController.showCourse(courseId)).flashing(
+          "success" -> s"Import final exam results successfully")
+      } else {
+        Redirect(routes.CourseController.showCourse(courseId)).flashing(
+          "error" -> "Missing exam excel files")
+      }
     }.getOrElse {
-      Redirect(routes.PageController.index).flashing(
-        "error" -> "Missing file")
+      Redirect(routes.CourseController.showCourse(courseId)).flashing(
+        "error" -> "Missing exam excel files")
     }
   }
 }
