@@ -25,8 +25,8 @@ MessagesAbstractController(cc) {
   // Define Login Form
   val loginForm = Form {
     mapping(
-      "email" -> email,
-      "password" -> nonEmptyText(minLength = 6)
+      "Email" -> email,
+      "Password" -> nonEmptyText(minLength = 6)
     )(LoginData.apply)(LoginData.unapply)
   }
 

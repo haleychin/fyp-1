@@ -1,0 +1,83 @@
+@()(implicit request: RequestHeader)
+
+<!-- Sidebar navigation -->
+@if(request.session.get("email").isDefined) {
+<div id="slide-out" class="side-nav fixed">
+  <ul class="custom-scrollbar">
+    <li>
+      <h1 class="text-center">SPES</h1>
+    </li>
+
+    <!-- Side navigation links -->
+    <li>
+      <ul class="collapsible collapsible-accordion">
+        <li>
+          <a class="collapsible-header waves-effect arrow-r">
+            Course
+            <i class="fa fa-angle-down rotate-icon"></i>
+          </a>
+          <div class="collapsible-body">
+            <ul>
+              <li>
+                <a href="@routes.CourseController.index" class="waves-effect">View all courses</a>
+              </li>
+              <li>
+                <a href="@routes.CourseController.newCourse"
+                  class="waves-effect">Add Course</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li><a class="collapsible-header waves-effect arrow-r">
+            Student
+            <i class="fa fa-angle-down rotate-icon"></i>
+          </a>
+          <div class="collapsible-body">
+            <ul>
+              <li><a href="@routes.StudentController.index" class="waves-effect">View all students</a>
+              </li>
+              <li><a href="@routes.StudentController.newStudent" class="waves-effect">Add student</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li><a class="collapsible-header waves-effect arrow-r"><i class="fa fa-eye"></i> About<i class="fa fa-angle-down rotate-icon"></i></a>
+          <div class="collapsible-body">
+            <ul>
+              <li><a href="#" class="waves-effect">Introduction</a>
+              </li>
+              <li><a href="#" class="waves-effect">Monthly meetings</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <li><a class="collapsible-header waves-effect arrow-r"><i class="fa fa-envelope-o"></i> Contact me<i class="fa fa-angle-down rotate-icon"></i></a>
+          <div class="collapsible-body">
+            <ul>
+              <li><a href="#" class="waves-effect">FAQ</a>
+              </li>
+              <li><a href="#" class="waves-effect">Write a message</a>
+              </li>
+              <li><a href="#" class="waves-effect">FAQ</a>
+              </li>
+              <li><a href="#" class="waves-effect">Write a message</a>
+              </li>
+              <li><a href="#" class="waves-effect">FAQ</a>
+              </li>
+              <li><a href="#" class="waves-effect">Write a message</a>
+              </li>
+              <li><a href="#" class="waves-effect">FAQ</a>
+              </li>
+              <li><a href="#" class="waves-effect">Write a message</a>
+              </li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </li>
+    <!--/. Side navigation links -->
+  </ul>
+  <div class="sidenav-bg rgba-blue-strong"></div>
+</div>
+<!--/. Sidebar navigation -->
+}

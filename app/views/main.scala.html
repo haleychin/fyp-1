@@ -21,70 +21,70 @@
     <link rel="stylesheet" href='@routes.Assets.versioned("css/main.css")'>
   </head>
 
-  <body>
+  <body class="fixed-sn">
+    @common.sideNav()
     <header>
-      <nav class="navbar navbar-expand-lg navbar-dark blue scrolling-navbar
-        mb-3">
-          <a class="navbar-brand" href="@routes.PageController.index"><strong>Momento</strong></a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              @if(request.session.get("email").isDefined) {
-                <li class="nav-item">
-                  <a class="nav-link"
-                    href="@routes.CourseController.index">Courses</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link"
-                    href="@routes.StudentController.index">Students</a>
-                </li>
-              }
-            </ul>
-            <ul class="navbar-nav">
-              @if(request.session.get("email").isEmpty) {
-                <li class="nav-item">
-                  <a class="nav-link"
-                    href="@routes.UserController.newUser">Sign Up</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link"
-                    href="@routes.SessionController.newSession">Sign In</a>
-                </li>
-                } else {
-                  <li class="nav-item">
-                    <a class="nav-link"
-                      href="@routes.SessionController.destroySession">Sign out</a>
-                  </li>
-                }
-            </ul>
-          </div>
+      <nav class="navbar fixed-top navbar-toggleable-md navbar-expand-lg scrolling-navbar double-nav top-nav-collapse blue">
+        @if(!request.session.get("email").isEmpty) {
+        <div class='float-left'>
+          <a href="#" data-activates="slide-out" class="button-collapse"><i class="fa fa-bars"></i></a>
+        </div>
+        }
+
+        <div class="breadcrumb-dn mr-auto">
+          <p>Student Performance Evaluation System</p>
+        </div>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav ml-auto">
+            @if(request.session.get("email").isEmpty) {
+            <li class="nav-item">
+              <a class="nav-link"
+                 href="@routes.UserController.newUser">Sign Up</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link"
+                 href="@routes.SessionController.newSession">Sign In</a>
+            </li>
+            } else {
+            <li class="nav-item">
+              <a class="nav-link"
+                 href="@routes.SessionController.destroySession">Sign out</a>
+            </li>
+            }
+          </ul>
+        </div>
       </nav>
     </header>
-    <div class="container">
-      @flashClass(key: String) = @{
+    <main>
+      <div class="container">
+        @flashClass(key: String) = @{
         if (key == "error") {
-          "danger"
+        "danger"
         } else {
-          "success"
+        "success"
         }
-      }
-      @flash.data.map { case (key, value) =>
+        }
+        @flash.data.map { case (key, value) =>
         @if(value) {
-          <div class="alert alert-@flashClass(key) alert-dismissible fade show" role="alert">
-            @value
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
+        <div class="alert alert-@flashClass(key) alert-dismissible fade show" role="alert">
+          @value
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
         }
-      }
+        }
 
-      <div class="p-3 mb-2">
-        @content
+        <div class="p-3 mb-2">
+          @content
+        </div>
       </div>
-    </div>
+    </main>
 
 
     <!-- JQuery -->

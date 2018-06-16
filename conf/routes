@@ -13,7 +13,7 @@ GET    /logout    controllers.SessionController.destroySession
 
 # User Routes
 GET    /users                controllers.UserController.index
-GET    /users/new            controllers.UserController.newUser
+GET    /sign_up              controllers.UserController.newUser
 GET    /users/:id            controllers.UserController.showUser(id: Long)
 POST   /users                controllers.UserController.createUser
 GET    /users/:id/edit       controllers.UserController.editUser(id: Long)
