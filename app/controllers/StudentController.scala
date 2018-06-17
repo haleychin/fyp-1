@@ -34,16 +34,16 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   val studentForm = Form {
     mapping(
-      "name" -> nonEmptyText,
-      "email" -> email,
-      "studentId" -> nonEmptyText,
-      "icOrPassport" -> nonEmptyText,
-      "nationality" -> nonEmptyText,
-      "contactNumber" -> nonEmptyText,
-      "birthDate" -> sqlDate,
-      "programme" -> nonEmptyText,
-      "intake" -> nonEmptyText,
-      "semester" -> number,
+      "Name" -> nonEmptyText,
+      "Email" -> email,
+      "Student Id" -> nonEmptyText,
+      "IC/Passport" -> nonEmptyText,
+      "Nationality" -> nonEmptyText,
+      "Contact Number" -> nonEmptyText,
+      "Birth Date" -> sqlDate,
+      "Programme" -> nonEmptyText,
+      "Intake" -> nonEmptyText,
+      "Semester" -> number,
     )(StudentData.apply)(StudentData.unapply)
   }
 

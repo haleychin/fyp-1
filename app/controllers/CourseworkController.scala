@@ -33,7 +33,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   val form = Form {
     mapping(
-      "courseworks" -> list(text)
+      "Courseworks" -> list(text)
     )(CourseworkFormData.apply)(CourseworkFormData.unapply)
   }
 

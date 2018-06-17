@@ -6,8 +6,8 @@ Flash, messagesProvider: MessagesProvider)
 <h1>Edit User</h1>
 
 @form(routes.UserController.updateUser(id)) {
-  @inputText(user("name"))
-  @inputText(user("email"))
+  @inputText(user("Name"))
+  @inputText(user("Email"))
   @CSRF.formField
 
   <div class="buttons">

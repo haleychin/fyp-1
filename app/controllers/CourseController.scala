@@ -167,7 +167,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       repo.get(courseId).map(result =>
         result
           .map(c => new CourseRequest(c, input))
-          .toRight(Redirect(routes.PageController.index).flashing("error" -> "You're not allowed to do that"))
+          .toRight(Redirect(routes.CourseController.index).flashing("error" -> "You're not allowed to do that"))
       )
     }
   }
@@ -176,7 +176,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     def executionContext = ec
     def filter[A](input: CourseRequest[A]) = Future.successful {
         if (input.user.id != input.course.userId) {
-          Some(Redirect(routes.PageController.index).flashing("error" -> "You're not allowed to do that"))
+          Some(Redirect(routes.CourseController.index).flashing("error" -> "You're not allowed to do that"))
         } else { None }
     }
   }
@@ -239,7 +239,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         Future.successful(Ok(views.html.course.editCourse(id, errorForm)))
       },
       course => {
-        repo.update(id, course.code, course.title, course.startDate).map { result =>
+        repo.update(id, course.title, course.code, course.startDate).map { result =>
           Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully updated.")
         }
       }

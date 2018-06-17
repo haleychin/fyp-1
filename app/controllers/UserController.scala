@@ -31,15 +31,15 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   // Define Form Structure
   val userForm = Form {
     mapping(
-      "name" -> nonEmptyText,
-      "email" -> email,
-      "password" -> nonEmptyText(minLength = 6)
+      "Name" -> nonEmptyText,
+      "Email" -> email,
+      "Password" -> nonEmptyText(minLength = 6)
     )(UserData.apply)(UserData.unapply)
   }
   val profileForm = Form {
     mapping(
-      "name" -> nonEmptyText,
-      "email" -> email
+      "Name" -> nonEmptyText,
+      "Email" -> email
     )(ProfileData.apply)(ProfileData.unapply)
   }
 
