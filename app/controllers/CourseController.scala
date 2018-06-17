@@ -67,8 +67,8 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )(FilterData.apply)(FilterData.unapply)
   }
 
-  def index = Action.async { implicit request =>
-    repo.list().map { courses =>
+  def index = authenticatedAction.async { implicit request =>
+    repo.list(request.user.id).map { courses =>
       Ok(views.html.course.index(courses))
     }
   }

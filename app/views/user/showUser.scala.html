@@ -1,6 +1,11 @@
 @(user: User)(implicit flash: Flash, request: RequestHeader)
 
 @main(user.name, Html("")) {
+@common.jumbotron {
 <h1>@user.name</h1>
 <p>@user.email</p>
+
+<a href="@routes.UserController.editUser" class="btn btn-primary btn-sm">Edit Profile</a>
+<a href="@routes.UserController.deleteUser" class="btn btn-danger btn-sm">Delete Account</a>
+}
 }

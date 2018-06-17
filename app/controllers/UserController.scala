@@ -43,12 +43,6 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )(ProfileData.apply)(ProfileData.unapply)
   }
 
-  def index = Action.async { implicit request =>
-    repo.list().map { users =>
-      Ok(views.html.user.index(users))
-    }
-  }
-
   def newUser = Action { implicit request =>
     Ok(views.html.user.newUser(userForm))
   }
@@ -66,7 +60,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
               val errorForm = userForm.withError("email", "already been taken")
               Ok(views.html.user.newUser(errorForm))
             case Success(_) =>
-              Redirect(routes.UserController.index).flashing("success" -> "You have successfully sign up")
+              Redirect(routes.CourseController.index).flashing("success" -> "Successfully sign up and login.").withSession("email" -> user.email)
           }
         }
 
@@ -74,63 +68,48 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     )
   }
 
-  def showUser(id: Long) = Action.async { implicit request =>
-    repo.get(id).map { result =>
+  def showUser = authenticatedAction.async { implicit request =>
+    repo.get(request.user.id).map { result =>
       result match {
         case Some(u) =>
           Ok(views.html.user.showUser(u))
-        case None => Redirect(routes.UserController.index).flashing("error" -> "User not found.")
+        case None => Redirect(routes.PageController.index).flashing("error" -> "User not found.")
       }
     }
   }
 
-  def checkAuthorization[A](id: Long, action: Action[A]) = authenticatedAction.async(action.parser)
-  { implicit request =>
-    if (request.user.id != id) {
-      Future.successful(Redirect(routes.PageController.index()).flashing("error" -> "You're not allowed to do that"))
-    } else {
-      action(request)
+  def editUser = authenticatedAction.async { implicit request =>
+    repo.get(request.user.id).map { result =>
+      result match {
+        case Some(u) =>
+          val filledForm = profileForm.fill(ProfileData(u.name, u.email))
+          Ok(views.html.user.editUser(filledForm))
+        case None => Redirect(routes.PageController.index).flashing("error" -> "User not found.")
+      }
     }
   }
 
-  def editUser(id: Long) = checkAuthorization(id,
-    Action.async { implicit request =>
-      repo.get(id).map { result =>
-        result match {
-          case Some(u) =>
-            val filledForm = profileForm.fill(ProfileData(u.name, u.email))
-            Ok(views.html.user.editUser(id, filledForm))
-          case None => Redirect(routes.UserController.index).flashing("error" -> "User not found.")
-        }
-      }
-    }
-  )
-
-  def updateUser(id: Long) = checkAuthorization(id,
-    Action.async { implicit request =>
-      profileForm.bindFromRequest.fold(
-        errorForm => {
-          Future.successful(Ok(views.html.user.editUser(id, errorForm)))
-        },
-        user => {
-          repo.update(id, user.name, user.email).map { result =>
-            if (result > 0) {
-              Redirect(routes.UserController.showUser(id))
-            } else {
-              Redirect(routes.UserController.editUser(id))
-            }
+  def updateUser = authenticatedAction.async { implicit request =>
+    profileForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.user.editUser(errorForm)))
+      },
+      user => {
+        repo.update(request.user.id, user.name, user.email).map { result =>
+          if (result > 0) {
+            Redirect(routes.UserController.showUser)
+          } else {
+            Redirect(routes.UserController.editUser)
           }
         }
-      )
-    }
-  )
-
-  def deleteUser(id: Long) = checkAuthorization(id,
-    Action.async { implicit requset =>
-      repo.delete(id).map { _ =>
-        Redirect(routes.UserController.index())
       }
+    )
+  }
+
+  def deleteUser = authenticatedAction.async { implicit request =>
+    repo.delete(request.user.id).map { _ =>
+      Redirect(routes.PageController.index).flashing("success" -> "Successfully deleted your account.").withNewSession
     }
-  )
+  }
 }
 

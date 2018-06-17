@@ -12,19 +12,28 @@
   </thead>
 
   <tbody>
-    @for(course <- courses) {
-    <tr>
-      <td>
-        <a href="@routes.CourseController.showCourse(course.id)">
-          @course.title
-        </a>
-      </td>
+    @if(courses.isEmpty) {
+      <tr>
+        <td colspan=2>
+          <em>No courses created yet.</em>
+          <a class="blue-text underline" href="@routes.CourseController.newCourse">Add your first course</a>
+        </td>
+      </tr>
+    } else {
+      @for(course <- courses) {
+      <tr>
+        <td>
+          <a href="@routes.CourseController.showCourse(course.id)">
+            @course.title
+          </a>
+        </td>
 
-      <td>
-        <a class="btn btn-primary btn-sm" href="@routes.CourseController.editCourse(course.id)">Edit</a>
-        <a class="btn btn-danger btn-sm" href="@routes.CourseController.deleteCourse(course.id)">Delete</a>
-      </td>
-    </tr>
+        <td>
+          <a class="btn btn-primary btn-sm" href="@routes.CourseController.editCourse(course.id)">Edit</a>
+          <a class="btn btn-danger btn-sm" href="@routes.CourseController.deleteCourse(course.id)">Delete</a>
+        </td>
+      </tr>
+      }
     }
   </tbody>
 </table>

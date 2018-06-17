@@ -4,14 +4,22 @@
 @if(request.session.get("email").isDefined) {
 <div id="slide-out" class="side-nav fixed">
   <ul class="custom-scrollbar">
-    <li>
-      <h1 class="text-center">SPES</h1>
+    <li class="p-4">
+      <p>
+        <strong class="d-block">Student Performance Evaluation System</strong>
+        <small class="text-muted">Login as @request.session.get("email")</small>
+      </p>
     </li>
 
     <!-- Side navigation links -->
     <li>
       <ul class="collapsible collapsible-accordion">
         @content
+        <li>
+          <a href="@routes.UserController.showUser" class="waves-effect arrow-r">
+            View Profile
+          </a>
+        </li>
         <li>
           <a class="collapsible-header waves-effect arrow-r">
             Course

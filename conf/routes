@@ -12,13 +12,12 @@ GET    /logout    controllers.SessionController.destroySession
 
 
 # User Routes
-GET    /users                    controllers.UserController.index
 GET    /sign_up                  controllers.UserController.newUser
-GET    /users/:id                controllers.UserController.showUser(id: Long)
+GET    /profile                  controllers.UserController.showUser
 POST   /users                    controllers.UserController.createUser
-GET    /users/:id/edit           controllers.UserController.editUser(id: Long)
-POST   /users/:id                controllers.UserController.updateUser(id: Long)
-GET    /users/:id/delete         controllers.UserController.deleteUser(id: Long)
+GET    /profile/edit             controllers.UserController.editUser
+POST   /profile                  controllers.UserController.updateUser
+GET    /profile/delete           controllers.UserController.deleteUser
 
 # Course Routes
 GET    /courses                  controllers.CourseController.index

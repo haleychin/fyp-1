@@ -1,17 +1,21 @@
-@(id: Long, user: Form[ProfileData])(implicit request: RequestHeader, flash:
+@(user: Form[ProfileData])(implicit request: RequestHeader, flash:
 Flash, messagesProvider: MessagesProvider)
 @import helper._
 
-@main("Edit User", Html("")) {
-<h1>Edit User</h1>
-
-@form(routes.UserController.updateUser(id)) {
-  @inputText(user("Name"))
-  @inputText(user("Email"))
-  @CSRF.formField
-
-  <div class="buttons">
-    <input type="submit" value="Update"/>
+@main("Edit Rules", Html("")) {
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.UserController.updateUser,
+      routes.CourseController.index(),
+      "Edit Profile",
+      "Update"
+      ) {
+        @inputText(user("Name"), 'class -> "form-control")
+        @inputText(user("Email"), 'class -> "form-control")
+      }
+    }
   </div>
-}
+</div>
 }

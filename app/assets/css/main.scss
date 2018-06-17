@@ -2,6 +2,12 @@ body {
   background-color: #eee;
 }
 
+.underline {
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
 table.table-borderless {
   border: 0;
 
@@ -64,8 +70,7 @@ table.dataTable {
     font-weight: 300;
 }
 .dataTables_wrapper .row {
-    margin-bottom: 1.5rem;
-}
+    margin-bottom: 1.5rem; }
 div.dataTables_wrapper div.dataTables_info {
     padding-top: 0;
     padding-bottom: 1rem;

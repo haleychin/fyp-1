@@ -46,8 +46,8 @@ class CourseRepository @Inject() (
   // =================
   // Define CRUD here.
   // =================
-  def list(): Future[Seq[Course]] = db.run {
-    courses.result
+  def list(userId: Long): Future[Seq[Course]] = db.run {
+    courses.filter(_.userId === userId).result
   }
 
   def get(id: Long): Future[Option[Course]] = db.run {
