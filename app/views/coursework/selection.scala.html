@@ -2,18 +2,21 @@
 @import helper._
 
 @main("Select Coursework", Html("")) {
-<h1>Select Courseworks to import from Blackboard</h1>
-
-@form(routes.CourseworkController.saveSelection(id)) {
-  @inputCheckboxGroup(
-    courseworkForm("Courseworks"),
-    options = courseworks
-  )
-  @CSRF.formField
-
-  <p>
-    <input class="btn btn-primary" type="submit" value="Submit">
-  </p>
-
-}
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.CourseworkController.saveSelection(id),
+      routes.CourseController.index,
+      "Select Courseworks to import from Blackboard",
+      "Submit"
+      ) {
+        @inputCheckboxGroup(
+          courseworkForm("Courseworks"),
+          options = courseworks
+          )
+      }
+    }
+  </div>
+</div>
 }

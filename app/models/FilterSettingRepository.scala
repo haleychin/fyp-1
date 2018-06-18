@@ -95,6 +95,15 @@ class FilterSettingRepository @Inject() (
     db.run(seq)
   }
 
+  def updateCW(courseId: Long, courseworkThreshold: Double,
+    courseworkMark: Int, courseworkMarkPoint: Double): Future[Int] = {
+      val setting = settings.filter(_.courseId === courseId)
+      val action = setting.map(u => (
+      u.courseworkThreshold, u.courseworkMark, u.courseworkMarkPoint)).update(
+        courseworkThreshold, courseworkMark, courseworkMarkPoint)
+      db.run(action)
+  }
+
   def update(courseId: Long,
     attendanceRate: Int, attendanceRatePoint: Double,
     consecutiveMissed: Int, consecutiveMissedPoint: Double,

@@ -110,9 +110,16 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       form => {
         bbParser.getCourseworks(form.courseworks)
         bbParser.saveToDb(courseId, repo)
-        Redirect(routes.CourseController.showCourse(courseId)).flashing("success" -> "Successfully fetch attendnace.")
+        Redirect(routes.CourseController.showCourse(courseId)).flashing("success" -> "Successfully import courseworks marks.")
       }
     )
+  }
+
+  def delete(courseId: Long) = authenticatedAction.async { implicit request =>
+    repo.delete(courseId).map { _ =>
+      Redirect(routes.CourseworkController.index(courseId)).flashing(
+        "success" -> "Successfully remove all courseworks")
+    }
   }
 
 }

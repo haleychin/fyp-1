@@ -29,11 +29,24 @@
   getCourseworkData(id).map(_.insight).getOrElse(Insight())
 }
 
-@main(course.title, Html("")) {
-@common.indexHeader(course)
+@action = {
+<li class="nav-item">
+  <a class="nav-link" href="@routes.CourseController.importation(course.id)">Import Coursework</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="@routes.CourseController.editCWSetting(course.id)">Edit Rules</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.CourseworkController.delete(course.id)">Clear all
+    courseworks</a>
+</li>
+}
+
+@main(course.title, sideNav(course)) {
+@common.indexHeader(course, action)
 @common.indexTabNav(course.id, "Coursework")
 @common.jumbotron {
-<h3>@course.title</h3>
 @common.sortableTable {
   <thead>
     <tr>
@@ -88,6 +101,8 @@
         <strong>Pass / Fail: </strong>
         @data.statistic.passCount / @data.statistic.failCount
       </td>
+      <td>
+      </td>
     </tr>
   </tfoot>
 }
@@ -95,7 +110,9 @@
 
 <div class="row">
   <div class="col">
-    @common.cardBody {
+    @common.card {
+      Descriptive Statistics
+    } {
     <table class="table table-borderless table-sm">
     <tr>
       <th>Max score: </th>

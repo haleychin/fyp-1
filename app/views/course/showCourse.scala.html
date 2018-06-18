@@ -67,35 +67,9 @@
   data.coursework.statistic.gradeFrequency.get(grade).getOrElse("-")
 }
 
-@sideNav = {
-  <li><a class="collapsible-header waves-effect arrow-r">
-      @course.title
-      <i class="fa fa-angle-down rotate-icon"></i>
-    </a>
-    <div class="collapsible-body">
-      <ul>
-        <li><a href="@routes.CourseController.importation(course.id)"
-            class="waves-effect">Import from files</a>
-        </li>
-        <li><a href="@routes.UploadController.fetch(course.id)"
-            class="waves-effect">Import students</a>
-        </li>
-        <li><a href="@routes.AttendanceController.newAttendance(course.id)"
-            class="waves-effect">Import attendances</a>
-        </li>
-        <li><a href="@routes.CourseController.export(course.id)"
-            class="waves-effect">Export course</a>
-        </li>
-        <li><a href="@routes.CourseController.filterSetting(course.id)"
-            class="waves-effect">Filter Settings</a>
-        </li>
-      </ul>
-    </div>
-  </li>
-}
 
-@main(course.title, sideNav: Html) {
-@common.indexHeader(course)
+@main(course.title, sideNav(course): Html) {
+@common.indexHeader(course, Html(""))
 @common.indexTabNav(course.id, "Overview")
 
 @common.jumbotron {

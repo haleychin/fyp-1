@@ -1,0 +1,31 @@
+@(id: Long, filter: Form[CourseworkFilterData])(implicit request: RequestHeader, flash:
+Flash, messagesProvider: MessagesProvider)
+@import helper._
+
+@main("Edit Coursework Rules", Html("")) {
+
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.CourseController.updateCWSetting(id),
+      routes.CourseController.index(),
+      "Edit Courseworks Rules",
+      "Update"
+      ) {
+        <div class="form-row">
+          <div class="col-md-4">
+            @inputText(filter("Coursework Alert Percentage"), 'class -> "form-control")
+          </div>
+          <div class="col-md-4">
+            @inputText(filter("Coursework Alert Percentage Weightage"), 'class -> "form-control")
+          </div>
+          <div class="col-md-4">
+            @inputText(filter("Coursework Threshold"), 'class -> "form-control")
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
+}

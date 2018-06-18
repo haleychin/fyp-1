@@ -27,6 +27,12 @@ case class FilterData(
   passingMark: Int, overviewThreshold: Double,
   attendanceThreshold: Double, courseworkThreshold: Double,
   courseworkMark: Int, courseworkMarkPoint: Double)
+case class CourseworkFilterData(courseworkMark: Int, courseworkMarkPoint: Double, courseworkThreshold: Double)
+case class AttendanceFilterData(
+  attendanceRate: Int, attendanceRatePoint: Double,
+  consecutiveMissed: Int, consecutiveMissedPoint: Double,
+  absentCount: Int, absentCountPoint: Double,
+  attendanceThreshold: Double)
 
 class CourseController @Inject()(
   repo: CourseRepository,
@@ -48,6 +54,26 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       "Code" -> nonEmptyText,
       "Start Date" -> sqlDate
     )(CourseData.apply)(CourseData.unapply)
+  }
+
+  val courseworkfilterForm = Form {
+    mapping(
+      "Coursework Alert Percentage" -> number,
+      "Coursework Threshold" -> of(doubleFormat),
+      "Coursework Alert Percentage Weightage" -> of(doubleFormat)
+    )(CourseworkFilterData.apply)(CourseworkFilterData.unapply)
+  }
+
+  val attendanceFilterForm = Form {
+    mapping(
+      "Attendance Rate" -> number,
+      "Attendance Rate Weightage" -> of(doubleFormat),
+      "Consecutive Missed Class Count" -> number,
+      "Consecutive Missed Class Count Weightage" -> of(doubleFormat),
+      "Absent Count" -> number,
+      "Absent Count Weightage" -> of(doubleFormat),
+      "Attendance Threshold" -> of(doubleFormat),
+    )(AttendanceFilterData.apply)(AttendanceFilterData.unapply)
   }
 
   val filterForm = Form {
@@ -195,6 +221,34 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       }
     }
   }
+
+  def editCWSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    fsRepo.get(id).map { option =>
+      option match {
+        case Some(s) =>
+        val filledForm = courseworkfilterForm.fill(CourseworkFilterData(
+          s.courseworkMark, s.courseworkThreshold, s.courseworkMarkPoint
+        ))
+          Ok(views.html.course.editCWSetting(id, filledForm))
+        case None => Redirect(routes.CourseController.index).flashing("error" -> "Setting not found.")
+      }
+    }
+  }
+
+  def updateCWSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    courseworkfilterForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.course.editCWSetting(id, errorForm)))
+      },
+      s => {
+        fsRepo.updateCW(id,
+          s.courseworkThreshold, s.courseworkMark, s.courseworkMarkPoint).map { result =>
+          Redirect(routes.CourseworkController.index(id)).flashing("success" -> "Coursework rules has been successfully updated.")
+        }
+      }
+    )
+  }
+
   def editSetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
 
     fsRepo.get(id).map { option =>
@@ -227,7 +281,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
           s.passingMark, s.overviewThreshold,
           s.attendanceThreshold, s.courseworkThreshold,
           s.courseworkMark, s.courseworkMarkPoint).map { result =>
-          Redirect(routes.CourseController.index).flashing("success" -> "Setting  has been successfully updated.")
+          Redirect(routes.CourseController.index).flashing("success" -> "Rules has been successfully updated.")
         }
       }
     )

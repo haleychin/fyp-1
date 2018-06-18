@@ -1,4 +1,4 @@
-@(course: Course)(implicit request: RequestHeader)
+@(course: Course, content: Html = Html(""))(implicit request: RequestHeader)
 
 <div class="row mb-3">
   <div class="col">
@@ -7,5 +7,9 @@
       <small class="text-muted">@course.code</small>
     </h3>
   </div>
+
+  <ul class="nav justify-content-end">
+    @content
+  </ul>
 </div>
 
