@@ -1,10 +1,5 @@
 # --- !Ups
-create table "questions_metrics" (
-  "question_id" BIGINT NOT NULL,
-  "metric_id" BIGINT NOT NULL,
-  "created_at" timestamp default now() NOT NULL,
-  "updated_at" timestamp default now() NOT NULL
-)
+alter table "questions" add constraint "fk_exams" foreign key("exam_id") references "exams"("id") on update RESTRICT on delete CASCADE
 # --- !Downs
-DROP TABLE IF EXISTS "questions_metrics"
+DROP TABLE IF EXISTS "questions"
 

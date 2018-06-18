@@ -55,7 +55,7 @@ object Analyser {
 
         if (stat.questions.contains(question.name)) {
           val qStat = stat.questions.get(question.name).get
-          println(question.name)
+          // println(question.name)
           qStat.total += question.mark
           qStat.maxMark += question.totalMark
           qStat.frequency += 1

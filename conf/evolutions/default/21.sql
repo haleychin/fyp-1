@@ -1,7 +1,7 @@
 # --- !Ups
 create table "questions" (
   "id" BIGSERIAL NOT NULL PRIMARY KEY,
-  "student_id" BIGINT NOT NULL,
+  "exam_id" BIGINT NOT NULL,
   "course_id" BIGINT NOT NULL,
   "name" VARCHAR NOT NULL,
   "mark" DOUBLE PRECISION NOT NULL,

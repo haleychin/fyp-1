@@ -1,12 +1,5 @@
 # --- !Ups
-create table "metrics" (
-  "id" BIGSERIAL NOT NULL PRIMARY KEY,
-  "course_id" BIGINT NOT NULL,
-  "name" VARCHAR NOT NULL,
-  "description" VARCHAR NOT NULL,
-  "created_at" timestamp default now() NOT NULL,
-  "updated_at" timestamp default now() NOT NULL
-)
-
+create unique index "question_unique" on "questions" ("exam_id","name")  
 # --- !Downs
-DROP TABLE IF EXISTS "metrics"
+DROP TABLE IF EXISTS "questions"
+

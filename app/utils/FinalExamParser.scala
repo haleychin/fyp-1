@@ -18,7 +18,6 @@ import models._
 @Singleton
 class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
 
-  @throws(classOf[Exception])
   def save(file: String, courseId: Long, repo: ExamRepository) {
     val workbook = WorkbookFactory.create(new File(file))
     val formatter = new DataFormatter()
@@ -94,8 +93,13 @@ class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
         val weightage = row.getCell(questionEnd + 2).getNumericCellValue()
 
         // Create exam record
-        eRepo.create(courseId, studentId, mark, total, weightage, totalWeightage).map{_ =>
-            (row.getRowNum, studentId)}
+        eRepo.create(courseId, studentId, mark, total, weightage, totalWeightage).map { e =>
+          if (e.isDefined) {
+            (row.getRowNum, e.get.id)
+          } else {
+            (None, 1)
+          }
+        }.filter(e => e._1 != None)
       } else {
         Future.successful(None)
       }
@@ -109,7 +113,7 @@ class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
         val metricRow   = sheet.getRow(2)
         val fullMarkRow = sheet.getRow(3)
 
-        list.foreach { case (rowNum: Int, studentId) =>
+        list.foreach { case (rowNum: Int, examId: Long) =>
           // ====================
           // Get question details
           // ====================
@@ -125,13 +129,11 @@ class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
           val celltype = CellType.forInt(markCell.getCellType())
           if (celltype == CellType.NUMERIC) {
             val mark = markCell.getNumericCellValue()
-            // println(s"$i. Row: $rowNum, Student ID: $studentId")
-            // println(s"Name: $name, Mark: $mark")
 
             // ===============
             // Create question
             // ===============
-            qRepo.create(courseId, studentId.toString, name, fullMark, mark).map { q =>
+            qRepo.create(examId, courseId, name, fullMark, mark).map { q =>
               if (q.isDefined) {
                 // =========================
                 // Link Question with Metric

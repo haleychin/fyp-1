@@ -73,7 +73,6 @@ class CourseworkRepository @Inject() (
           )
           val result = db.run(seq.asTry)
           result.map { r =>
-            println(r)
             r match {
               case Success(a) =>
                 println(a)

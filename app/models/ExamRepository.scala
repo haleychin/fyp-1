@@ -14,7 +14,7 @@ import scala.concurrent.duration._
 import scala.collection.mutable.{LinkedHashMap, ArrayBuffer}
 import utils.{Utils, Stats}
 
-case class Exam(courseId: Long, studentId: Long,
+case class Exam(id: Long, courseId: Long, studentId: Long,
   mark: Double, totalMark: Double,
   weightage: Double, totalWeightage: Double,
   createdAt: Timestamp, updateAt: Timestamp)
@@ -34,6 +34,7 @@ class ExamRepository @Inject() (
   class ExamTable(tag: Tag) extends Table[Exam](tag, "exams") {
 
     // Define columns
+    def id = column[Long]("id", O.PrimaryKey, O.AutoInc)
     def courseId = column[Long]("course_id")
     def studentId = column[Long]("student_id")
     def mark = column[Double]("mark")
@@ -42,16 +43,18 @@ class ExamRepository @Inject() (
     def totalWeightage = column[Double]("total_weightage")
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
-    def pk = primaryKey("pk_exam", (courseId, studentId))
+
+    def idx = index("exam_unique", (courseId, studentId), unique = true)
 
     def courses = foreignKey("e_fk_courses", courseId, cRepo.courses)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
     def students = foreignKey("e_fk_students", studentId, sRepo.students)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 
     // Default Projection
-    def * = (courseId, studentId, mark, totalMark, weightage, totalWeightage, createdAt, updatedAt) <> (Exam.tupled, Exam.unapply)
+    def * = (id, courseId, studentId, mark, totalMark, weightage, totalWeightage, createdAt, updatedAt) <> (Exam.tupled, Exam.unapply)
   }
 
   val exams = TableQuery[ExamTable]
+  // exams.schema.create.statements.foreach(println)
 
   def delete(courseId: Long): Future[Int] = db.run {
     exams.filter(_.courseId === courseId).delete
@@ -68,9 +71,9 @@ class ExamRepository @Inject() (
             val seq = (
               (exams.map(a => (
                 a.courseId, a.studentId, a.mark, a.totalMark, a.weightage, a.totalWeightage))
-            returning exams.map(a => (a.createdAt, a.updatedAt))
+            returning exams.map(a => (a.id, a.createdAt, a.updatedAt))
             into ((form, a) => Exam(
-              form._1, form._2, form._3, form._4, form._5, form._6, a._1, a._2))
+              a._1, form._1, form._2, form._3, form._4, form._5, form._6, a._2, a._3))
           ) += (courseId, student.id, mark, totalMark, weightage, totalWeightage)
         )
             val result = db.run(seq.asTry)
@@ -87,6 +90,10 @@ class ExamRepository @Inject() (
             Future(None)
         }
       }
+  }
+
+  def get(id: Long): Future[Option[Exam]] = db.run {
+    exams.filter(_.id === id).result.headOption
   }
 
   def getExams(

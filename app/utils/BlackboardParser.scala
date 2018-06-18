@@ -36,13 +36,13 @@ class BlackboardParser {
 
   def saveToDb(courseId: Long, repo: CourseworkRepository) {
     lines = lines.drop(1)
-    println(lines)
+    // println(lines)
 
     lines.foreach { line =>
       val courseCode = extractCommon(line, "First Name")
       val name = extractCommon(line, "Last Name")
       val studentId = extractCommon(line, "Username")
-      println(courseCode, name, studentId)
+      // println(courseCode, name, studentId)
       val courseworksMarks = courseworks.zipWithIndex.map { case (c, index) =>
         val name = courseworkNames(index)
         val mark = extractCommon(line, name)

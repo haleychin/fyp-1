@@ -1,5 +1,12 @@
 # --- !Ups
-alter table "questions_metrics" add constraint "qm_primary_key"
-primary key("question_id","metric_id")
+create table "metrics" (
+  "id" BIGSERIAL NOT NULL PRIMARY KEY,
+  "course_id" BIGINT NOT NULL,
+  "name" VARCHAR NOT NULL,
+  "description" VARCHAR NOT NULL,
+  "created_at" timestamp default now() NOT NULL,
+  "updated_at" timestamp default now() NOT NULL
+)
+
 # --- !Downs
-DROP TABLE IF EXISTS "questions_metrics"
+DROP TABLE IF EXISTS "metrics"
