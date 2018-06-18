@@ -52,6 +52,10 @@ class AttendanceRepository @Inject() (
 
   val attendances = TableQuery[AttendanceTable]
 
+  def delete(id: Long): Future[Int] = db.run {
+    attendances.filter(_.courseId === id).delete
+  }
+
   // studentId here refer to the Student Id for student instead
   // of the primary key of the Student record
   def create(courseId: Long, studentId: String, groupId: Int, date: Date, attendanceType: String): Future[Option[Attendance]] = {

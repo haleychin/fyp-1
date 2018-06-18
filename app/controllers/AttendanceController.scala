@@ -81,6 +81,13 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       }
   }
 
+  def delete(id: Long) = authenticatedAction.async { implicit request =>
+    repo.delete(id).map { _ =>
+      Redirect(routes.AttendanceController.index(id)).flashing(
+        "success" -> "Successfully remove all attendance records.")
+    }
+  }
+
   def fetch(id: Long, groupId: Int, date: String) = authenticatedAction.async { implicit request =>
     wsRequest("http://localhost:4567/attendance")
       .addQueryStringParameters(

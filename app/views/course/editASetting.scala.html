@@ -1,0 +1,51 @@
+@(id: Long, filter: Form[AttendanceFilterData])(implicit request: RequestHeader, flash:
+Flash, messagesProvider: MessagesProvider)
+@import helper._
+
+@main("Edit Rules", Html("")) {
+
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.CourseController.updateASetting(id),
+      routes.CourseController.index(),
+      "Edit Rules",
+      "Update"
+      ) {
+
+        <div class="form-row">
+          @inputText(filter("Attendance Threshold"), 'class -> "form-control")
+        </div>
+
+        <div class="form-row">
+          <div class="col-md-6">
+          @inputText(filter("Attendance Rate"), 'class -> "form-control")
+          </div>
+          <div class="col-md-6">
+          @inputText(filter("Attendance Rate Weightage"), 'class -> "form-control")
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-md-6">
+          @inputText(filter("Consecutive Missed Class Count"), 'class -> "form-control")
+          </div>
+          <div class="col-md-6">
+        @inputText(filter("Consecutive Missed Class Count Weightage"), 'class -> "form-control")
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-md-6">
+          @inputText(filter("Absent Count"), 'class -> "form-control")
+          </div>
+          <div class="col-md-6">
+          @inputText(filter("Absent Count Weightage"), 'class -> "form-control")
+          </div>
+        </div>
+      }
+    }
+  </div>
+</div>
+}

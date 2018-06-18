@@ -35,6 +35,8 @@ GET    /courses/:id/cwfilter/edit  controllers.CourseController.editCWSetting(id
 POST   /courses/:id/cwfilter       controllers.CourseController.updateCWSetting(id: Long)
 GET    /courses/:id/efilter/edit   controllers.CourseController.editESetting(id: Long)
 POST   /courses/:id/efilter        controllers.CourseController.updateESetting(id: Long)
+GET    /courses/:id/afilter/edit   controllers.CourseController.editASetting(id: Long)
+POST   /courses/:id/afilter        controllers.CourseController.updateASetting(id: Long)
 GET    /courses/:id/import         controllers.CourseController.importation(id: Long)
 
 # CourseStudent Routes
@@ -59,6 +61,7 @@ GET   /courses/:id/fetch               controllers.UploadController.fetch(id: Lo
 GET   /attendances/:id                 controllers.AttendanceController.index(id: Long)
 GET   /attendances/:id/new             controllers.AttendanceController.newAttendance(id: Long)
 GET   /attendances/:id/group/          controllers.AttendanceController.fetch(id: Long, groupId: Int, date: String)
+GET   /attendances/:id/delete          controllers.AttendanceController.delete(id: Long)
 
 # Coursework Routes
 GET   /courseworks/:id                  controllers.CourseworkController.index(id: Long)

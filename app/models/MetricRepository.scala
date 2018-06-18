@@ -41,6 +41,7 @@ class MetricRepository @Inject() (
     def courses = foreignKey("fk_courses", courseId, courseRepo.courses)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
     def * = (id, courseId, name, description, createdAt, updatedAt) <> (Metric.tupled, Metric.unapply)
   }
+
   val metricsTable = TableQuery[MetricTable]
   // metricsTable.schema.create.statements.foreach(println)
 
