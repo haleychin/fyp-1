@@ -10,10 +10,6 @@
 )
 @import util._
 
-@header = {
-Unenrolled students
-}
-
 @action = {
 <li class="nav-item">
   <a class="nav-link"
@@ -82,33 +78,4 @@ Unenrolled students
   </tbody>
 }
 }
-
-<div class="row">
-  <div class="col-md-6">
-    @common.card(header) {
-    <table class="table table-borderless table-sm">
-      <thead>
-        <th>Name</th>
-        <th>Student ID</th>
-      </thead>
-
-      <tbody>
-        @if(unenrolled.isEmpty) {
-          <tr>
-            <td><em>No students yet.</em></td>
-          </tr>
-        } else {
-          @for(student <- unenrolled) {
-          <tr>
-            <td>@student.name</td>
-            <td>@student.studentId</td>
-          </tr>
-          }
-        }
-      </tbody>
-    </table>
-    }
-  </div>
-</div>
-
 }
