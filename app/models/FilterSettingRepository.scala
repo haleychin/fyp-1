@@ -104,6 +104,12 @@ class FilterSettingRepository @Inject() (
       db.run(action)
   }
 
+  def updateE(courseId: Long, passingMark: Int): Future[Int] = {
+      val setting = settings.filter(_.courseId === courseId)
+      val action = setting.map(u => (u.passingMark)).update(passingMark)
+      db.run(action)
+  }
+
   def update(courseId: Long,
     attendanceRate: Int, attendanceRatePoint: Double,
     consecutiveMissed: Int, consecutiveMissedPoint: Double,

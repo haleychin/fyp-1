@@ -51,7 +51,7 @@ class CourseworkRepository @Inject() (
 
   val courseworks = TableQuery[CourseworkTable]
 
-  def delete(courseId: Long) = db.run {
+  def delete(courseId: Long): Future[Int] = db.run {
     courseworks.filter(_.courseId === courseId).delete
   }
 

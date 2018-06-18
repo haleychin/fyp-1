@@ -53,6 +53,10 @@ class ExamRepository @Inject() (
 
   val exams = TableQuery[ExamTable]
 
+  def delete(courseId: Long): Future[Int] = db.run {
+    exams.filter(_.courseId === courseId).delete
+  }
+
   // studentId here refer to the Student Id for student instead
   // of the primary key of the Student record
   def create(courseId: Long, studentId: String,

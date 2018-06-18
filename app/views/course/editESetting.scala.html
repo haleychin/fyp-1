@@ -1,0 +1,23 @@
+@(id: Long, filter: Form[ExamFilterData])(implicit request: RequestHeader, flash:
+Flash, messagesProvider: MessagesProvider)
+@import helper._
+
+@main("Edit Exam Rules", Html("")) {
+
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.cardBody {
+    @component.form(
+      routes.CourseController.updateESetting(id),
+      routes.CourseController.index(),
+      "Edit Exam Rules",
+      "Update"
+      ) {
+        <div class="form-row">
+          @inputText(filter("Passing Percentage"), 'class -> "form-control")
+        </div>
+      }
+    }
+  </div>
+</div>
+}

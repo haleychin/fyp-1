@@ -56,5 +56,12 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
+  def delete(courseId: Long) = authenticatedAction.async { implicit reqeust =>
+    repo.delete(courseId).map { _ =>
+      Redirect(routes.ExaminationController.index(courseId)).flashing(
+        "success" -> "Successfully clear all exams.")
+    }
+  }
+
 }
 

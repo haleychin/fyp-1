@@ -67,10 +67,15 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       if (s"$filename" != "") {
         file.ref.moveTo(Paths.get(s"$filename"), replace = true)
 
-        eParser.saveWithMetric(filename.toString(), courseId, repo,
-          qRepo, mRepo)
-        Redirect(routes.CourseController.showCourse(courseId)).flashing(
-          "success" -> s"Import final exam results successfully")
+        try {
+          eParser.saveWithMetric(filename.toString(), courseId, repo,
+            qRepo, mRepo)
+          Redirect(routes.ExaminationController.index(courseId)).flashing(
+            "success" -> s"Import final exam results successfully")
+        } catch {
+          case e: Exception =>
+            Redirect(routes.CourseController.importation(courseId)).flashing("error" -> "Incorrect Excel format provided.")
+        }
       } else {
         Redirect(routes.CourseController.showCourse(courseId)).flashing(
           "error" -> "Missing exam excel files")

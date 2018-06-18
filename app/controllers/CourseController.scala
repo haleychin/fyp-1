@@ -28,6 +28,7 @@ case class FilterData(
   attendanceThreshold: Double, courseworkThreshold: Double,
   courseworkMark: Int, courseworkMarkPoint: Double)
 case class CourseworkFilterData(courseworkMark: Int, courseworkMarkPoint: Double, courseworkThreshold: Double)
+case class ExamFilterData(passingMark: Int)
 case class AttendanceFilterData(
   attendanceRate: Int, attendanceRatePoint: Double,
   consecutiveMissed: Int, consecutiveMissedPoint: Double,
@@ -74,6 +75,12 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       "Absent Count Weightage" -> of(doubleFormat),
       "Attendance Threshold" -> of(doubleFormat),
     )(AttendanceFilterData.apply)(AttendanceFilterData.unapply)
+  }
+
+  val examfilterForm = Form {
+    mapping(
+      "Passing Percentage" -> number,
+    )(ExamFilterData.apply)(ExamFilterData.unapply)
   }
 
   val filterForm = Form {
@@ -244,6 +251,31 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
         fsRepo.updateCW(id,
           s.courseworkThreshold, s.courseworkMark, s.courseworkMarkPoint).map { result =>
           Redirect(routes.CourseworkController.index(id)).flashing("success" -> "Coursework rules has been successfully updated.")
+        }
+      }
+    )
+  }
+
+  def editESetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    fsRepo.get(id).map { option =>
+      option match {
+        case Some(s) =>
+        val filledForm = examfilterForm.fill(ExamFilterData(
+          s.passingMark))
+          Ok(views.html.course.editESetting(id, filledForm))
+        case None => Redirect(routes.CourseController.index()).flashing("error" -> "Setting not found.")
+      }
+    }
+  }
+
+  def updateESetting(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    examfilterForm.bindFromRequest.fold(
+      errorForm => {
+        Future.successful(Ok(views.html.course.editESetting(id, errorForm)))
+      },
+      s => {
+        fsRepo.updateE(id, s.passingMark).map { result =>
+          Redirect(routes.ExaminationController.index(id)).flashing("success" -> "Exam Rules has been successfully updated.")
         }
       }
     )

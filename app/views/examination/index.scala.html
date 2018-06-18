@@ -33,8 +33,23 @@
   }
 }
 
-@main(course.title, Html("")) {
-@common.indexHeader(course, Html(""))
+@action = {
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.CourseController.importation(course.id)">Import Exam</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="@routes.CourseController.editESetting(course.id)">Edit Rules</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.ExaminationController.delete(course.id)">Clear all
+  </a>
+</li>
+}
+
+@main(course.title, sideNav(course)) {
+@common.indexHeader(course, action)
 @common.indexTabNav(course.id, "Exam")
 @common.jumbotron {
 <h3>@course.title</h3>

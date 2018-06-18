@@ -33,6 +33,8 @@ GET    /courses/:id/filter/edit    controllers.CourseController.editSetting(id: 
 POST   /courses/:id/filter         controllers.CourseController.updateSetting(id: Long)
 GET    /courses/:id/cwfilter/edit  controllers.CourseController.editCWSetting(id: Long)
 POST   /courses/:id/cwfilter       controllers.CourseController.updateCWSetting(id: Long)
+GET    /courses/:id/efilter/edit   controllers.CourseController.editESetting(id: Long)
+POST   /courses/:id/efilter        controllers.CourseController.updateESetting(id: Long)
 GET    /courses/:id/import         controllers.CourseController.importation(id: Long)
 
 # CourseStudent Routes
@@ -71,6 +73,7 @@ GET   /exam/:id                        controllers.ExamController.index(id: Long
 GET   /examination/:id                 controllers.ExaminationController.index(id: Long)
 GET   /exam/:id/new                    controllers.ExamController.newImport(id: Long)
 POST  /exam/:id/save                   controllers.ExamController.save(id: Long)
+GET   /exam/:id/delete                 controllers.ExaminationController.delete(id: Long)
 
 
 # Map static resources from the /public folder to the /assets URL path

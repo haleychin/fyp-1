@@ -18,6 +18,7 @@ import models._
 @Singleton
 class FinalExamParser @Inject()(implicit ec: ExecutionContext) {
 
+  @throws(classOf[Exception])
   def save(file: String, courseId: Long, repo: ExamRepository) {
     val workbook = WorkbookFactory.create(new File(file))
     val formatter = new DataFormatter()
