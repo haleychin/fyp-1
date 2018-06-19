@@ -105,11 +105,11 @@ object Utils {
         val weightage = examDetail.exam._2
         c.courseworks += ("Exam" -> weightage)
         c.courseworksTotal += ("Exam" -> examDetail.fullWeightage)
-        c.totalMark += weightage
-        c.fullMark += examDetail.fullWeightage
-
         val cwPercent = calculatePercent(c.totalMark, c.fullMark)
         val examPercent = calculatePercent(weightage, examDetail.fullWeightage)
+
+        c.totalMark += weightage
+        c.fullMark += examDetail.fullWeightage
 
         c.status = calculateGrade(
           cwPercent,
@@ -127,7 +127,6 @@ object Utils {
         }
       }
     }
-
 
     courseworks.statistic.failCount = gradeFrequency.get("F*").getOrElse(0) + gradeFrequency.get("F").getOrElse(0)
 

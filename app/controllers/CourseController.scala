@@ -384,15 +384,15 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     repo.updateCompleted(id, true).map { _ =>
       csRepo.getStudents(id).map { students =>
         students.foreach { s =>
-          var courseworkFuture = cwRepo.getCoursesCourseworks(id)
-          var examFuture = eRepo.getCoursesExam(id)
+          var courseworkFuture = cwRepo.getCoursesCourseworks(s.id)
+          var examFuture = eRepo.getCoursesExam(s.id)
           val result = for {
             coursework <- courseworkFuture
             exam <- examFuture
           } yield (coursework, exam)
           result.map { result =>
             val courseworks = Utils.combineCourseworkAndExamTotal(result._1, result._2)
-            sRepo.updateFailCount(id, courseworks.statistic.failCount)
+            sRepo.updateFailCount(s.id, courseworks.statistic.failCount)
           }
         }
       }
