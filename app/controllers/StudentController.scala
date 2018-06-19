@@ -174,7 +174,15 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
   }
 
   def delete(id: Long) = authenticatedAction.async { implicit request =>
-      repo.delete(id).map { _ =>
-        Redirect(routes.StudentController.index())
-      }
-  } }
+    repo.delete(id).map { _ =>
+      Redirect(routes.StudentController.index())
+    }
+  }
+
+  def deleteAll(courseId: Long) = authenticatedAction.async { implicit request =>
+    csRepo.deleteAll(courseId).map { _ =>
+      Redirect(routes.CourseController.index()).flashing(
+        "success" -> "Successfully remove all students")
+    }
+  }
+}

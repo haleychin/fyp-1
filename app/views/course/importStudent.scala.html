@@ -1,0 +1,19 @@
+@(id: Long)(implicit request: RequestHeader, flash: Flash)
+
+@main("Import Students", Html("")) {
+<div class="row justify-content-md-center">
+  <div class="col-md-6">
+    @common.card {
+      Import Students
+    } {
+    <div class="text-center">
+      <p class="text-muted">
+      First, import students enrolled into this course from iCheckin.
+      </p>
+      <a href="@routes.UploadController.fetch(id)"
+        class="waves-effect btn btn-primary btn-sm">Import students</a>
+    </div>
+    }
+  </div>
+</div>
+}

@@ -145,6 +145,7 @@
     @common.card {
       Metrics Breakdown
     } {
+      @if(!metrics.isEmpty) {
       <p class="h3-responsive">Summary</p>
       <table class="table table-sm text-center mb-5">
         <tr class="special-color white-text">
@@ -197,7 +198,12 @@
         </tr>
       </table>
       }
+    } else {
+    <tr>
+      <td><em>No metrics available.</em></td>
+    </tr>
     }
+  }
   </div>
 </div>
 

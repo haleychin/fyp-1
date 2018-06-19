@@ -184,10 +184,14 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       course => {
         repo.create(course.title, course.code, course.startDate, request.user.id).map { result =>
           fsRepo.create(result.id, 80, 1, 4, 1, 10, 1, 40, 2, 2, 2, 40, 1)
-          Redirect(routes.CourseController.index).flashing("success" -> "Course has been successfully created.")
+          Redirect(routes.CourseController.importStudent(result.id)).flashing("success" -> "Course has been successfully created.")
         }
       }
     )
+  }
+
+  def importStudent(id: Long) = authenticatedAction { implicit request =>
+    Ok(views.html.course.importStudent(id))
   }
 
   class CourseRequest[A](val course: Course , request: AuthenticatedRequest[A]) extends WrappedRequest[A](request) {

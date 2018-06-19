@@ -111,6 +111,7 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     val action = students.filter(_.id === id).delete
     db.run(action)
   }
+
 }
 
 

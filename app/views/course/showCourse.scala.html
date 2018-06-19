@@ -68,8 +68,27 @@
 }
 
 
+@action = {
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.CourseController.importation(course.id)">Import data from files</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.AttendanceController.newAttendance(course.id)">Import Attendance</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link" href="@routes.CourseController.editSetting(course.id)">Edit Rules</a>
+</li>
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.StudentController.deleteAll(course.id)">Remove all
+    students</a>
+</li>
+}
+
 @main(course.title, sideNav(course): Html) {
-@common.indexHeader(course, Html(""))
+@common.indexHeader(course, action)
 @common.indexTabNav(course.id, "Overview")
 
 @common.jumbotron {
@@ -129,7 +148,9 @@
   @for(s <- data.students) {
   <tr class="text-center">
     <td>@s.studentId</td>
-    <td>@s.name</td>
+    <td>
+      <a href="@routes.StudentController.show(s.id)">@s.name</a>
+    </td>
     <td>@s.programme</td>
     <td>@s.intake</td>
     <td>@getAttendanceRate(s.id)</td>
@@ -165,6 +186,10 @@
     <tr>
       <th>Max score: </th>
       <td>@formatDouble(data.coursework.descStat.max)</td>
+    </tr>
+    <tr>
+      <th>Min score: </th>
+      <td>@formatDouble(data.coursework.descStat.min)</td>
     </tr>
     <tr>
       <th>Mean: </th>

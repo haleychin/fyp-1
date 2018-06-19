@@ -92,4 +92,8 @@ class CourseStudentRepository @Inject() (
     val action = coursesStudents.filter(cs =>  cs.courseId === courseId && cs.studentId === studentId).delete
     db.run(action)
   }
+
+  def deleteAll(courseId: Long): Future[Int] = db.run {
+    coursesStudents.filter(_.courseId === courseId).delete
+  }
 }
