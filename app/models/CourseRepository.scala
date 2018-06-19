@@ -11,7 +11,8 @@ import slick.driver.PostgresDriver.api._
 import scala.concurrent.{ Future, ExecutionContext }
 
 case class Course(id: Long, userId: Long, title: String, code: String,
-  startDate: Date, createdAt: Timestamp, updateAt: Timestamp)
+  startDate: Date, completed: Boolean,
+  createdAt: Timestamp, updateAt: Timestamp)
 
 @Singleton
 class CourseRepository @Inject() (
@@ -33,12 +34,13 @@ class CourseRepository @Inject() (
     def title = column[String]("title")
     def code = column[String]("code")
     def startDate = column[Date]("start_date")
+    def completed = column[Boolean]("completed", O.Default(false))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
     def user = foreignKey("user_fk", userId, userRepository.users)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
 
     // Default Projection
-    def * = (id, userId, title, code, startDate, createdAt, updatedAt) <> (Course.tupled, Course.unapply)
+    def * = (id, userId, title, code, startDate, completed, createdAt, updatedAt) <> (Course.tupled, Course.unapply)
   }
 
   val courses = TableQuery[CourseTable]
@@ -58,8 +60,8 @@ class CourseRepository @Inject() (
   def create(title: String, code: String, startDate: Date, userId: Long): Future[Course] = {
     val seq = (
     (courses.map(u => (u.userId, u.title, u.code, u.startDate))
-      returning courses.map(c => (c.id, c.createdAt, c.updatedAt))
-      into ((course, c) => Course(c._1, course._1, course._2, course._3, course._4, c._2, c._3))
+      returning courses.map(c => (c.id, c.completed, c.createdAt, c.updatedAt))
+      into ((course, c) => Course(c._1, course._1, course._2, course._3, course._4, c._2, c._3, c._4))
       ) += (userId, title, code, startDate)
     )
     db.run(seq)
@@ -68,6 +70,12 @@ class CourseRepository @Inject() (
   def update(id: Long, title: String, code: String, startDate: Date): Future[Int] = {
     val course = courses.filter(_.id === id)
     val action = course.map(u => (u.title, u.code, u.startDate)).update(title, code, startDate)
+    db.run(action)
+  }
+
+  def updateCompleted(id: Long, completed: Boolean): Future[Int] = {
+    val course = courses.filter(_.id === id)
+    val action = course.map(u => (u.completed)).update(completed)
     db.run(action)
   }
 

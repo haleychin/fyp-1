@@ -14,7 +14,7 @@ import scala.concurrent.{ Future, ExecutionContext }
 case class Student(id: Long, name: String, email: String,
   studentId: String, icOrPassport: String, nationality: String,
   contactNumber: String, birthDate: Date, programme: String,
-  intake: String, semester: Int, createdAt: Timestamp,
+  intake: String, semester: Int, failCount: Int, createdAt: Timestamp,
   updatedAt: Timestamp)
 
 @Singleton
@@ -39,12 +39,14 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     def programme = column[String]("programme")
     def intake    = column[String]("intake")
     def semester  = column[Int]("semester")
+    def failCount = column[Int]("fail_count", O.Default(0))
     def createdAt = column[Timestamp]("created_at", O.SqlType("timestamp default now()"))
     def updatedAt = column[Timestamp]("updated_at", O.SqlType("timestamp default now()"))
 
     // Default Projection
-    def * = (id, name, email, studentId, icOrPassport, nationality, contactNumber,
-      birthDate, programme, intake, semester, createdAt, updatedAt) <> (Student.tupled, Student.unapply)
+    def * = (id, name, email, studentId, icOrPassport,
+      nationality, contactNumber, birthDate, programme,
+      intake, semester, failCount, createdAt, updatedAt) <> (Student.tupled, Student.unapply)
   }
 
   val students = TableQuery[StudentTable]
@@ -79,11 +81,11 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
          s.contactNumber, s.birthDate, s.programme, s.intake,
          s.semester)
       )
-      returning students.map(s => (s.id, s.createdAt, s.updatedAt))
+      returning students.map(s => (s.id, s.failCount, s.createdAt, s.updatedAt))
       into ((form, student) =>
           Student(student._1, form._1, form._2, form._3, form._4,
             form._5, form._6, form._7, form._8, form._9, form._10,
-            student._2, student._3))
+            student._2, student._3, student._4))
       ) += (name, email, studentId, icOrPassport, nationality,
       contactNumber, birthDate, programme, intake, semester)
     )
@@ -104,6 +106,12 @@ class StudentRepository @Inject() (dbConfigProvider: DatabaseConfigProvider)(imp
     ).update(name, email, studentId, icOrPassport, nationality,
       contactNumber, birthDate, programme, intake, semester)
 
+    db.run(action)
+  }
+
+  def updateFailCount(id: Long, failCount: Int): Future[Int] = {
+    val student = students.filter(_.id === id)
+    val action  = student.map(s => (s.failCount)).update(failCount)
     db.run(action)
   }
 

@@ -85,6 +85,10 @@
     href="@routes.StudentController.deleteAll(course.id)">Remove all
     students</a>
 </li>
+<li class="nav-item">
+  <a class="nav-link"
+    href="@routes.CourseController.complete(course.id)">Mark as completed</a>
+</li>
 }
 
 @main(course.title, sideNav(course): Html) {

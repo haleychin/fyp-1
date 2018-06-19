@@ -40,6 +40,7 @@ POST   /courses/:id/afilter        controllers.CourseController.updateASetting(i
 GET    /courses/:id/import         controllers.CourseController.importation(id: Long)
 GET    /courses/:id/importStudent  controllers.CourseController.importStudent(id: Long)
 GET    /courses/:id/deleteStudent  controllers.StudentController.deleteAll(id: Long)
+GET    /courses/:id/completed      controllers.CourseController.complete(id: Long)
 
 # CourseStudent Routes
 GET    /courses/:id/add                   controllers.CourseStudentController.newCourseStudent(id: Long)

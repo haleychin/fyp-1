@@ -37,6 +37,7 @@ case class AttendanceFilterData(
 
 class CourseController @Inject()(
   repo: CourseRepository,
+  sRepo: StudentRepository,
   csRepo: CourseStudentRepository,
   aRepo: AttendanceRepository,
   cwRepo: CourseworkRepository,
@@ -133,7 +134,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
     results.map { r =>
       var combined = Utils.combineExamAndCoursework(r._5, r._6)
-      var attendance = Utils.combineInsight(r._4, combined)
+      var attendance = Utils.combineInsight(r._4, combined, r._3)
       var programmeToIntake = Map[String,String]()
       r._2.foreach { s =>
         if (programmeToIntake.contains(s.programme)) {
@@ -377,6 +378,27 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
 
   def importation(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction) { implicit request =>
     Ok(views.html.course.importation(request.course))
+  }
+
+  def complete(id: Long) = (authenticatedAction andThen CourseAction(id) andThen PermissionCheckAction).async { implicit request =>
+    repo.updateCompleted(id, true).map { _ =>
+      csRepo.getStudents(id).map { students =>
+        students.foreach { s =>
+          var courseworkFuture = cwRepo.getCoursesCourseworks(id)
+          var examFuture = eRepo.getCoursesExam(id)
+          val result = for {
+            coursework <- courseworkFuture
+            exam <- examFuture
+          } yield (coursework, exam)
+          result.map { result =>
+            val courseworks = Utils.combineCourseworkAndExamTotal(result._1, result._2)
+            sRepo.updateFailCount(id, courseworks.statistic.failCount)
+          }
+        }
+      }
+      Redirect(routes.CourseController.showCourse(id)).flashing(
+        "success" -> "Successfully mark course as completed.")
+    }
   }
 
 }

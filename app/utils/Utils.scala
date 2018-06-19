@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.sql.Date
 
-import models.{AttendanceAPI,CourseworkAPI,CCourseworkAPI,CExamAPI,ExamAPI,Status,Insight}
+import models.{AttendanceAPI,CourseworkAPI,CCourseworkAPI,CExamAPI,ExamAPI,Status,Insight,Student}
 
 import scala.collection.mutable.LinkedHashMap
 
@@ -65,16 +65,30 @@ object Utils {
     else { "F" }
   }
 
-  def combineInsight(attendance: AttendanceAPI, coursework: CourseworkAPI): AttendanceAPI = {
-    coursework.courseworkDetails.foreach { case (k, v) =>
-      attendance.studentDetails.get(k).map { attendanceDetail =>
-        val dangerLevel = v.insight.dangerLevel + attendanceDetail.insight.dangerLevel
-        attendanceDetail.insight = Insight(
-          dangerLevel,
-          v.insight.reasons ++ attendanceDetail.insight.reasons
-        )
+  def intepretFailCount(failCount: Int): (Int,String) = {
+    if (failCount > 0) { (1, s"Failed $failCount subject(s)") }
+    else { (0,"") }
+  }
+
+  def combineInsight(attendance: AttendanceAPI, coursework: CourseworkAPI, students: Seq[Student]): AttendanceAPI = {
+    students.foreach { s =>
+      val failCountTuple = intepretFailCount(s.failCount)
+      val k = s.id
+      val optionA = attendance.studentDetails.get(k)
+      val optionC = coursework.courseworkDetails.get(k)
+
+      if (optionA.isDefined && optionC.isDefined) {
+        val c = optionC.get
+        val a = optionA.get
+        val dangerLevel = c.insight.dangerLevel + a.insight.dangerLevel + failCountTuple._1
+        var reasons = (c.insight.reasons ++ a.insight.reasons).toArray
+        if (failCountTuple._2 != "") {
+          reasons = reasons :+ failCountTuple._2
+        }
+        a.insight = Insight(dangerLevel, reasons)
       }
     }
+
 
     attendance
   }
@@ -113,6 +127,9 @@ object Utils {
         }
       }
     }
+
+
+    courseworks.statistic.failCount = gradeFrequency.get("F*").getOrElse(0) + gradeFrequency.get("F").getOrElse(0)
 
     val marks = courseworks.courseworkDetails.values.map(_.totalMark).toSeq
     courseworks.descStat = Stats.computeDescriptiveStatistic(marks)

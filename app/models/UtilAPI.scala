@@ -27,7 +27,7 @@ case class Status(name: String = "-", reason: String = "")
 case class CwStatistic(
   averages: LinkedHashMap[String, Double],
   passCount: Int,
-  failCount: Int,
+  var failCount: Int,
   var gradeFrequency: LinkedHashMap[String,Int] = LinkedHashMap[String,Int]())
 
 // Overall Exam Statistic
