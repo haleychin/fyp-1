@@ -25,6 +25,14 @@
   getCourseworkData(id).map(_.status).getOrElse("-")
 }
 
+@getGrade(id: Long) = @{
+  getCourseworkData(id).map(_.grade.name).getOrElse("-")
+}
+
+@getGradeFreq(grade: String) = @{
+  data.statistic.gradeFrequency.get(grade).getOrElse("-")
+}
+
 @getInsight(id: Long) = @{
   getCourseworkData(id).map(_.insight).getOrElse(Insight())
 }
@@ -57,7 +65,7 @@
       <th class="text-center">Total
         (@formatDouble(data.total)%)
       </th>
-      <th class="text-center">Status</th>
+      <th class="text-center">Grade</th>
       <th>Danger Level</th>
     </tr>
   </thead>
@@ -77,7 +85,7 @@
     <td
       class="text-center">@getTotal(s.id)</td>
     <td class="text-center
-      @colColor(getStatus(s.id))">@getStatus(s.id)</td>
+      @colColor(getStatus(s.id))">@getGrade(s.id)</td>
     <td class="text-center @insightColor(getInsight(s.id).dangerLevel, threshold)"
       data-toggle="popover"
       data-trigger="focus"
@@ -109,7 +117,7 @@
 }
 
 <div class="row">
-  <div class="col">
+  <div class="col-md-6">
     @common.card {
       Descriptive Statistics
     } {
@@ -142,6 +150,26 @@
       <th>Variance: </th>
       <td>@formatDouble(data.descStat.variance)</td>
     </tr>
+    </table>
+    }
+  </div>
+  <div class="col-md-6">
+    @common.card {
+      Grade Distribution
+    } {
+    <table class="table table-borderless table-sm">
+    <thead>
+      <th>Grade</th>
+      <th>Frequency</th>
+    </thead>
+    <tbody>
+      @for(g <- Seq("A", "B", "C", "D", "E", "F", "F*")) {
+      <tr>
+        <th>@g</th>
+        <td>@getGradeFreq(g)</td>
+      </tr>
+      }
+    </tbody>
     </table>
     }
   </div>

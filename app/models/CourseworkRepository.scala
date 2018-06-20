@@ -130,6 +130,8 @@ class CourseworkRepository @Inject() (
 
         studentMap.foreach { case (_, s) =>
           s.status = Utils.calculatePass(s.total, total)
+          val gradeTotal = Utils.calculatePercent(s.total, total)
+          s.grade  = Utils.calculateStatus(0.0, 0.0, gradeTotal, false)
           // WARNING: Force unwrap FilterSetting here
           s.insight = Analyser.analyseCoursework(s, filter.get)
         }
@@ -221,9 +223,16 @@ class CourseworkRepository @Inject() (
     var averages = LinkedHashMap[String, Double]()
     val size = data.size
     var passCount = 0;
+    var gradeFrequency = LinkedHashMap[String,Int]()
 
     data.foreach { d =>
       val courseworksMap = d.courseworks
+
+      if (gradeFrequency.contains(d.grade.name)) {
+        gradeFrequency.update(d.grade.name, gradeFrequency.get(d.grade.name).get + 1)
+      } else {
+        gradeFrequency += (d.grade.name -> 1)
+      }
 
       d.courseworks.foreach { case (key, value) =>
         if (averages.contains(key)) {
@@ -231,6 +240,7 @@ class CourseworkRepository @Inject() (
         } else {
           averages += (key -> value)
         }
+
       }
 
       if (d.status == "Pass") { passCount += 1 }
@@ -249,7 +259,7 @@ class CourseworkRepository @Inject() (
       }
     }
 
-    CwStatistic(averages, passCount, failCount)
+    CwStatistic(averages, passCount, failCount, gradeFrequency)
   }
 
  }

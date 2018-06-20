@@ -3,6 +3,7 @@ version := "1.0.0"
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.12.4"
 crossScalaVersions := Seq("2.11.12", "2.12.4")
+scalacOptions in Compile in doc += "-diagrams"
 
 libraryDependencies += guice
 libraryDependencies += "com.typesafe.play" %% "play-slick" % "3.0.3"

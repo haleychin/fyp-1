@@ -35,14 +35,14 @@ object Utils {
     }
   }
 
-  def calculateStatus(cw: Double, exam: Double, total: Double): Status = {
+  def calculateStatus(cw: Double, exam: Double, total: Double, examIncluded: Boolean =  true): Status = {
     var reason = ""
     var grade  = "F"
-    if (cw < 40) {
+    if (examIncluded && cw < 40) {
       grade = "F*"
       reason = "Fail coursework"
     }
-    else if (exam < 40)   {
+    else if (examIncluded && exam < 40)   {
       grade = "F*"
       if (reason != "") { reason += " & " }
       reason += "Fail exam"
