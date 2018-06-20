@@ -62,6 +62,7 @@ object Analyser {
         } else {
           val qStat = QuestionStat(
             question.mark,
+            question.totalMark,
             question.totalMark
           )
           stat.questions += (question.name -> qStat)
@@ -69,11 +70,13 @@ object Analyser {
       } else {
         val qStat = QuestionStat(
           question.mark,
+          question.totalMark,
           question.totalMark
         )
         val questionMap = LinkedHashMap(question.name -> qStat)
         val stat = MetricStat(
           question.mark,
+          question.totalMark,
           question.totalMark,
           questionMap,
           metric.description
@@ -86,6 +89,7 @@ object Analyser {
     map.foreach { case (_, value) =>
       value.average = value.total / value.frequency
       value.percentage = value.total / value.maxMark * 100
+      value.fullMark = value.questions.map(_._2.fullMark).sum / value.questions.size
 
       value.questions.foreach { case (_, value) =>
         value.average = value.total / value.frequency

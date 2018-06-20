@@ -51,6 +51,7 @@ case class AStat(
 case class QuestionStat(
   var total: Double,
   var maxMark: Double,
+  var fullMark: Double,
   var average: Double = 0,
   var frequency: Int = 1,
   var percentage: Double = 0
@@ -60,6 +61,7 @@ case class QuestionStat(
 case class MetricStat(
   var total: Double,
   var maxMark: Double,
+  var fullMark: Double,
   var questions: LinkedHashMap[String,QuestionStat] = LinkedHashMap[String,QuestionStat](),
   var description: String,
   var average: Double = 0,

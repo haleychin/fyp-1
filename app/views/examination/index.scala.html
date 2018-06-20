@@ -178,17 +178,17 @@
       <table class="table table-sm text-center mb-5">
         <tr class="special-color white-text">
           <th>Metric Name</th>
+          <th>Average / Max Average</th>
           <th>Total Mark</th>
           <th>Percentage</th>
-          <th>Average</th>
-          <th>Frequency</th>
+          <th>Sample Size</th>
         </tr>
         @for((key, stat) <- metrics) {
         <tr>
           <th>@key</th>
+          <td>@formatDouble(stat.average) / @formatDouble(stat.fullMark)</td>
           <td>@stat.total / @stat.maxMark</td>
           <td>@formatDouble(stat.percentage)%</td>
-          <td>@formatDouble(stat.average)</td>
           <td>@stat.frequency</td>
         </tr>
         }
@@ -203,17 +203,17 @@
       <table class="table table-sm rounded text-center mb-5">
         <tr class="special-color white-text">
           <th>Question</th>
+          <th>Average / Max Average</th>
           <th>Mark / Total</th>
           <th>Percentage</th>
-          <th>Average</th>
-          <th>Frequency</th>
+          <th>Sample Size</th>
         </tr>
         @for((key, qstat) <- stat.questions) {
         <tr>
           <th>@key</th>
           <td>@qstat.total / @qstat.maxMark</td>
+          <td>@formatDouble(qstat.average) / @formatDouble(qstat.fullMark)</td>
           <td>@formatDouble(qstat.percentage)%</td>
-          <td>@formatDouble(qstat.average)</td>
           <td>@qstat.frequency</td>
         </tr>
         }
@@ -221,7 +221,7 @@
           <th>Total</th>
           <td>@stat.total / @stat.maxMark</td>
           <td>@formatDouble(stat.percentage)%</td>
-          <td>@formatDouble(stat.average)</td>
+          <td>@formatDouble(stat.average) / @formatDouble(stat.fullMark)</td>
           <td>@stat.frequency</td>
         </tr>
       </table>
