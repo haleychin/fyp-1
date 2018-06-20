@@ -113,7 +113,9 @@ class ExamRepository @Inject() (
       r.foreach { case (student, e) =>
         val pass = Utils.calculatePass(e.weightage, e.totalWeightage)
         val data = (e.mark, e.weightage, pass)
-        studentMap += (student.id -> ExamDetailsAPI(student, data))
+        val gradeTotal = Utils.calculatePercent(e.weightage, e.totalWeightage)
+        val grade = Utils.calculateStatus(0.0, 0.0, gradeTotal, false)
+        studentMap += (student.id -> ExamDetailsAPI(student, data, grade))
       }
 
       val statistic = computeStatistic(studentMap.values)
@@ -162,8 +164,15 @@ class ExamRepository @Inject() (
     var total = 0.0;
     var totalWeightage = 0.0;
     var passCount = 0;
+    var gradeFrequency = LinkedHashMap[String,Int]()
 
     data.foreach { d  =>
+      if (gradeFrequency.contains(d.grade.name)) {
+        gradeFrequency.update(d.grade.name, gradeFrequency.get(d.grade.name).get + 1)
+      } else {
+        gradeFrequency += (d.grade.name -> 1)
+      }
+
       val exam = d.exam
       total += exam._1
       totalWeightage += exam._2
@@ -179,7 +188,7 @@ class ExamRepository @Inject() (
     } else { 0.0 }
     val failCount = size - passCount
 
-    Statistic(average, averageWeightage, passCount, failCount)
+    Statistic(average, averageWeightage, passCount, failCount, gradeFrequency)
   }
 
 }

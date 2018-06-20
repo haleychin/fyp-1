@@ -23,6 +23,14 @@
   getExamDetail(id).map(_.exam._3).getOrElse("-")
 }
 
+@getGrade(id: Long) = @{
+  getExamDetail(id).map(_.grade.name).getOrElse("-")
+}
+
+@getGradeFreq(grade: String) = @{
+  data.statistic.gradeFrequency.get(grade).getOrElse("-")
+}
+
 @getWeightage(id: Long) = @{
   val examDetails = getExamDetail(id)
 
@@ -79,7 +87,7 @@
 
     <td class="text-center
       @colColor(getStatus(s.id))">
-      @getStatus(s.id)
+      @getGrade(s.id)
     </td>
   </tr>
   }
@@ -106,7 +114,7 @@
 }
 
 <div class="row mb-4">
-  <div class="col">
+  <div class="col-md-6">
     @common.card {
       Statistic
     } {
@@ -135,6 +143,26 @@
         <th>Variance: </th>
         <td>@formatDouble(data.descStat.variance)</td>
       </tr>
+    </table>
+    }
+  </div>
+  <div class="col-md-6">
+    @common.card {
+      Grade Distribution
+    } {
+    <table class="table table-borderless table-sm">
+    <thead>
+      <th>Grade</th>
+      <th>Frequency</th>
+    </thead>
+    <tbody>
+      @for(g <- Seq("A", "B", "C", "D", "E", "F", "F*")) {
+      <tr>
+        <th>@g</th>
+        <td>@getGradeFreq(g)</td>
+      </tr>
+      }
+    </tbody>
     </table>
     }
   </div>

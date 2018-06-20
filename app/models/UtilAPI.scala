@@ -35,7 +35,9 @@ case class Statistic(
   averageMark: Double,
   averageWeightage: Double,
   passCount: Int,
-  failCount: Int)
+  failCount: Int,
+  var gradeFrequency: LinkedHashMap[String,Int] = LinkedHashMap[String,Int]())
+
 
 // Attendance Statistic
 case class AStat(

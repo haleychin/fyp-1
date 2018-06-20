@@ -62,7 +62,8 @@ case class ExamAPI(
 case class ExamDetailsAPI(
   student: Student,
   // (Total, Weightage, Pass/Fail)
-  var exam: (Double, Double, String))
+  var exam: (Double, Double, String),
+  var grade: Status = Status())
 case class ExamMetricAPI(
   course: Option[Course],
   students: Seq[Student],
