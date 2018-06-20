@@ -106,9 +106,10 @@ class AttendanceRepository @Inject() (
           groupIdDates += ((a.groupId, a.date))
           if (studentMap.contains(student.id)) {
             // println(s"Inserting ${student.name} attendance on ${a.date}")
-            studentMap.get(student.id).get.attendances += (a.date -> a.attendanceType)
+            studentMap.get(student.id).get.attendances +=
+              ((a.groupId, a.date) -> a.attendanceType)
           } else {
-            val data = LinkedHashMap[Date, String](a.date -> a.attendanceType)
+            val data = LinkedHashMap[(Int,Date), String]((a.groupId,a.date) -> a.attendanceType)
             studentMap += (student.id -> StudentDetailsAPI(student, data))
           }
         }
@@ -164,13 +165,13 @@ class AttendanceRepository @Inject() (
      attend / attendances.size * 100
   }
 
-  def calculateRate(attendances: LinkedHashMap[Date,String]): AStat = {
+  def calculateRate(attendances: LinkedHashMap[(Int,Date),String]): AStat = {
     var attend = 0.0
     var absent = 0
     var previous = ""
     val consecutiveMissed = ArrayBuffer[ArrayBuffer[Date]]()
 
-    attendances.foreach { case (date, value) =>
+    attendances.foreach { case ((id: Int, date: Date), value) =>
       if (value == "attend") {
         previous = "attend"
         attend += 1

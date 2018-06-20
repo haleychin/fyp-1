@@ -12,10 +12,6 @@
 
 @action = {
 <li class="nav-item">
-  <a class="nav-link"
-    href="@routes.AttendanceController.newAttendance(course.id)">Import Attendance</a>
-</li>
-<li class="nav-item">
   <a class="nav-link" href="@routes.CourseController.editASetting(course.id)">Edit Rules</a>
 </li>
 <li class="nav-item">
@@ -34,7 +30,7 @@
   <thead>
     <tr>
       <th>Name</th>
-      @for((_, d) <- data.dates) {
+      @for((_, d) <- data.dates.toList) {
       <th class="text-center">@d</th>
       }
       <th>Attendance Rate</th>
@@ -49,10 +45,11 @@
           @d.student.name
         </a>
       </td>
-      @for((_, date) <- data.dates.toList) {
+      @for(key <- data.dates.toList) {
       <td class="text-center">
         @{
-        val value = d.attendances.getOrElse(date, "")
+        val value = d.attendances.getOrElse(key, "")
+        value
         if (value == "attend") {
           <i class="fa fa-check green-text" aria-hidden="true"></i>
         } else if (value == "absent") {

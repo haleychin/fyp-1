@@ -23,7 +23,7 @@ case class AttendanceAPI(
   dates: LinkedHashSet[(Int, Date)])
 case class StudentDetailsAPI(
   student: Student,
-  var attendances: LinkedHashMap[Date,String],
+  var attendances: LinkedHashMap[(Int,Date),String],
   var stat: AStat = AStat(),
   var insight: Insight = Insight())
 

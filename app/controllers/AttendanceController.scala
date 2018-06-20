@@ -53,6 +53,7 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     results.map { r =>
       val icheckInStudents = r._3.studentDetails.values.map(_.student)
       val unenrolled = r._2.diff(icheckInStudents.toSeq)
+      println(r._3)
       CourseAttendanceAPI(r._1, r._2, r._3, unenrolled, r._4.get.attendanceThreshold)
     }
   }
@@ -77,6 +78,19 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
       .get()
       .map { r =>
         val data = aImporter.extractCourseDetail(r.json)
+        data.foreach { cd =>
+          cd.dates.foreach { date =>
+            wsRequest("http://localhost:4567/attendance")
+              .addQueryStringParameters(
+                "course_id" -> id.toString,
+                "date" -> date,
+                "group_id" -> cd.groupId.toString)
+              .get()
+              .map { r =>
+                aImporter.extractAttendanceDetail(r.json, repo)
+              }
+          }
+        }
         Ok(views.html.attendance.newAttendance(id, data))
       }
   }
