@@ -10,10 +10,14 @@ import play.api.data._
 import play.api.data.format.Formats.doubleFormat
 import play.api.data.Forms._
 import play.api.data.validation.Constraints._
+import scala.concurrent.duration._
+import play.api.libs.ws._
+import play.api.libs.json._
 
 import java.sql.Date
+import java.util.Calendar
 import java.io.File
-import scala.collection.mutable.{Map}
+import scala.collection.mutable.{LinkedHashSet, Map}
 
 // Model
 import models._
@@ -36,6 +40,7 @@ case class AttendanceFilterData(
   attendanceThreshold: Double)
 
 class CourseController @Inject()(
+  ws: WSClient,
   repo: CourseRepository,
   sRepo: StudentRepository,
   csRepo: CourseStudentRepository,
@@ -44,6 +49,7 @@ class CourseController @Inject()(
   eRepo: ExamRepository,
   qRepo: MetricRepository,
   fsRepo: FilterSettingRepository,
+  aImporter: AttendanceImporter,
   exporter: CourseExporter,
   authenticatedAction: AuthenticatedAction,
   cc: MessagesControllerComponents)
@@ -148,12 +154,57 @@ AbstractController(cc) with play.api.i18n.I18nSupport {
     }
   }
 
+  def wsRequest(url: String): WSRequest = {
+    ws.url(url)
+      .addHttpHeaders("Accept" -> "application/json")
+      .withRequestTimeout(10000.millis)
+  }
+
+  def shouldFetchAttendance(date: Date, importDate: Date): Boolean = {
+    importDate.after(date)
+  }
+
+  def fetchAllAttendance(id: Long, lastDate: Option[Date]) {
+    wsRequest(s"http://localhost:4567/courses/$id")
+      .get()
+      .map { r =>
+        val data = aImporter.extractCourseDetail(r.json)
+        data.foreach { cd =>
+          cd.dates.foreach { date =>
+            if (!lastDate.isDefined || shouldFetchAttendance(lastDate.get, Utils.convertStringToDate(date))) {
+            wsRequest("http://localhost:4567/attendance")
+              .addQueryStringParameters(
+                "course_id" -> id.toString,
+                "date" -> date,
+                "group_id" -> cd.groupId.toString)
+              .get()
+              .map { r =>
+                aImporter.extractAttendanceDetail(r.json, aRepo)
+              }
+            }
+          }
+        }
+      }
+  }
+
+  def shouldFetchAllAttendance(dates: LinkedHashSet[(Int, Date)]): Boolean = {
+    if (dates.size < 1) { true }
+    else {
+      val today = Calendar.getInstance().getTime()
+      today.after(dates.last._2)
+    }
+  }
+
   def showCourse(id: Long,
     programme: String = "%",
     intake: String = "%") = Action.async { implicit request =>
     getCourseDetail(id, programme, intake).map { courseApi =>
       courseApi.course match {
         case Some(c) =>
+          if (shouldFetchAllAttendance(courseApi.attendance.dates)) {
+            val lastDate = courseApi.attendance.dates.lastOption.map(_._2)
+            fetchAllAttendance(id, lastDate)
+          }
           Ok(views.html.course.showCourse(c, courseApi))
         case None => Redirect(routes.CourseController.index).flashing("error" -> "Course not found.")
       }

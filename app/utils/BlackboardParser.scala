@@ -23,7 +23,9 @@ class BlackboardParser {
       .getLines.foreach { line => lines += line }
 
     if (lines.length > 0) {
+      println(lines(0))
       header = extractHeader(lines(0))
+      println(header)
     }
   }
 
@@ -49,6 +51,11 @@ class BlackboardParser {
         repo.create(courseId,studentId, c.name, mark.toDouble, c.totalMark)
       }
     }
+
+    header = Map[String, Int]()
+    courseworks = new ArrayBuffer[CourseworkData]()
+    lines = new ArrayBuffer[String]()
+    courseworkNames = new ArrayBuffer[String]()
   }
 
   def convertLine(line: String): String = {
