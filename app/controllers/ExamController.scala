@@ -30,33 +30,6 @@ class ExamController @Inject()(
 (implicit ec: ExecutionContext) extends
 AbstractController(cc) with play.api.i18n.I18nSupport {
 
-  def getExamDetails(courseId: Long): Future[CourseExamAPI] = {
-    val courseFuture = cRepo.get(courseId)
-    val studentFuture = csRepo.getStudents(courseId)
-    val examsFuture = repo.getExams(courseId)
-
-    val results = for {
-      course <- courseFuture
-      students <- studentFuture
-      exams <- examsFuture
-    } yield (course, students, exams)
-
-
-    results.map { r =>
-      CourseExamAPI(r._1, r._2, r._3)
-    }
-  }
-
-  def index(courseId: Long) = Action.async { implicit request =>
-    getExamDetails(courseId).map { examApi =>
-      examApi.course match {
-        case Some(c) =>
-          Ok(views.html.exam.index(c, examApi.students, examApi.exams))
-        case None => Redirect(routes.CourseController.index).flashing("error" -> "Course not found.")
-      }
-    }
-  }
-
   def newImport(courseId: Long) = authenticatedAction { implicit request =>
     Ok(views.html.exam.newImport(courseId))
   }

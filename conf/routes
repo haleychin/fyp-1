@@ -75,8 +75,7 @@ GET   /courseworks/:id/delete           controllers.CourseworkController.delete(
 POST  /courseworks/:id/save_selection   controllers.CourseworkController.saveSelection(id: Long)
 
 # Exam Routes
-GET   /exam/:id                        controllers.ExamController.index(id: Long)
-GET   /examination/:id                 controllers.ExaminationController.index(id: Long)
+GET   /exam/:id                 controllers.ExaminationController.index(id: Long)
 GET   /exam/:id/new                    controllers.ExamController.newImport(id: Long)
 POST  /exam/:id/save                   controllers.ExamController.save(id: Long)
 GET   /exam/:id/delete                 controllers.ExaminationController.delete(id: Long)
