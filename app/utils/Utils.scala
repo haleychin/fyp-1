@@ -3,8 +3,9 @@ package utils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.sql.Date
+import scala.collection.mutable.ArrayBuffer
 
-import models.{AttendanceAPI,CourseworkAPI,CCourseworkAPI,CExamAPI,ExamAPI,Status,Insight,Student}
+import models.{StudentDetailsAPI,AttendanceAPI,CourseworkAPI,CCourseworkAPI,CExamAPI,ExamAPI,Status,Insight,Student,AStat}
 
 import scala.collection.mutable.LinkedHashMap
 
@@ -66,8 +67,11 @@ object Utils {
   }
 
   def intepretFailCount(failCount: Int): (Int,String) = {
-    if (failCount > 0) { (1, s"Failed $failCount subject(s)") }
-    else { (0,"") }
+    val msg = s"Failed $failCount subjects"
+    if (failCount == 0) { (0,"") }
+    else if (failCount <= 2) { (1, msg) }
+    else if (failCount <= 5) { (2, msg) }
+    else { (3, msg) }
   }
 
   def combineInsight(attendance: AttendanceAPI, coursework: CourseworkAPI, students: Seq[Student]): AttendanceAPI = {
@@ -86,7 +90,16 @@ object Utils {
           reasons = reasons :+ failCountTuple._2
         }
         a.insight = Insight(dangerLevel, reasons)
+      } else if (!optionA.isDefined) {
+        val data = StudentDetailsAPI(
+          s,
+          LinkedHashMap[(Int,java.sql.Date),String](),
+          AStat(),
+          Insight(failCountTuple._1, ArrayBuffer(failCountTuple._2))
+        )
+        attendance.studentDetails += (s.id -> data)
       }
+
     }
 
 
