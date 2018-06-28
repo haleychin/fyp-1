@@ -5,7 +5,7 @@ import java.sql.Date
 // Insight - used to identify risky student
 case class Insight(
   dangerLevel: Double = 0.0,
-  reasons: Iterable[String] = Array[String]()
+  reasons: ArrayBuffer[String] = ArrayBuffer[String]()
 )
 
 // Descriptive Statistic for Course Overview

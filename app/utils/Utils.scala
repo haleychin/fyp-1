@@ -76,21 +76,20 @@ object Utils {
 
   def combineInsight(attendance: AttendanceAPI, coursework: CourseworkAPI, students: Seq[Student]): AttendanceAPI = {
     students.foreach { s =>
-      val failCountTuple = intepretFailCount(s.failCount)
+      val failCountTuple: (Int,String) = intepretFailCount(s.failCount)
       val k = s.id
       val optionA = attendance.studentDetails.get(k)
       val optionC = coursework.courseworkDetails.get(k)
 
-      if (optionA.isDefined && optionC.isDefined) {
-        val c = optionC.get
+      if (optionA.isDefined) {
         val a = optionA.get
-        val dangerLevel = c.insight.dangerLevel + a.insight.dangerLevel + failCountTuple._1
-        var reasons = (c.insight.reasons ++ a.insight.reasons).toArray
+        val dangerLevel = a.insight.dangerLevel + failCountTuple._1
+        var reasons = a.insight.reasons
         if (failCountTuple._2 != "") {
-          reasons = reasons :+ failCountTuple._2
+          reasons += failCountTuple._2
         }
         a.insight = Insight(dangerLevel, reasons)
-      } else if (!optionA.isDefined) {
+      } else {
         val data = StudentDetailsAPI(
           s,
           LinkedHashMap[(Int,java.sql.Date),String](),
@@ -98,6 +97,14 @@ object Utils {
           Insight(failCountTuple._1, ArrayBuffer(failCountTuple._2))
         )
         attendance.studentDetails += (s.id -> data)
+      }
+
+      if (optionC.isDefined) {
+        val c = optionC.get
+        val a = attendance.studentDetails.get(k).get
+        val dangerLevel = c.insight.dangerLevel + a.insight.dangerLevel
+        var reasons = c.insight.reasons ++ a.insight.reasons
+        a.insight = Insight(dangerLevel, reasons)
       }
 
     }

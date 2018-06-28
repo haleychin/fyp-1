@@ -100,6 +100,7 @@
   <tr class="text-center">
     <th>Course</th>
     <th>Semester</th>
+    <th>Completed</th>
     <th>Attendance Rate</th>
     <th>Marks</th>
     <th>Total</th>
@@ -112,6 +113,14 @@
     <td>@course.title</td>
     <td>@course.startDate</td>
     <td>
+      @if(course.completed) {
+        Completed
+      } else {
+      In Progress
+      }
+
+    </td>
+    <td>
     @if(attendances(course.id).isDefined) {
       @formatDouble(attendances(course.id).get.attendanceRate)%
     } else {
@@ -123,7 +132,7 @@
         @for((c, mark) <- courseworks(course.id).get.courseworks) {
         <p class="mb-0">
           <strong>@c:</strong>
-          @mark /
+          @formatDouble(mark) /
           @courseworks(course.id).get.courseworksTotal.get(c).getOrElse("")
         </p>
         }
